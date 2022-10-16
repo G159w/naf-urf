@@ -2,6 +2,7 @@
     "name": "front",
     "version": "0.0.1",
     "scripts": {
+        "deploy": "prisma migrate deploy",
         "generate": "$npm_execpath run generate:prima && $npm_execpath run generate:houdini",
         "generate:houdini": "houdini generate",
         "generate:prima": "prisma generate && ./generated-args.sh",
