@@ -2,6 +2,7 @@
     "name": "front",
     "version": "0.0.1",
     "scripts": {
+        "generate": "$npm_execpath run generate:prima && $npm_execpath run generate:houdini",
         "generate:houdini": "houdini generate",
         "generate:prima": "prisma generate && ./generated-args.sh",
         "sync": "svelte-kit sync",
@@ -18,21 +19,16 @@
     "dependencies": {
         "@envelop/graphql-jit": "4.6.0",
         "@prisma/client": "^4.3.1",
-        "@types/graphql": "^14.5.0",
         "apollo-upload-client": "^17.0.0",
         "date-fns": "^2.29.3",
         "graphql": "^15.8.0",
         "graphql-yoga": "^3.0.0-next.4",
         "lodash": "^4.17.21",
         "reflect-metadata": "^0.1.13",
-        "svelte-apollo": "^0.5.0",
         "type-graphql": "^1.1.1"
     },
     "devDependencies": {
         "@fontsource/fira-mono": "^4.5.0",
-        "@graphql-codegen/cli": "^2.13.5",
-        "@graphql-codegen/typescript": "^2.7.3",
-        "@graphql-codegen/typescript-operations": "^2.5.3",
         "@neoconfetti/svelte": "^1.0.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@popperjs/core": "^2.11.6",
