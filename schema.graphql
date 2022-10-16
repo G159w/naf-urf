@@ -1,0 +1,4 @@
+type Query {
+  foo(servings: Float = 2, title: String): String!
+  hello: String!
+}

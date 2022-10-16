@@ -1,0 +1,1 @@
+find ./\$type-graphql -type f -exec sed -i 's/Args().*:\(.*\))/Args(() => \1) args: \1)/g' {} \;
