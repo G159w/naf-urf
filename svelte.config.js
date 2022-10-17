@@ -15,8 +15,6 @@ const config = {
 	kit: {
 		adapter: vercel({
 			edge: false,	  
-			// an array of dependencies that esbuild should treat
-			// as external when bundling functions
 			external: [],
 			split: false
 		  }),
