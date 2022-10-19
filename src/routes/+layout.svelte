@@ -1,11 +1,11 @@
 <script>
-  import { fade } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import '../app.postcss';
 	import Header from './Header.svelte';
 	import './styles.css';
 </script>
 
-<div class="app bg-gray-900">
+<div class="app bg-white dark:bg-neutral-900">
 	<Header />
 
 	<main in:fade={{ duration: 200 }}>
@@ -13,7 +13,9 @@
 	</main>
 
 	<footer>
-		<p class="text-gray-400">visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+		<p class="text-gray-400">
+			Vous pouvez aussi requêter notre <a href="/api/graphql">API Graphql</a>
+		</p>
 	</footer>
 </div>
 

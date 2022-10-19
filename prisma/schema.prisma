@@ -13,9 +13,113 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int          @id @default(autoincrement())
   name      String
-  lolId     String?  @unique
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  ign       String?
+  lolId     String?      @unique
+  stats     Stat[]
+  gameStats PlayerStat[]
+  updatedAt DateTime     @updatedAt
+  createdAt DateTime     @default(now())
+}
+
+model Game {
+  id        Int          @id @default(autoincrement())
+  stats     Stat[]
+  players   PlayerStat[]
+  periodId  Int
+  period    Period       @relation(fields: [periodId], references: [id])
+  duration  Float
+  updatedAt DateTime     @updatedAt
+  createdAt DateTime     @default(now())
+}
+
+model PlayerStat {
+  id         Int         @id @default(autoincrement())
+  gameId     Int
+  game       Game        @relation(fields: [gameId], references: [id])
+  championId Int
+  champion   Champion    @relation(fields: [championId], references: [id])
+  userId     Int?
+  user       User?       @relation(fields: [userId], references: [id])
+  allyTeam   Boolean
+  kills      Int
+  deaths     Int
+  assists    Int
+  damage     Float
+  reduction  Float
+  sumSpells  SumSpells[]
+  items      Item[]
+  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime    @default(now())
+}
+
+model SumSpells {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique
+  players   PlayerStat[]
+  updatedAt DateTime     @updatedAt
+  createdAt DateTime     @default(now())
+}
+
+model Item {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique
+  players   PlayerStat[]
+  updatedAt DateTime     @updatedAt
+  createdAt DateTime     @default(now())
+}
+
+model Stat {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id])
+  championStatId Int
+  champion       ChampionStat @relation(fields: [championStatId], references: [id])
+  periodId       Int
+  period         Period       @relation(fields: [periodId], references: [id])
+  gameId         Int?
+  game           Game?        @relation(fields: [gameId], references: [id])
+  kills          Int
+  deaths         Int
+  assists        Int
+  damage         Int
+  reduction      Int
+  kda            Int
+  perf           Int
+  xClass         Int
+  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime     @default(now())
+}
+
+model Champion {
+  id        Int            @id @default(autoincrement())
+  name      String         @unique
+  players   PlayerStat[]
+  stats     ChampionStat[]
+  updatedAt DateTime       @updatedAt
+  createdAt DateTime       @default(now())
+}
+
+model ChampionStat {
+  id         Int      @id @default(autoincrement())
+  periodId   Int
+  period     Period   @relation(fields: [periodId], references: [id])
+  winrate    Float
+  support    Boolean
+  championId Int
+  champion   Champion @relation(fields: [championId], references: [id])
+  userStats  Stat[]
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+}
+
+model Period {
+  id            Int            @id @default(autoincrement())
+  date          DateTime
+  games         Game[]
+  championStats ChampionStat[]
+  stats         Stat[]
+  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime       @default(now())
 }
