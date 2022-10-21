@@ -3,9 +3,12 @@
 	import '../app.postcss';
 	import Header from './Header.svelte';
 	import './styles.css';
+	import { darkTheme } from '$lib/stores/store';
+
+	$: dark = $darkTheme;
 </script>
 
-<div class="app bg-white dark:bg-neutral-900">
+<div class:dark class="app bg-white dark:bg-neutral-900">
 	<Header />
 
 	<main in:fade={{ duration: 200 }}>

@@ -1,10 +1,11 @@
 import 'reflect-metadata';
-import { buildSchemaSync } from "type-graphql";
+import { buildSchemaSync } from 'type-graphql';
 import resolvers from '$lib/server/graphql/resolvers';
 import { useGraphQlJit } from '@envelop/graphql-jit';
 import { createYoga, renderGraphiQL } from 'graphql-yoga';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createContext } from '$lib/server/context';
+import { logger } from '$lib/server/logger';
 
 const schema = buildSchemaSync({ resolvers });
 const yogaApp = createYoga<RequestEvent>({
@@ -22,7 +23,7 @@ const yogaApp = createYoga<RequestEvent>({
 	hello
 }`
 	},
-	fetchAPI: globalThis,
+	fetchAPI: globalThis
 });
-
+logger.info('test');
 export { yogaApp as GET, yogaApp as POST };

@@ -14,8 +14,8 @@ datasource db {
 
 model User {
   id        Int          @id @default(autoincrement())
-  name      String
-  ign       String?
+  name      String       @unique
+  ign       String?      @unique
   lolId     String?      @unique
   stats     Stat[]
   gameStats PlayerStat[]
@@ -24,14 +24,16 @@ model User {
 }
 
 model Game {
-  id        Int          @id @default(autoincrement())
-  stats     Stat[]
-  players   PlayerStat[]
-  periodId  Int
-  period    Period       @relation(fields: [periodId], references: [id])
-  duration  Float
-  updatedAt DateTime     @updatedAt
-  createdAt DateTime     @default(now())
+  id            Int          @id @default(autoincrement())
+  matchId       String       @unique
+  isMatchLoaded Boolean      @default(false)
+  stats         Stat[]
+  players       PlayerStat[]
+  periodId      Int?
+  period        Period?      @relation(fields: [periodId], references: [id])
+  duration      Float?
+  updatedAt     DateTime     @updatedAt
+  createdAt     DateTime     @default(now())
 }
 
 model PlayerStat {
@@ -71,25 +73,27 @@ model Item {
 }
 
 model Stat {
-  id             Int          @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   userId         Int
-  user           User         @relation(fields: [userId], references: [id])
-  championStatId Int
-  champion       ChampionStat @relation(fields: [championStatId], references: [id])
-  periodId       Int
-  period         Period       @relation(fields: [periodId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
+  championStatId Int?
+  champion       ChampionStat? @relation(fields: [championStatId], references: [id])
+  periodId       Int?
+  period         Period?       @relation(fields: [periodId], references: [id])
   gameId         Int?
-  game           Game?        @relation(fields: [gameId], references: [id])
-  kills          Int
-  deaths         Int
-  assists        Int
-  damage         Int
-  reduction      Int
-  kda            Int
-  perf           Int
-  xClass         Int
-  updatedAt      DateTime     @updatedAt
-  createdAt      DateTime     @default(now())
+  game           Game?         @relation(fields: [gameId], references: [id])
+  kills          Int?
+  deaths         Int?
+  assists        Int?
+  damage         Int?
+  reduction      Int?
+  kda            Int?
+  perf           Int?
+  xClass         Int?
+  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime      @default(now())
+
+  @@unique([userId, gameId], name: "gameIdentifier")
 }
 
 model Champion {

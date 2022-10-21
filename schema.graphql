@@ -96,6 +96,8 @@ type Champion {
   createdAt: DateTime!
   id: Int!
   name: String!
+  players(cursor: PlayerStatWhereUniqueInput, distinct: [PlayerStatScalarFieldEnum!], orderBy: [PlayerStatOrderByWithRelationInput!], skip: Int, take: Int, where: PlayerStatWhereInput): [PlayerStat!]!
+  stats(cursor: ChampionStatWhereUniqueInput, distinct: [ChampionStatScalarFieldEnum!], orderBy: [ChampionStatOrderByWithRelationInput!], skip: Int, take: Int, where: ChampionStatWhereInput): [ChampionStat!]!
   updatedAt: DateTime!
 }
 
@@ -263,12 +265,15 @@ input ChampionScalarWhereWithAggregatesInput {
 
 type ChampionStat {
   _count: ChampionStatCount
+  champion: Champion!
   championId: Int!
   createdAt: DateTime!
   id: Int!
+  period: Period!
   periodId: Int!
   support: Boolean!
   updatedAt: DateTime!
+  userStats(cursor: StatWhereUniqueInput, distinct: [StatScalarFieldEnum!], orderBy: [StatOrderByWithRelationInput!], skip: Int, take: Int, where: StatWhereInput): [Stat!]!
   winrate: Float!
 }
 
@@ -624,10 +629,12 @@ input ChampionStatUpdateManyWithoutPeriodNestedInput {
   upsert: [ChampionStatUpsertWithWhereUniqueWithoutPeriodInput!]
 }
 
-input ChampionStatUpdateOneRequiredWithoutUserStatsNestedInput {
+input ChampionStatUpdateOneWithoutUserStatsNestedInput {
   connect: ChampionStatWhereUniqueInput
   connectOrCreate: ChampionStatCreateOrConnectWithoutUserStatsInput
   create: ChampionStatCreateWithoutUserStatsInput
+  delete: Boolean
+  disconnect: Boolean
   update: ChampionStatUpdateWithoutUserStatsInput
   upsert: ChampionStatUpsertWithoutUserStatsInput
 }
@@ -838,6 +845,33 @@ input FloatFilter {
   notIn: [Float!]
 }
 
+input FloatNullableFilter {
+  equals: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  lt: Float
+  lte: Float
+  not: NestedFloatNullableFilter
+  notIn: [Float!]
+}
+
+input FloatNullableWithAggregatesFilter {
+  _avg: NestedFloatNullableFilter
+  _count: NestedIntNullableFilter
+  _max: NestedFloatNullableFilter
+  _min: NestedFloatNullableFilter
+  _sum: NestedFloatNullableFilter
+  equals: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  lt: Float
+  lte: Float
+  not: NestedFloatNullableWithAggregatesFilter
+  notIn: [Float!]
+}
+
 input FloatWithAggregatesFilter {
   _avg: NestedFloatFilter
   _count: NestedIntFilter
@@ -857,9 +891,14 @@ input FloatWithAggregatesFilter {
 type Game {
   _count: GameCount
   createdAt: DateTime!
-  duration: Float!
+  duration: Float
   id: Int!
-  periodId: Int!
+  matchId: String!
+  matchLoaded: Boolean!
+  period: Period
+  periodId: Int
+  players(cursor: PlayerStatWhereUniqueInput, distinct: [PlayerStatScalarFieldEnum!], orderBy: [PlayerStatOrderByWithRelationInput!], skip: Int, take: Int, where: PlayerStatWhereInput): [PlayerStat!]!
+  stats(cursor: StatWhereUniqueInput, distinct: [StatScalarFieldEnum!], orderBy: [StatOrderByWithRelationInput!], skip: Int, take: Int, where: StatWhereInput): [Stat!]!
   updatedAt: DateTime!
 }
 
@@ -885,6 +924,8 @@ type GameCountAggregate {
   createdAt: Int!
   duration: Int!
   id: Int!
+  matchId: Int!
+  matchLoaded: Int!
   periodId: Int!
   updatedAt: Int!
 }
@@ -893,14 +934,18 @@ input GameCountOrderByAggregateInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  matchId: SortOrder
+  matchLoaded: SortOrder
   periodId: SortOrder
   updatedAt: SortOrder
 }
 
 input GameCreateInput {
   createdAt: DateTime
-  duration: Float!
-  period: PeriodCreateNestedOneWithoutGamesInput!
+  duration: Float
+  matchId: String!
+  matchLoaded: Boolean
+  period: PeriodCreateNestedOneWithoutGamesInput
   players: PlayerStatCreateNestedManyWithoutGameInput
   stats: StatCreateNestedManyWithoutGameInput
   updatedAt: DateTime
@@ -908,16 +953,20 @@ input GameCreateInput {
 
 input GameCreateManyInput {
   createdAt: DateTime
-  duration: Float!
+  duration: Float
   id: Int
-  periodId: Int!
+  matchId: String!
+  matchLoaded: Boolean
+  periodId: Int
   updatedAt: DateTime
 }
 
 input GameCreateManyPeriodInput {
   createdAt: DateTime
-  duration: Float!
+  duration: Float
   id: Int
+  matchId: String!
+  matchLoaded: Boolean
   updatedAt: DateTime
 }
 
@@ -962,7 +1011,9 @@ input GameCreateOrConnectWithoutStatsInput {
 
 input GameCreateWithoutPeriodInput {
   createdAt: DateTime
-  duration: Float!
+  duration: Float
+  matchId: String!
+  matchLoaded: Boolean
   players: PlayerStatCreateNestedManyWithoutGameInput
   stats: StatCreateNestedManyWithoutGameInput
   updatedAt: DateTime
@@ -970,16 +1021,20 @@ input GameCreateWithoutPeriodInput {
 
 input GameCreateWithoutPlayersInput {
   createdAt: DateTime
-  duration: Float!
-  period: PeriodCreateNestedOneWithoutGamesInput!
+  duration: Float
+  matchId: String!
+  matchLoaded: Boolean
+  period: PeriodCreateNestedOneWithoutGamesInput
   stats: StatCreateNestedManyWithoutGameInput
   updatedAt: DateTime
 }
 
 input GameCreateWithoutStatsInput {
   createdAt: DateTime
-  duration: Float!
-  period: PeriodCreateNestedOneWithoutGamesInput!
+  duration: Float
+  matchId: String!
+  matchLoaded: Boolean
+  period: PeriodCreateNestedOneWithoutGamesInput
   players: PlayerStatCreateNestedManyWithoutGameInput
   updatedAt: DateTime
 }
@@ -991,9 +1046,11 @@ type GameGroupBy {
   _min: GameMinAggregate
   _sum: GameSumAggregate
   createdAt: DateTime!
-  duration: Float!
+  duration: Float
   id: Int!
-  periodId: Int!
+  matchId: String!
+  matchLoaded: Boolean!
+  periodId: Int
   updatedAt: DateTime!
 }
 
@@ -1007,6 +1064,8 @@ type GameMaxAggregate {
   createdAt: DateTime
   duration: Float
   id: Int
+  matchId: String
+  matchLoaded: Boolean
   periodId: Int
   updatedAt: DateTime
 }
@@ -1015,6 +1074,8 @@ input GameMaxOrderByAggregateInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  matchId: SortOrder
+  matchLoaded: SortOrder
   periodId: SortOrder
   updatedAt: SortOrder
 }
@@ -1023,6 +1084,8 @@ type GameMinAggregate {
   createdAt: DateTime
   duration: Float
   id: Int
+  matchId: String
+  matchLoaded: Boolean
   periodId: Int
   updatedAt: DateTime
 }
@@ -1031,6 +1094,8 @@ input GameMinOrderByAggregateInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  matchId: SortOrder
+  matchLoaded: SortOrder
   periodId: SortOrder
   updatedAt: SortOrder
 }
@@ -1048,6 +1113,8 @@ input GameOrderByWithAggregationInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  matchId: SortOrder
+  matchLoaded: SortOrder
   periodId: SortOrder
   updatedAt: SortOrder
 }
@@ -1056,6 +1123,8 @@ input GameOrderByWithRelationInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  matchId: SortOrder
+  matchLoaded: SortOrder
   period: PeriodOrderByWithRelationInput
   periodId: SortOrder
   players: PlayerStatOrderByRelationAggregateInput
@@ -1072,6 +1141,8 @@ enum GameScalarFieldEnum {
   createdAt
   duration
   id
+  matchId
+  matchLoaded
   periodId
   updatedAt
 }
@@ -1081,9 +1152,11 @@ input GameScalarWhereInput {
   NOT: [GameScalarWhereInput!]
   OR: [GameScalarWhereInput!]
   createdAt: DateTimeFilter
-  duration: FloatFilter
+  duration: FloatNullableFilter
   id: IntFilter
-  periodId: IntFilter
+  matchId: StringFilter
+  matchLoaded: BoolFilter
+  periodId: IntNullableFilter
   updatedAt: DateTimeFilter
 }
 
@@ -1092,9 +1165,11 @@ input GameScalarWhereWithAggregatesInput {
   NOT: [GameScalarWhereWithAggregatesInput!]
   OR: [GameScalarWhereWithAggregatesInput!]
   createdAt: DateTimeWithAggregatesFilter
-  duration: FloatWithAggregatesFilter
+  duration: FloatNullableWithAggregatesFilter
   id: IntWithAggregatesFilter
-  periodId: IntWithAggregatesFilter
+  matchId: StringWithAggregatesFilter
+  matchLoaded: BoolWithAggregatesFilter
+  periodId: IntNullableWithAggregatesFilter
   updatedAt: DateTimeWithAggregatesFilter
 }
 
@@ -1112,8 +1187,10 @@ input GameSumOrderByAggregateInput {
 
 input GameUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
-  duration: FloatFieldUpdateOperationsInput
-  period: PeriodUpdateOneRequiredWithoutGamesNestedInput
+  duration: NullableFloatFieldUpdateOperationsInput
+  matchId: StringFieldUpdateOperationsInput
+  matchLoaded: BoolFieldUpdateOperationsInput
+  period: PeriodUpdateOneWithoutGamesNestedInput
   players: PlayerStatUpdateManyWithoutGameNestedInput
   stats: StatUpdateManyWithoutGameNestedInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1121,7 +1198,9 @@ input GameUpdateInput {
 
 input GameUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
-  duration: FloatFieldUpdateOperationsInput
+  duration: NullableFloatFieldUpdateOperationsInput
+  matchId: StringFieldUpdateOperationsInput
+  matchLoaded: BoolFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
 }
 
@@ -1169,7 +1248,9 @@ input GameUpdateWithWhereUniqueWithoutPeriodInput {
 
 input GameUpdateWithoutPeriodInput {
   createdAt: DateTimeFieldUpdateOperationsInput
-  duration: FloatFieldUpdateOperationsInput
+  duration: NullableFloatFieldUpdateOperationsInput
+  matchId: StringFieldUpdateOperationsInput
+  matchLoaded: BoolFieldUpdateOperationsInput
   players: PlayerStatUpdateManyWithoutGameNestedInput
   stats: StatUpdateManyWithoutGameNestedInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1177,16 +1258,20 @@ input GameUpdateWithoutPeriodInput {
 
 input GameUpdateWithoutPlayersInput {
   createdAt: DateTimeFieldUpdateOperationsInput
-  duration: FloatFieldUpdateOperationsInput
-  period: PeriodUpdateOneRequiredWithoutGamesNestedInput
+  duration: NullableFloatFieldUpdateOperationsInput
+  matchId: StringFieldUpdateOperationsInput
+  matchLoaded: BoolFieldUpdateOperationsInput
+  period: PeriodUpdateOneWithoutGamesNestedInput
   stats: StatUpdateManyWithoutGameNestedInput
   updatedAt: DateTimeFieldUpdateOperationsInput
 }
 
 input GameUpdateWithoutStatsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
-  duration: FloatFieldUpdateOperationsInput
-  period: PeriodUpdateOneRequiredWithoutGamesNestedInput
+  duration: NullableFloatFieldUpdateOperationsInput
+  matchId: StringFieldUpdateOperationsInput
+  matchLoaded: BoolFieldUpdateOperationsInput
+  period: PeriodUpdateOneWithoutGamesNestedInput
   players: PlayerStatUpdateManyWithoutGameNestedInput
   updatedAt: DateTimeFieldUpdateOperationsInput
 }
@@ -1212,10 +1297,12 @@ input GameWhereInput {
   NOT: [GameWhereInput!]
   OR: [GameWhereInput!]
   createdAt: DateTimeFilter
-  duration: FloatFilter
+  duration: FloatNullableFilter
   id: IntFilter
+  matchId: StringFilter
+  matchLoaded: BoolFilter
   period: PeriodRelationFilter
-  periodId: IntFilter
+  periodId: IntNullableFilter
   players: PlayerStatListRelationFilter
   stats: StatListRelationFilter
   updatedAt: DateTimeFilter
@@ -1223,6 +1310,7 @@ input GameWhereInput {
 
 input GameWhereUniqueInput {
   id: Int
+  matchId: String
 }
 
 input IntFieldUpdateOperationsInput {
@@ -1292,6 +1380,7 @@ type Item {
   createdAt: DateTime!
   id: Int!
   name: String!
+  players(cursor: PlayerStatWhereUniqueInput, distinct: [PlayerStatScalarFieldEnum!], orderBy: [PlayerStatOrderByWithRelationInput!], skip: Int, take: Int, where: PlayerStatWhereInput): [PlayerStat!]!
   updatedAt: DateTime!
 }
 
@@ -1541,6 +1630,7 @@ type Mutation {
   createOneStat(data: StatCreateInput!): Stat!
   createOneSumSpells(data: SumSpellsCreateInput!): SumSpells!
   createOneUser(data: UserCreateInput!): User!
+  createUser(data: UserCreateInput!): User!
   deleteManyChampion(where: ChampionWhereInput): AffectedRowsOutput!
   deleteManyChampionStat(where: ChampionStatWhereInput): AffectedRowsOutput!
   deleteManyGame(where: GameWhereInput): AffectedRowsOutput!
@@ -1559,6 +1649,7 @@ type Mutation {
   deleteOneStat(where: StatWhereUniqueInput!): Stat
   deleteOneSumSpells(where: SumSpellsWhereUniqueInput!): SumSpells
   deleteOneUser(where: UserWhereUniqueInput!): User
+  syncUsersMatches(args: UserWhereUniqueInput): [User!]!
   updateManyChampion(data: ChampionUpdateManyMutationInput!, where: ChampionWhereInput): AffectedRowsOutput!
   updateManyChampionStat(data: ChampionStatUpdateManyMutationInput!, where: ChampionStatWhereInput): AffectedRowsOutput!
   updateManyGame(data: GameUpdateManyMutationInput!, where: GameWhereInput): AffectedRowsOutput!
@@ -1645,6 +1736,22 @@ input NestedFloatNullableFilter {
   lt: Float
   lte: Float
   not: NestedFloatNullableFilter
+  notIn: [Float!]
+}
+
+input NestedFloatNullableWithAggregatesFilter {
+  _avg: NestedFloatNullableFilter
+  _count: NestedIntNullableFilter
+  _max: NestedFloatNullableFilter
+  _min: NestedFloatNullableFilter
+  _sum: NestedFloatNullableFilter
+  equals: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  lt: Float
+  lte: Float
+  not: NestedFloatNullableWithAggregatesFilter
   notIn: [Float!]
 }
 
@@ -1780,15 +1887,34 @@ input NestedStringWithAggregatesFilter {
   startsWith: String
 }
 
+input NullableFloatFieldUpdateOperationsInput {
+  decrement: Float
+  divide: Float
+  increment: Float
+  multiply: Float
+  set: Float
+}
+
+input NullableIntFieldUpdateOperationsInput {
+  decrement: Int
+  divide: Int
+  increment: Int
+  multiply: Int
+  set: Int
+}
+
 input NullableStringFieldUpdateOperationsInput {
   set: String
 }
 
 type Period {
   _count: PeriodCount
+  championStats(cursor: ChampionStatWhereUniqueInput, distinct: [ChampionStatScalarFieldEnum!], orderBy: [ChampionStatOrderByWithRelationInput!], skip: Int, take: Int, where: ChampionStatWhereInput): [ChampionStat!]!
   createdAt: DateTime!
   date: DateTime!
+  games(cursor: GameWhereUniqueInput, distinct: [GameScalarFieldEnum!], orderBy: [GameOrderByWithRelationInput!], skip: Int, take: Int, where: GameWhereInput): [Game!]!
   id: Int!
+  stats(cursor: StatWhereUniqueInput, distinct: [StatScalarFieldEnum!], orderBy: [StatOrderByWithRelationInput!], skip: Int, take: Int, where: StatWhereInput): [Stat!]!
   updatedAt: DateTime!
 }
 
@@ -2009,18 +2135,22 @@ input PeriodUpdateOneRequiredWithoutChampionStatsNestedInput {
   upsert: PeriodUpsertWithoutChampionStatsInput
 }
 
-input PeriodUpdateOneRequiredWithoutGamesNestedInput {
+input PeriodUpdateOneWithoutGamesNestedInput {
   connect: PeriodWhereUniqueInput
   connectOrCreate: PeriodCreateOrConnectWithoutGamesInput
   create: PeriodCreateWithoutGamesInput
+  delete: Boolean
+  disconnect: Boolean
   update: PeriodUpdateWithoutGamesInput
   upsert: PeriodUpsertWithoutGamesInput
 }
 
-input PeriodUpdateOneRequiredWithoutStatsNestedInput {
+input PeriodUpdateOneWithoutStatsNestedInput {
   connect: PeriodWhereUniqueInput
   connectOrCreate: PeriodCreateOrConnectWithoutStatsInput
   create: PeriodCreateWithoutStatsInput
+  delete: Boolean
+  disconnect: Boolean
   update: PeriodUpdateWithoutStatsInput
   upsert: PeriodUpsertWithoutStatsInput
 }
@@ -2085,15 +2215,20 @@ type PlayerStat {
   _count: PlayerStatCount
   allyTeam: Boolean!
   assists: Int!
+  champion: Champion!
   championId: Int!
   createdAt: DateTime!
   damage: Float!
   deaths: Int!
+  game: Game!
   gameId: Int!
   id: Int!
+  items(cursor: ItemWhereUniqueInput, distinct: [ItemScalarFieldEnum!], orderBy: [ItemOrderByWithRelationInput!], skip: Int, take: Int, where: ItemWhereInput): [Item!]!
   kills: Int!
   reduction: Float!
+  sumSpells(cursor: SumSpellsWhereUniqueInput, distinct: [SumSpellsScalarFieldEnum!], orderBy: [SumSpellsOrderByWithRelationInput!], skip: Int, take: Int, where: SumSpellsWhereInput): [SumSpells!]!
   updatedAt: DateTime!
+  user: User
   userId: Int
 }
 
@@ -2920,21 +3055,25 @@ enum SortOrder {
 }
 
 type Stat {
-  assists: Int!
-  championStatId: Int!
+  assists: Int
+  champion: ChampionStat
+  championStatId: Int
   createdAt: DateTime!
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
+  game: Game
   gameId: Int
   id: Int!
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  periodId: Int!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  period: Period
+  periodId: Int
+  reduction: Int
   updatedAt: DateTime!
+  user: User!
   userId: Int!
-  xClass: Int!
+  xClass: Int
 }
 
 type StatAvgAggregate {
@@ -3007,37 +3146,37 @@ input StatCountOrderByAggregateInput {
 }
 
 input StatCreateInput {
-  assists: Int!
-  champion: ChampionStatCreateNestedOneWithoutUserStatsInput!
+  assists: Int
+  champion: ChampionStatCreateNestedOneWithoutUserStatsInput
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   game: GameCreateNestedOneWithoutStatsInput
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  period: PeriodCreateNestedOneWithoutStatsInput!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  period: PeriodCreateNestedOneWithoutStatsInput
+  reduction: Int
   updatedAt: DateTime
   user: UserCreateNestedOneWithoutStatsInput!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateManyChampionInput {
-  assists: Int!
+  assists: Int
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   gameId: Int
   id: Int
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  periodId: Int!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  periodId: Int
+  reduction: Int
   updatedAt: DateTime
   userId: Int!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateManyChampionInputEnvelope {
@@ -3046,20 +3185,20 @@ input StatCreateManyChampionInputEnvelope {
 }
 
 input StatCreateManyGameInput {
-  assists: Int!
-  championStatId: Int!
+  assists: Int
+  championStatId: Int
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   id: Int
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  periodId: Int!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  periodId: Int
+  reduction: Int
   updatedAt: DateTime
   userId: Int!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateManyGameInputEnvelope {
@@ -3068,38 +3207,38 @@ input StatCreateManyGameInputEnvelope {
 }
 
 input StatCreateManyInput {
-  assists: Int!
-  championStatId: Int!
+  assists: Int
+  championStatId: Int
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   gameId: Int
   id: Int
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  periodId: Int!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  periodId: Int
+  reduction: Int
   updatedAt: DateTime
   userId: Int!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateManyPeriodInput {
-  assists: Int!
-  championStatId: Int!
+  assists: Int
+  championStatId: Int
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   gameId: Int
   id: Int
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  reduction: Int
   updatedAt: DateTime
   userId: Int!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateManyPeriodInputEnvelope {
@@ -3108,20 +3247,20 @@ input StatCreateManyPeriodInputEnvelope {
 }
 
 input StatCreateManyUserInput {
-  assists: Int!
-  championStatId: Int!
+  assists: Int
+  championStatId: Int
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   gameId: Int
   id: Int
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  periodId: Int!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  periodId: Int
+  reduction: Int
   updatedAt: DateTime
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateManyUserInputEnvelope {
@@ -3178,67 +3317,72 @@ input StatCreateOrConnectWithoutUserInput {
 }
 
 input StatCreateWithoutChampionInput {
-  assists: Int!
+  assists: Int
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   game: GameCreateNestedOneWithoutStatsInput
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  period: PeriodCreateNestedOneWithoutStatsInput!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  period: PeriodCreateNestedOneWithoutStatsInput
+  reduction: Int
   updatedAt: DateTime
   user: UserCreateNestedOneWithoutStatsInput!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateWithoutGameInput {
-  assists: Int!
-  champion: ChampionStatCreateNestedOneWithoutUserStatsInput!
+  assists: Int
+  champion: ChampionStatCreateNestedOneWithoutUserStatsInput
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  period: PeriodCreateNestedOneWithoutStatsInput!
-  reduction: Int!
+  damage: Int
+  deaths: Int
+  kda: Int
+  kills: Int
+  perf: Int
+  period: PeriodCreateNestedOneWithoutStatsInput
+  reduction: Int
   updatedAt: DateTime
   user: UserCreateNestedOneWithoutStatsInput!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateWithoutPeriodInput {
-  assists: Int!
-  champion: ChampionStatCreateNestedOneWithoutUserStatsInput!
+  assists: Int
+  champion: ChampionStatCreateNestedOneWithoutUserStatsInput
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   game: GameCreateNestedOneWithoutStatsInput
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  reduction: Int
   updatedAt: DateTime
   user: UserCreateNestedOneWithoutStatsInput!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatCreateWithoutUserInput {
-  assists: Int!
-  champion: ChampionStatCreateNestedOneWithoutUserStatsInput!
+  assists: Int
+  champion: ChampionStatCreateNestedOneWithoutUserStatsInput
   createdAt: DateTime
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   game: GameCreateNestedOneWithoutStatsInput
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  period: PeriodCreateNestedOneWithoutStatsInput!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  period: PeriodCreateNestedOneWithoutStatsInput
+  reduction: Int
   updatedAt: DateTime
-  xClass: Int!
+  xClass: Int
+}
+
+input StatGameIdentifierCompoundUniqueInput {
+  gameId: Int!
+  userId: Int!
 }
 
 type StatGroupBy {
@@ -3247,21 +3391,21 @@ type StatGroupBy {
   _max: StatMaxAggregate
   _min: StatMinAggregate
   _sum: StatSumAggregate
-  assists: Int!
-  championStatId: Int!
+  assists: Int
+  championStatId: Int
   createdAt: DateTime!
-  damage: Int!
-  deaths: Int!
+  damage: Int
+  deaths: Int
   gameId: Int
   id: Int!
-  kda: Int!
-  kills: Int!
-  perf: Int!
-  periodId: Int!
-  reduction: Int!
+  kda: Int
+  kills: Int
+  perf: Int
+  periodId: Int
+  reduction: Int
   updatedAt: DateTime!
   userId: Int!
-  xClass: Int!
+  xClass: Int
 }
 
 input StatListRelationFilter {
@@ -3413,42 +3557,42 @@ input StatScalarWhereInput {
   AND: [StatScalarWhereInput!]
   NOT: [StatScalarWhereInput!]
   OR: [StatScalarWhereInput!]
-  assists: IntFilter
-  championStatId: IntFilter
+  assists: IntNullableFilter
+  championStatId: IntNullableFilter
   createdAt: DateTimeFilter
-  damage: IntFilter
-  deaths: IntFilter
+  damage: IntNullableFilter
+  deaths: IntNullableFilter
   gameId: IntNullableFilter
   id: IntFilter
-  kda: IntFilter
-  kills: IntFilter
-  perf: IntFilter
-  periodId: IntFilter
-  reduction: IntFilter
+  kda: IntNullableFilter
+  kills: IntNullableFilter
+  perf: IntNullableFilter
+  periodId: IntNullableFilter
+  reduction: IntNullableFilter
   updatedAt: DateTimeFilter
   userId: IntFilter
-  xClass: IntFilter
+  xClass: IntNullableFilter
 }
 
 input StatScalarWhereWithAggregatesInput {
   AND: [StatScalarWhereWithAggregatesInput!]
   NOT: [StatScalarWhereWithAggregatesInput!]
   OR: [StatScalarWhereWithAggregatesInput!]
-  assists: IntWithAggregatesFilter
-  championStatId: IntWithAggregatesFilter
+  assists: IntNullableWithAggregatesFilter
+  championStatId: IntNullableWithAggregatesFilter
   createdAt: DateTimeWithAggregatesFilter
-  damage: IntWithAggregatesFilter
-  deaths: IntWithAggregatesFilter
+  damage: IntNullableWithAggregatesFilter
+  deaths: IntNullableWithAggregatesFilter
   gameId: IntNullableWithAggregatesFilter
   id: IntWithAggregatesFilter
-  kda: IntWithAggregatesFilter
-  kills: IntWithAggregatesFilter
-  perf: IntWithAggregatesFilter
-  periodId: IntWithAggregatesFilter
-  reduction: IntWithAggregatesFilter
+  kda: IntNullableWithAggregatesFilter
+  kills: IntNullableWithAggregatesFilter
+  perf: IntNullableWithAggregatesFilter
+  periodId: IntNullableWithAggregatesFilter
+  reduction: IntNullableWithAggregatesFilter
   updatedAt: DateTimeWithAggregatesFilter
   userId: IntWithAggregatesFilter
-  xClass: IntWithAggregatesFilter
+  xClass: IntNullableWithAggregatesFilter
 }
 
 type StatSumAggregate {
@@ -3484,33 +3628,33 @@ input StatSumOrderByAggregateInput {
 }
 
 input StatUpdateInput {
-  assists: IntFieldUpdateOperationsInput
-  champion: ChampionStatUpdateOneRequiredWithoutUserStatsNestedInput
+  assists: NullableIntFieldUpdateOperationsInput
+  champion: ChampionStatUpdateOneWithoutUserStatsNestedInput
   createdAt: DateTimeFieldUpdateOperationsInput
-  damage: IntFieldUpdateOperationsInput
-  deaths: IntFieldUpdateOperationsInput
+  damage: NullableIntFieldUpdateOperationsInput
+  deaths: NullableIntFieldUpdateOperationsInput
   game: GameUpdateOneWithoutStatsNestedInput
-  kda: IntFieldUpdateOperationsInput
-  kills: IntFieldUpdateOperationsInput
-  perf: IntFieldUpdateOperationsInput
-  period: PeriodUpdateOneRequiredWithoutStatsNestedInput
-  reduction: IntFieldUpdateOperationsInput
+  kda: NullableIntFieldUpdateOperationsInput
+  kills: NullableIntFieldUpdateOperationsInput
+  perf: NullableIntFieldUpdateOperationsInput
+  period: PeriodUpdateOneWithoutStatsNestedInput
+  reduction: NullableIntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   user: UserUpdateOneRequiredWithoutStatsNestedInput
-  xClass: IntFieldUpdateOperationsInput
+  xClass: NullableIntFieldUpdateOperationsInput
 }
 
 input StatUpdateManyMutationInput {
-  assists: IntFieldUpdateOperationsInput
+  assists: NullableIntFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
-  damage: IntFieldUpdateOperationsInput
-  deaths: IntFieldUpdateOperationsInput
-  kda: IntFieldUpdateOperationsInput
-  kills: IntFieldUpdateOperationsInput
-  perf: IntFieldUpdateOperationsInput
-  reduction: IntFieldUpdateOperationsInput
+  damage: NullableIntFieldUpdateOperationsInput
+  deaths: NullableIntFieldUpdateOperationsInput
+  kda: NullableIntFieldUpdateOperationsInput
+  kills: NullableIntFieldUpdateOperationsInput
+  perf: NullableIntFieldUpdateOperationsInput
+  reduction: NullableIntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  xClass: IntFieldUpdateOperationsInput
+  xClass: NullableIntFieldUpdateOperationsInput
 }
 
 input StatUpdateManyWithWhereWithoutChampionInput {
@@ -3610,67 +3754,67 @@ input StatUpdateWithWhereUniqueWithoutUserInput {
 }
 
 input StatUpdateWithoutChampionInput {
-  assists: IntFieldUpdateOperationsInput
+  assists: NullableIntFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
-  damage: IntFieldUpdateOperationsInput
-  deaths: IntFieldUpdateOperationsInput
+  damage: NullableIntFieldUpdateOperationsInput
+  deaths: NullableIntFieldUpdateOperationsInput
   game: GameUpdateOneWithoutStatsNestedInput
-  kda: IntFieldUpdateOperationsInput
-  kills: IntFieldUpdateOperationsInput
-  perf: IntFieldUpdateOperationsInput
-  period: PeriodUpdateOneRequiredWithoutStatsNestedInput
-  reduction: IntFieldUpdateOperationsInput
+  kda: NullableIntFieldUpdateOperationsInput
+  kills: NullableIntFieldUpdateOperationsInput
+  perf: NullableIntFieldUpdateOperationsInput
+  period: PeriodUpdateOneWithoutStatsNestedInput
+  reduction: NullableIntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   user: UserUpdateOneRequiredWithoutStatsNestedInput
-  xClass: IntFieldUpdateOperationsInput
+  xClass: NullableIntFieldUpdateOperationsInput
 }
 
 input StatUpdateWithoutGameInput {
-  assists: IntFieldUpdateOperationsInput
-  champion: ChampionStatUpdateOneRequiredWithoutUserStatsNestedInput
+  assists: NullableIntFieldUpdateOperationsInput
+  champion: ChampionStatUpdateOneWithoutUserStatsNestedInput
   createdAt: DateTimeFieldUpdateOperationsInput
-  damage: IntFieldUpdateOperationsInput
-  deaths: IntFieldUpdateOperationsInput
-  kda: IntFieldUpdateOperationsInput
-  kills: IntFieldUpdateOperationsInput
-  perf: IntFieldUpdateOperationsInput
-  period: PeriodUpdateOneRequiredWithoutStatsNestedInput
-  reduction: IntFieldUpdateOperationsInput
+  damage: NullableIntFieldUpdateOperationsInput
+  deaths: NullableIntFieldUpdateOperationsInput
+  kda: NullableIntFieldUpdateOperationsInput
+  kills: NullableIntFieldUpdateOperationsInput
+  perf: NullableIntFieldUpdateOperationsInput
+  period: PeriodUpdateOneWithoutStatsNestedInput
+  reduction: NullableIntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   user: UserUpdateOneRequiredWithoutStatsNestedInput
-  xClass: IntFieldUpdateOperationsInput
+  xClass: NullableIntFieldUpdateOperationsInput
 }
 
 input StatUpdateWithoutPeriodInput {
-  assists: IntFieldUpdateOperationsInput
-  champion: ChampionStatUpdateOneRequiredWithoutUserStatsNestedInput
+  assists: NullableIntFieldUpdateOperationsInput
+  champion: ChampionStatUpdateOneWithoutUserStatsNestedInput
   createdAt: DateTimeFieldUpdateOperationsInput
-  damage: IntFieldUpdateOperationsInput
-  deaths: IntFieldUpdateOperationsInput
+  damage: NullableIntFieldUpdateOperationsInput
+  deaths: NullableIntFieldUpdateOperationsInput
   game: GameUpdateOneWithoutStatsNestedInput
-  kda: IntFieldUpdateOperationsInput
-  kills: IntFieldUpdateOperationsInput
-  perf: IntFieldUpdateOperationsInput
-  reduction: IntFieldUpdateOperationsInput
+  kda: NullableIntFieldUpdateOperationsInput
+  kills: NullableIntFieldUpdateOperationsInput
+  perf: NullableIntFieldUpdateOperationsInput
+  reduction: NullableIntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   user: UserUpdateOneRequiredWithoutStatsNestedInput
-  xClass: IntFieldUpdateOperationsInput
+  xClass: NullableIntFieldUpdateOperationsInput
 }
 
 input StatUpdateWithoutUserInput {
-  assists: IntFieldUpdateOperationsInput
-  champion: ChampionStatUpdateOneRequiredWithoutUserStatsNestedInput
+  assists: NullableIntFieldUpdateOperationsInput
+  champion: ChampionStatUpdateOneWithoutUserStatsNestedInput
   createdAt: DateTimeFieldUpdateOperationsInput
-  damage: IntFieldUpdateOperationsInput
-  deaths: IntFieldUpdateOperationsInput
+  damage: NullableIntFieldUpdateOperationsInput
+  deaths: NullableIntFieldUpdateOperationsInput
   game: GameUpdateOneWithoutStatsNestedInput
-  kda: IntFieldUpdateOperationsInput
-  kills: IntFieldUpdateOperationsInput
-  perf: IntFieldUpdateOperationsInput
-  period: PeriodUpdateOneRequiredWithoutStatsNestedInput
-  reduction: IntFieldUpdateOperationsInput
+  kda: NullableIntFieldUpdateOperationsInput
+  kills: NullableIntFieldUpdateOperationsInput
+  perf: NullableIntFieldUpdateOperationsInput
+  period: PeriodUpdateOneWithoutStatsNestedInput
+  reduction: NullableIntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  xClass: IntFieldUpdateOperationsInput
+  xClass: NullableIntFieldUpdateOperationsInput
 }
 
 input StatUpsertWithWhereUniqueWithoutChampionInput {
@@ -3701,28 +3845,29 @@ input StatWhereInput {
   AND: [StatWhereInput!]
   NOT: [StatWhereInput!]
   OR: [StatWhereInput!]
-  assists: IntFilter
+  assists: IntNullableFilter
   champion: ChampionStatRelationFilter
-  championStatId: IntFilter
+  championStatId: IntNullableFilter
   createdAt: DateTimeFilter
-  damage: IntFilter
-  deaths: IntFilter
+  damage: IntNullableFilter
+  deaths: IntNullableFilter
   game: GameRelationFilter
   gameId: IntNullableFilter
   id: IntFilter
-  kda: IntFilter
-  kills: IntFilter
-  perf: IntFilter
+  kda: IntNullableFilter
+  kills: IntNullableFilter
+  perf: IntNullableFilter
   period: PeriodRelationFilter
-  periodId: IntFilter
-  reduction: IntFilter
+  periodId: IntNullableFilter
+  reduction: IntNullableFilter
   updatedAt: DateTimeFilter
   user: UserRelationFilter
   userId: IntFilter
-  xClass: IntFilter
+  xClass: IntNullableFilter
 }
 
 input StatWhereUniqueInput {
+  gameIdentifier: StatGameIdentifierCompoundUniqueInput
   id: Int
 }
 
@@ -3801,6 +3946,7 @@ type SumSpells {
   createdAt: DateTime!
   id: Int!
   name: String!
+  players(cursor: PlayerStatWhereUniqueInput, distinct: [PlayerStatScalarFieldEnum!], orderBy: [PlayerStatOrderByWithRelationInput!], skip: Int, take: Int, where: PlayerStatWhereInput): [PlayerStat!]!
   updatedAt: DateTime!
 }
 
@@ -4034,10 +4180,12 @@ input SumSpellsWhereUniqueInput {
 type User {
   _count: UserCount
   createdAt: DateTime!
+  gameStats(cursor: PlayerStatWhereUniqueInput, distinct: [PlayerStatScalarFieldEnum!], orderBy: [PlayerStatOrderByWithRelationInput!], skip: Int, take: Int, where: PlayerStatWhereInput): [PlayerStat!]!
   id: Int!
   ign: String
   lolId: String
   name: String!
+  stats(cursor: StatWhereUniqueInput, distinct: [StatScalarFieldEnum!], orderBy: [StatOrderByWithRelationInput!], skip: Int, take: Int, where: StatWhereInput): [Stat!]!
   updatedAt: DateTime!
 }
 
@@ -4321,5 +4469,7 @@ input UserWhereInput {
 
 input UserWhereUniqueInput {
   id: Int
+  ign: String
   lolId: String
+  name: String
 }

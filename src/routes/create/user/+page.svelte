@@ -5,10 +5,11 @@
 	import { createForm } from 'svelte-forms-lib';
 	import * as yup from 'yup';
 	import { graphql, type CreateUserStore } from '$houdini';
+	import { goto } from '$app/navigation';
 
 	const createUser: CreateUserStore = graphql`
-		mutation CreateUser($name: String!, $lolId: String!, $ign: String!) {
-			createOneUser(data: { name: $name, lolId: $lolId, ign: $ign }) {
+		mutation CreateUser($name: String!, $ign: String!) {
+			createUser(data: { name: $name, ign: $ign }) {
 				id
 				ign
 				lolId
@@ -16,7 +17,7 @@
 		}
 	`;
 
-	const { form, errors, state, handleChange, handleSubmit } = createForm({
+	const { form, errors, handleChange, handleSubmit } = createForm({
 		initialValues: {
 			name: '',
 			ign: '',
@@ -24,13 +25,11 @@
 		},
 		validationSchema: yup.object().shape({
 			name: yup.string().required(),
-			ign: yup.string().required(),
-			lolId: yup.string().required()
+			ign: yup.string().required()
 		}),
 		onSubmit: (values) => {
 			createUser.mutate({
 				name: values.name,
-				lolId: values.lolId,
 				ign: values.ign
 			});
 		}
@@ -64,16 +63,6 @@
 			on:change={handleChange}
 			on:blur={handleChange}
 			bind:value={$form.ign}
-		/>
-		<Input
-			id="lolId"
-			name="lolId"
-			label="ID Lol"
-			placeholder="156494651"
-			error={$errors.lolId}
-			on:change={handleChange}
-			on:blur={handleChange}
-			bind:value={$form.lolId}
 		/>
 		<Button color="yellow" class="mt-2" type="submit">Créer</Button>
 	</form>

@@ -7,7 +7,7 @@ module.exports = {
 		"./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}",
 	  ],
 	
-		darkMode: 'media', // or 'media' or 'class'
+		darkMode: 'class',
 	  theme: {
 			screens: {},
 		  fontFamily: {
