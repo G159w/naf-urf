@@ -1,7 +1,7 @@
 import * as relationResolversImport from '$type-graphql/resolvers/relations/resolvers.index';
-import { relationResolvers, UserRelationsResolver } from '$type-graphql';
 import { Query, Resolver, type NonEmptyArray } from 'type-graphql';
 import {
+	relationResolvers,
 	ChampionCrudResolver,
 	ChampionStatCrudResolver,
 	GameCrudResolver,
@@ -13,6 +13,7 @@ import {
 	UserCrudResolver
 } from '$type-graphql';
 import { UserResolver } from './User/userResolvers';
+import { GameResolver } from './Game/gameResolvers';
 
 @Resolver()
 class FooResolver {
@@ -42,5 +43,6 @@ export default [
 	SumSpellsCrudResolver,
 	UserCrudResolver,
 	UserResolver,
+	GameResolver,
 	FooResolver
 ] as unknown as NonEmptyArray<never>;

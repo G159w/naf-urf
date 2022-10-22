@@ -27,8 +27,8 @@
 			name: yup.string().required(),
 			ign: yup.string().required()
 		}),
-		onSubmit: (values) => {
-			createUser.mutate({
+		onSubmit: async (values) => {
+			await createUser.mutate({
 				name: values.name,
 				ign: values.ign
 			});

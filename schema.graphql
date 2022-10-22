@@ -893,8 +893,8 @@ type Game {
   createdAt: DateTime!
   duration: Float
   id: Int!
+  isMatchLoaded: Boolean!
   matchId: String!
-  matchLoaded: Boolean!
   period: Period
   periodId: Int
   players(cursor: PlayerStatWhereUniqueInput, distinct: [PlayerStatScalarFieldEnum!], orderBy: [PlayerStatOrderByWithRelationInput!], skip: Int, take: Int, where: PlayerStatWhereInput): [PlayerStat!]!
@@ -924,8 +924,8 @@ type GameCountAggregate {
   createdAt: Int!
   duration: Int!
   id: Int!
+  isMatchLoaded: Int!
   matchId: Int!
-  matchLoaded: Int!
   periodId: Int!
   updatedAt: Int!
 }
@@ -934,8 +934,8 @@ input GameCountOrderByAggregateInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  isMatchLoaded: SortOrder
   matchId: SortOrder
-  matchLoaded: SortOrder
   periodId: SortOrder
   updatedAt: SortOrder
 }
@@ -943,8 +943,8 @@ input GameCountOrderByAggregateInput {
 input GameCreateInput {
   createdAt: DateTime
   duration: Float
+  isMatchLoaded: Boolean
   matchId: String!
-  matchLoaded: Boolean
   period: PeriodCreateNestedOneWithoutGamesInput
   players: PlayerStatCreateNestedManyWithoutGameInput
   stats: StatCreateNestedManyWithoutGameInput
@@ -955,8 +955,8 @@ input GameCreateManyInput {
   createdAt: DateTime
   duration: Float
   id: Int
+  isMatchLoaded: Boolean
   matchId: String!
-  matchLoaded: Boolean
   periodId: Int
   updatedAt: DateTime
 }
@@ -965,8 +965,8 @@ input GameCreateManyPeriodInput {
   createdAt: DateTime
   duration: Float
   id: Int
+  isMatchLoaded: Boolean
   matchId: String!
-  matchLoaded: Boolean
   updatedAt: DateTime
 }
 
@@ -1012,8 +1012,8 @@ input GameCreateOrConnectWithoutStatsInput {
 input GameCreateWithoutPeriodInput {
   createdAt: DateTime
   duration: Float
+  isMatchLoaded: Boolean
   matchId: String!
-  matchLoaded: Boolean
   players: PlayerStatCreateNestedManyWithoutGameInput
   stats: StatCreateNestedManyWithoutGameInput
   updatedAt: DateTime
@@ -1022,8 +1022,8 @@ input GameCreateWithoutPeriodInput {
 input GameCreateWithoutPlayersInput {
   createdAt: DateTime
   duration: Float
+  isMatchLoaded: Boolean
   matchId: String!
-  matchLoaded: Boolean
   period: PeriodCreateNestedOneWithoutGamesInput
   stats: StatCreateNestedManyWithoutGameInput
   updatedAt: DateTime
@@ -1032,8 +1032,8 @@ input GameCreateWithoutPlayersInput {
 input GameCreateWithoutStatsInput {
   createdAt: DateTime
   duration: Float
+  isMatchLoaded: Boolean
   matchId: String!
-  matchLoaded: Boolean
   period: PeriodCreateNestedOneWithoutGamesInput
   players: PlayerStatCreateNestedManyWithoutGameInput
   updatedAt: DateTime
@@ -1048,8 +1048,8 @@ type GameGroupBy {
   createdAt: DateTime!
   duration: Float
   id: Int!
+  isMatchLoaded: Boolean!
   matchId: String!
-  matchLoaded: Boolean!
   periodId: Int
   updatedAt: DateTime!
 }
@@ -1064,8 +1064,8 @@ type GameMaxAggregate {
   createdAt: DateTime
   duration: Float
   id: Int
+  isMatchLoaded: Boolean
   matchId: String
-  matchLoaded: Boolean
   periodId: Int
   updatedAt: DateTime
 }
@@ -1074,8 +1074,8 @@ input GameMaxOrderByAggregateInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  isMatchLoaded: SortOrder
   matchId: SortOrder
-  matchLoaded: SortOrder
   periodId: SortOrder
   updatedAt: SortOrder
 }
@@ -1084,8 +1084,8 @@ type GameMinAggregate {
   createdAt: DateTime
   duration: Float
   id: Int
+  isMatchLoaded: Boolean
   matchId: String
-  matchLoaded: Boolean
   periodId: Int
   updatedAt: DateTime
 }
@@ -1094,8 +1094,8 @@ input GameMinOrderByAggregateInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  isMatchLoaded: SortOrder
   matchId: SortOrder
-  matchLoaded: SortOrder
   periodId: SortOrder
   updatedAt: SortOrder
 }
@@ -1113,8 +1113,8 @@ input GameOrderByWithAggregationInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  isMatchLoaded: SortOrder
   matchId: SortOrder
-  matchLoaded: SortOrder
   periodId: SortOrder
   updatedAt: SortOrder
 }
@@ -1123,8 +1123,8 @@ input GameOrderByWithRelationInput {
   createdAt: SortOrder
   duration: SortOrder
   id: SortOrder
+  isMatchLoaded: SortOrder
   matchId: SortOrder
-  matchLoaded: SortOrder
   period: PeriodOrderByWithRelationInput
   periodId: SortOrder
   players: PlayerStatOrderByRelationAggregateInput
@@ -1141,8 +1141,8 @@ enum GameScalarFieldEnum {
   createdAt
   duration
   id
+  isMatchLoaded
   matchId
-  matchLoaded
   periodId
   updatedAt
 }
@@ -1154,8 +1154,8 @@ input GameScalarWhereInput {
   createdAt: DateTimeFilter
   duration: FloatNullableFilter
   id: IntFilter
+  isMatchLoaded: BoolFilter
   matchId: StringFilter
-  matchLoaded: BoolFilter
   periodId: IntNullableFilter
   updatedAt: DateTimeFilter
 }
@@ -1167,8 +1167,8 @@ input GameScalarWhereWithAggregatesInput {
   createdAt: DateTimeWithAggregatesFilter
   duration: FloatNullableWithAggregatesFilter
   id: IntWithAggregatesFilter
+  isMatchLoaded: BoolWithAggregatesFilter
   matchId: StringWithAggregatesFilter
-  matchLoaded: BoolWithAggregatesFilter
   periodId: IntNullableWithAggregatesFilter
   updatedAt: DateTimeWithAggregatesFilter
 }
@@ -1188,8 +1188,8 @@ input GameSumOrderByAggregateInput {
 input GameUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   duration: NullableFloatFieldUpdateOperationsInput
+  isMatchLoaded: BoolFieldUpdateOperationsInput
   matchId: StringFieldUpdateOperationsInput
-  matchLoaded: BoolFieldUpdateOperationsInput
   period: PeriodUpdateOneWithoutGamesNestedInput
   players: PlayerStatUpdateManyWithoutGameNestedInput
   stats: StatUpdateManyWithoutGameNestedInput
@@ -1199,8 +1199,8 @@ input GameUpdateInput {
 input GameUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   duration: NullableFloatFieldUpdateOperationsInput
+  isMatchLoaded: BoolFieldUpdateOperationsInput
   matchId: StringFieldUpdateOperationsInput
-  matchLoaded: BoolFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
 }
 
@@ -1249,8 +1249,8 @@ input GameUpdateWithWhereUniqueWithoutPeriodInput {
 input GameUpdateWithoutPeriodInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   duration: NullableFloatFieldUpdateOperationsInput
+  isMatchLoaded: BoolFieldUpdateOperationsInput
   matchId: StringFieldUpdateOperationsInput
-  matchLoaded: BoolFieldUpdateOperationsInput
   players: PlayerStatUpdateManyWithoutGameNestedInput
   stats: StatUpdateManyWithoutGameNestedInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1259,8 +1259,8 @@ input GameUpdateWithoutPeriodInput {
 input GameUpdateWithoutPlayersInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   duration: NullableFloatFieldUpdateOperationsInput
+  isMatchLoaded: BoolFieldUpdateOperationsInput
   matchId: StringFieldUpdateOperationsInput
-  matchLoaded: BoolFieldUpdateOperationsInput
   period: PeriodUpdateOneWithoutGamesNestedInput
   stats: StatUpdateManyWithoutGameNestedInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1269,8 +1269,8 @@ input GameUpdateWithoutPlayersInput {
 input GameUpdateWithoutStatsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   duration: NullableFloatFieldUpdateOperationsInput
+  isMatchLoaded: BoolFieldUpdateOperationsInput
   matchId: StringFieldUpdateOperationsInput
-  matchLoaded: BoolFieldUpdateOperationsInput
   period: PeriodUpdateOneWithoutGamesNestedInput
   players: PlayerStatUpdateManyWithoutGameNestedInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1299,8 +1299,8 @@ input GameWhereInput {
   createdAt: DateTimeFilter
   duration: FloatNullableFilter
   id: IntFilter
+  isMatchLoaded: BoolFilter
   matchId: StringFilter
-  matchLoaded: BoolFilter
   period: PeriodRelationFilter
   periodId: IntNullableFilter
   players: PlayerStatListRelationFilter
@@ -1649,6 +1649,7 @@ type Mutation {
   deleteOneStat(where: StatWhereUniqueInput!): Stat
   deleteOneSumSpells(where: SumSpellsWhereUniqueInput!): SumSpells
   deleteOneUser(where: UserWhereUniqueInput!): User
+  loadGames: [Game!]!
   syncUsersMatches(args: UserWhereUniqueInput): [User!]!
   updateManyChampion(data: ChampionUpdateManyMutationInput!, where: ChampionWhereInput): AffectedRowsOutput!
   updateManyChampionStat(data: ChampionStatUpdateManyMutationInput!, where: ChampionStatWhereInput): AffectedRowsOutput!
