@@ -48,7 +48,7 @@
 			id="name"
 			name="name"
 			label="Nom d'utilisateur"
-			placeholder="Henri"
+			placeholder="Entrer votre nom"
 			error={$errors.name}
 			on:change={handleChange}
 			on:blur={handleChange}
