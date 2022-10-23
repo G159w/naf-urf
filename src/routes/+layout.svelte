@@ -8,7 +8,7 @@
 	$: dark = $darkTheme;
 </script>
 
-<div class:dark class="app bg-white dark:bg-neutral-900">
+<div class="app bg-stone-100 dark:bg-neutral-900">
 	<Header />
 
 	<main in:fade={{ duration: 200 }}>
