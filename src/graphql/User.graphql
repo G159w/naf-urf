@@ -1,0 +1,11 @@
+query User($where: UserWhereUniqueInput!) {
+  user(where: $where) {
+    id
+    name
+    ign
+    lolId
+    gameStats {
+      id
+    }
+  }
+}

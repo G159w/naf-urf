@@ -26,39 +26,57 @@ model User {
 model Game {
   id            Int          @id @default(autoincrement())
   matchId       String       @unique
+  gameMode      String?
   isMatchLoaded Boolean      @default(false)
-  stats         Stat[]
   players       PlayerStat[]
   periodId      Int?
   period        Period?      @relation(fields: [periodId], references: [id])
   duration      Float?
+  gameCreation  DateTime?
   updatedAt     DateTime     @updatedAt
   createdAt     DateTime     @default(now())
 }
 
 model PlayerStat {
-  id         Int         @id @default(autoincrement())
-  gameId     Int
-  game       Game        @relation(fields: [gameId], references: [id])
-  championId Int
-  champion   Champion    @relation(fields: [championId], references: [id])
-  userId     Int?
-  user       User?       @relation(fields: [userId], references: [id])
-  allyTeam   Boolean
-  kills      Int
-  deaths     Int
-  assists    Int
-  damage     Float
-  reduction  Float
-  sumSpells  SumSpells[]
-  items      Item[]
-  updatedAt  DateTime    @updatedAt
-  createdAt  DateTime    @default(now())
+  id                   Int         @id @default(autoincrement())
+  gameId               Int
+  game                 Game        @relation(fields: [gameId], references: [id])
+  championId           Int
+  champion             Champion    @relation(fields: [championId], references: [id])
+  userId               Int?
+  user                 User?       @relation(fields: [userId], references: [id])
+  stat                 Stat?
+  sumName              String
+  puuid                String
+  isAllyTeam           Boolean
+  kills                Int
+  deaths               Int
+  assists              Int
+  damage               Int
+  tanked               Int
+  mitigated            Int
+  totalTimeCCDealt     Int
+  isFirstBloodKill     Boolean
+  doubleKills          Int
+  tripleKills          Int
+  quadraKills          Int
+  pentaKills           Int
+  timeCCingOthers      Int
+  goldEarned           Int
+  totalMinionsKilled   Int
+  neutralMinionsKilled Int
+  isWin                Boolean
+  totalTimeSpentDead   Int
+  sumSpells            SumSpells[]
+  items                Item[]
+  updatedAt            DateTime    @updatedAt
+  createdAt            DateTime    @default(now())
 }
 
 model SumSpells {
   id        Int          @id @default(autoincrement())
-  name      String       @unique
+  sumId     Int          @unique
+  name      String?      @unique
   players   PlayerStat[]
   updatedAt DateTime     @updatedAt
   createdAt DateTime     @default(now())
@@ -66,34 +84,33 @@ model SumSpells {
 
 model Item {
   id        Int          @id @default(autoincrement())
-  name      String       @unique
+  itemId    Int          @unique
+  name      String?      @unique
   players   PlayerStat[]
   updatedAt DateTime     @updatedAt
   createdAt DateTime     @default(now())
 }
 
 model Stat {
-  id             Int           @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   userId         Int
-  user           User          @relation(fields: [userId], references: [id])
-  championStatId Int?
-  champion       ChampionStat? @relation(fields: [championStatId], references: [id])
-  periodId       Int?
-  period         Period?       @relation(fields: [periodId], references: [id])
-  gameId         Int?
-  game           Game?         @relation(fields: [gameId], references: [id])
-  kills          Int?
-  deaths         Int?
-  assists        Int?
-  damage         Int?
-  reduction      Int?
-  kda            Int?
-  perf           Int?
-  xClass         Int?
-  updatedAt      DateTime      @updatedAt
-  createdAt      DateTime      @default(now())
-
-  @@unique([userId, gameId], name: "gameIdentifier")
+  user           User         @relation(fields: [userId], references: [id])
+  championStatId Int
+  champion       ChampionStat @relation(fields: [championStatId], references: [id])
+  periodId       Int
+  period         Period       @relation(fields: [periodId], references: [id])
+  playerStatId   Int          @unique
+  playerStat     PlayerStat   @relation(fields: [playerStatId], references: [id])
+  kills          Int
+  deaths         Int
+  assists        Int
+  damage         Int
+  reduction      Int
+  kda            Int
+  perf           Int
+  xClass         Int
+  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime     @default(now())
 }
 
 model Champion {
@@ -126,4 +143,10 @@ model Period {
   stats         Stat[]
   updatedAt     DateTime       @updatedAt
   createdAt     DateTime       @default(now())
+}
+
+model LolRequest {
+  id        Int      @id @default(autoincrement())
+  count     Int
+  createdAt DateTime @default(now())
 }

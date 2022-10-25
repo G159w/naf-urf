@@ -4,7 +4,7 @@
 	import { fade } from 'svelte/transition';
 	export let data;
 
-	$: ({ AllUsers } = data);
+	$: ({ User } = data);
 </script>
 
 <svelte:head>
@@ -13,5 +13,10 @@
 </svelte:head>
 
 <div class="page-content pt-10">
-	<SearchUser />
+	<SearchUser defaultValue={$User?.data?.user?.id} />
+
+	<div class="text-white">
+		{$User?.data?.user?.name}
+		{$User?.data?.user?.ign}
+	</div>
 </div>

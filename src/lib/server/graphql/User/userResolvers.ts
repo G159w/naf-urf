@@ -1,10 +1,10 @@
-import { UserWhereUniqueInput } from './../../../../../$type-graphql/resolvers/inputs/UserWhereUniqueInput';
+import { UserWhereUniqueInput } from '$type-graphql/resolvers/inputs/UserWhereUniqueInput';
 import { Arg, Args, Ctx, Mutation, Resolver } from 'type-graphql';
 import { CreateOneUserArgs, User } from '$type-graphql';
 import type { GraphQLContext } from '$lib/server/context';
-import { PlatformId, RiotAPITypes } from '@fightmegg/riot-api';
+import { PlatformId } from '@fightmegg/riot-api';
 import { GraphQLError } from 'graphql';
-import { logger } from '$lib/server/logger';
+import { delay, numberOfPossibleRequests } from '$lib/server/utils';
 
 @Resolver()
 export class UserResolver {
@@ -34,63 +34,86 @@ export class UserResolver {
 	@Mutation(() => [User])
 	async syncUsersMatches(
 		@Ctx() { prisma, riotApi }: GraphQLContext,
+		@Arg('full', () => Boolean, { nullable: true, defaultValue: false }) full: boolean,
 		@Arg('args', () => UserWhereUniqueInput, { nullable: true }) args?: UserWhereUniqueInput
 	): Promise<User[]> {
 		const users: User[] = [];
 		if (args) {
-			users.push(await prisma.user.findUnique({ where: { ...args } }));
+			users.push(
+				await prisma.user.findUnique({ where: { ...args }, include: { gameStats: { take: 1 } } })
+			);
 		} else {
-			users.push(...(await prisma.user.findMany()));
+			users.push(...(await prisma.user.findMany({ include: { gameStats: { take: 1 } } })));
 		}
 
+		const totalMatchIds: string[] = [];
 		const getUserMatch = async (user: User) => {
 			try {
-				const matchIds = await riotApi.matchV5.getIdsbyPuuid({
-					cluster: PlatformId.EUROPE,
-					puuid: user.lolId,
-					params: {
-						queue: 1900, // 900 for old URF and ARURF and 1900 for new URF (early 2022)
-						count: 20
-					}
-				});
+				const requests = await numberOfPossibleRequests(prisma);
+				const urfMatchIds: string[] = [];
+				const arurfMatchIds: string[] = [];
+				let urfGameRequests = 0;
 
-				const games = await prisma.$transaction(
-					matchIds.map((matchId) =>
-						prisma.game.upsert({
-							where: { matchId: matchId },
-							update: {},
-							create: {
-								matchId: matchId
-							}
-						})
-					)
-				);
+				for (
+					;
+					urfGameRequests < requests &&
+					(full ? urfMatchIds.length % 100 === 0 : urfGameRequests < 1);
+					urfGameRequests++
+				) {
+					const response = await riotApi.matchV5.getIdsbyPuuid({
+						cluster: PlatformId.EUROPE,
+						puuid: user.lolId,
+						params: {
+							queue: 1900, // 1900 for new URF (early 2022)
+							count: 100,
+							start: urfGameRequests * 100
+						}
+					});
+					urfMatchIds.push(...response);
+				}
 
-				await prisma.$transaction(
-					games.map((game) =>
-						prisma.stat.upsert({
-							where: {
-								gameIdentifier: {
-									gameId: game.id,
-									userId: user.id
-								}
-							},
-							update: {},
-							create: {
-								game: { connect: { id: game.id } },
-								user: { connect: { id: user.id } }
-							}
-						})
-					)
-				);
+				let arurfGameRequests = 0;
+				for (
+					;
+					urfGameRequests + arurfGameRequests < requests &&
+					(full ? arurfMatchIds.length % 100 === 0 : arurfGameRequests < 1);
+					arurfGameRequests++
+				) {
+					const response = await riotApi.matchV5.getIdsbyPuuid({
+						cluster: PlatformId.EUROPE,
+						puuid: user.lolId,
+						params: {
+							queue: 900, // 900 for old URF and ARURF
+							count: 100,
+							start: arurfGameRequests * 100
+						}
+					});
+					arurfMatchIds.push(...response);
+				}
+				totalMatchIds.push(...urfMatchIds, ...arurfMatchIds);
+				await prisma.lolRequest.create({ data: { count: arurfGameRequests + urfGameRequests } });
+				await delay(full ? 1000 : 100);
 			} catch (error) {
-				throw new GraphQLError(error.message);
+				throw new GraphQLError(JSON.stringify(error));
 			}
 		};
 
 		for (const user of users) {
 			await getUserMatch(user);
 		}
+
+		await prisma.$transaction(
+			totalMatchIds.map((matchId) =>
+				prisma.game.upsert({
+					where: { matchId: matchId },
+					update: {},
+					create: {
+						matchId: matchId
+					}
+				})
+			)
+		);
+
 		if (args) {
 			return [await prisma.user.findUnique({ where: { ...args } })];
 		} else {

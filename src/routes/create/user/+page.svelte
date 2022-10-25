@@ -32,6 +32,7 @@
 				name: values.name,
 				ign: values.ign
 			});
+			goto('/ranking');
 		}
 	});
 </script>

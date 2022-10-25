@@ -1,3 +1,8 @@
-import { GQL_Users } from '$houdini'
+import { load_AllUsers } from '$houdini';
+import type { LoadEvent } from '@sveltejs/kit';
 
-export const houdini_load = [GQL_Users]
+export async function load(event: LoadEvent) {
+	return {
+		...(await load_AllUsers({ event, variables: {} }))
+	};
+}

@@ -1,3 +1,3 @@
-import { GQL_Users } from '$houdini'
+import { GQL_AllUsers } from '$houdini';
 
-export const houdini_load = [GQL_Users]
+export const houdini_load = [GQL_AllUsers];

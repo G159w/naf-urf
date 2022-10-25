@@ -13,8 +13,8 @@
 	import { fade } from 'svelte/transition';
 	import type { User } from '$type-graphql';
 	export let data;
-	$: ({ Users } = data);
-	$: userData = $Users?.data;
+	$: ({ AllUsers } = data);
+	$: userData = AllUsers?.data;
 
 	let columns = [
 		{

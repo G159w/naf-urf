@@ -1,16 +1,20 @@
 import { PrismaClient } from '@prisma/client';
-import { RiotAPI, RiotAPITypes, PlatformId } from '@fightmegg/riot-api';
-import { logger } from './logger';
+import { RiotAPI } from '@fightmegg/riot-api';
+import { RIOT_API_KEY, DATABASE_URL } from '$env/static/private';
 
-const prisma = new PrismaClient();
-const riotApi = new RiotAPI(process.env.RIOT_API_KEY);
+const prisma = new PrismaClient({
+	datasources: {
+		db: {
+			url: DATABASE_URL
+		}
+	}
+});
+const riotApi = new RiotAPI(RIOT_API_KEY);
 
 export type GraphQLContext = {
 	prisma: PrismaClient;
 	riotApi: RiotAPI;
 };
-
-logger.info('context');
 
 export async function createContext(): Promise<GraphQLContext> {
 	return { prisma, riotApi };

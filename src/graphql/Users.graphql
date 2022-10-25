@@ -1,8 +1,7 @@
-query Users {
-  users {
+query AllUsers($where: UserWhereInput) {
+  users(where: $where) {
     id
     ign
     lolId
-    name
   }
 }
