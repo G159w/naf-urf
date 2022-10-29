@@ -1,7 +1,7 @@
 <script lang="ts">
+	import Button, { Label, Icon } from '@smui/button';
 	import Input from '$lib/component/core/input.svelte';
 	import { fade } from 'svelte/transition';
-	import { Button } from 'flowbite-svelte';
 	import { createForm } from 'svelte-forms-lib';
 	import * as yup from 'yup';
 	import { graphql, type CreateUserStore } from '$houdini';
@@ -43,9 +43,9 @@
 </svelte:head>
 
 <div class="page-content pt-10" in:fade={{ duration: 200 }}>
-	<h1 class="dark:text-white">Create user</h1>
+	<h1 class="text-white">Create user</h1>
 	<form class="flex flex-col align-middle justify-center gap-3" on:submit={handleSubmit}>
-		<Input
+		<!-- <Input
 			id="name"
 			name="name"
 			label="Nom d'utilisateur"
@@ -64,7 +64,7 @@
 			on:change={handleChange}
 			on:blur={handleChange}
 			bind:value={$form.ign}
-		/>
-		<Button color="yellow" class="mt-2" type="submit">Créer</Button>
+		/> -->
+		<Button class="mt-2" type="submit">Créer</Button>
 	</form>
 </div>

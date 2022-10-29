@@ -1,6 +1,6 @@
 import { UserWhereUniqueInput } from '$type-graphql/resolvers/inputs/UserWhereUniqueInput';
 import { Arg, Args, Ctx, Mutation, Resolver } from 'type-graphql';
-import { CreateOneUserArgs, User } from '$type-graphql';
+import { CreateOneUserArgs, User, Game } from '$type-graphql';
 import type { GraphQLContext } from '$lib/server/context';
 import { PlatformId } from '@fightmegg/riot-api';
 import { GraphQLError } from 'graphql';
@@ -31,12 +31,12 @@ export class UserResolver {
 		}
 	}
 
-	@Mutation(() => [User])
+	@Mutation(() => [Game])
 	async syncUsersMatches(
 		@Ctx() { prisma, riotApi }: GraphQLContext,
 		@Arg('full', () => Boolean, { nullable: true, defaultValue: false }) full: boolean,
 		@Arg('args', () => UserWhereUniqueInput, { nullable: true }) args?: UserWhereUniqueInput
-	): Promise<User[]> {
+	): Promise<Game[]> {
 		const users: User[] = [];
 		if (args) {
 			users.push(
@@ -102,7 +102,7 @@ export class UserResolver {
 			await getUserMatch(user);
 		}
 
-		await prisma.$transaction(
+		return await prisma.$transaction(
 			totalMatchIds.map((matchId) =>
 				prisma.game.upsert({
 					where: { matchId: matchId },
@@ -113,11 +113,5 @@ export class UserResolver {
 				})
 			)
 		);
-
-		if (args) {
-			return [await prisma.user.findUnique({ where: { ...args } })];
-		} else {
-			return prisma.user.findMany();
-		}
 	}
 }

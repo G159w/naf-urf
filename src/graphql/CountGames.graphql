@@ -1,0 +1,3 @@
+query CountGames($where: GameWhereInput, $orderBy: [GameOrderByWithRelationInput!], $cursor: GameWhereUniqueInput, $take: Int, $skip: Int, $distinct: [GameScalarFieldEnum!]) {
+  countGames(where: $where, orderBy: $orderBy, cursor: $cursor, take: $take, skip: $skip, distinct: $distinct)
+}

@@ -1687,8 +1687,8 @@ type Mutation {
   deleteOneStat(where: StatWhereUniqueInput!): Stat
   deleteOneSumSpells(where: SumSpellsWhereUniqueInput!): SumSpells
   deleteOneUser(where: UserWhereUniqueInput!): User
-  loadGames: [Game!]!
-  syncUsersMatches(args: UserWhereUniqueInput, full: Boolean = false): [User!]!
+  loadGames: [Float!]!
+  syncUsersMatches(args: UserWhereUniqueInput, full: Boolean = false): [Game!]!
   updateManyChampion(data: ChampionUpdateManyMutationInput!, where: ChampionWhereInput): AffectedRowsOutput!
   updateManyChampionStat(data: ChampionStatUpdateManyMutationInput!, where: ChampionStatWhereInput): AffectedRowsOutput!
   updateManyGame(data: GameUpdateManyMutationInput!, where: GameWhereInput): AffectedRowsOutput!
@@ -3682,6 +3682,7 @@ type Query {
   championStat(where: ChampionStatWhereUniqueInput!): ChampionStat
   championStats(cursor: ChampionStatWhereUniqueInput, distinct: [ChampionStatScalarFieldEnum!], orderBy: [ChampionStatOrderByWithRelationInput!], skip: Int, take: Int, where: ChampionStatWhereInput): [ChampionStat!]!
   champions(cursor: ChampionWhereUniqueInput, distinct: [ChampionScalarFieldEnum!], orderBy: [ChampionOrderByWithRelationInput!], skip: Int, take: Int, where: ChampionWhereInput): [Champion!]!
+  countGames(cursor: GameWhereUniqueInput, distinct: [GameScalarFieldEnum!], orderBy: [GameOrderByWithRelationInput!], skip: Int, take: Int, where: GameWhereInput): Float!
   findFirstChampion(cursor: ChampionWhereUniqueInput, distinct: [ChampionScalarFieldEnum!], orderBy: [ChampionOrderByWithRelationInput!], skip: Int, take: Int, where: ChampionWhereInput): Champion
   findFirstChampionStat(cursor: ChampionStatWhereUniqueInput, distinct: [ChampionStatScalarFieldEnum!], orderBy: [ChampionStatOrderByWithRelationInput!], skip: Int, take: Int, where: ChampionStatWhereInput): ChampionStat
   findFirstGame(cursor: GameWhereUniqueInput, distinct: [GameScalarFieldEnum!], orderBy: [GameOrderByWithRelationInput!], skip: Int, take: Int, where: GameWhereInput): Game

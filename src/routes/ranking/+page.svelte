@@ -1,14 +1,4 @@
 <script lang="ts">
-	import {
-		Select,
-		Label,
-		Table,
-		TableBody,
-		TableBodyCell,
-		TableBodyRow,
-		TableHead,
-		TableHeadCell
-	} from 'flowbite-svelte';
 	import _ from 'lodash';
 	import { fade } from 'svelte/transition';
 	import type { User } from '$type-graphql';
@@ -50,7 +40,7 @@
 </svelte:head>
 
 <div class="page-content pt-10" in:fade={{ duration: 200 }}>
-	<Table striped={!_.isEmpty(userData?.users)} color="yellow">
+	<!-- <Table striped={!_.isEmpty(userData?.users)} color="yellow">
 		<TableHead>
 			{#each columns as column}
 				<TableHeadCell>{column.header}</TableHeadCell>
@@ -73,5 +63,5 @@
 				{/each}
 			{/if}
 		</TableBody>
-	</Table>
+	</Table> -->
 </div>

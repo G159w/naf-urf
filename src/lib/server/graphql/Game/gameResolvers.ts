@@ -1,19 +1,26 @@
 import { numberOfPossibleRequests } from './../../utils';
-import { UserWhereUniqueInput } from './../../../../../$type-graphql/resolvers/inputs/UserWhereUniqueInput';
-import { Arg, Args, Ctx, Mutation, Resolver } from 'type-graphql';
-import { CreateOneUserArgs, Game, User } from '$type-graphql';
+import { Args, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { FindManyGameArgs, Game } from '$type-graphql';
 import type { GraphQLContext } from '$lib/server/context';
-import { PlatformId, RiotAPITypes } from '@fightmegg/riot-api';
+import { PlatformId } from '@fightmegg/riot-api';
 import { GraphQLError } from 'graphql';
-import { logger } from '$lib/server/logger';
 import type { Prisma } from '@prisma/client';
 import _ from 'lodash';
-import { subMinutes } from 'date-fns';
 
 @Resolver()
 export class GameResolver {
-	@Mutation(() => [Game])
-	async loadGames(@Ctx() { prisma, riotApi }: GraphQLContext): Promise<Game[]> {
+	@Query(() => Number)
+	async countGames(
+		@Args(() => FindManyGameArgs) args: FindManyGameArgs,
+		@Ctx() { prisma }: GraphQLContext
+	): Promise<number> {
+		return prisma.game.count({
+			...args
+		});
+	}
+
+	@Mutation(() => [Number])
+	async loadGames(@Ctx() { prisma, riotApi }: GraphQLContext): Promise<number> {
 		const requests = await numberOfPossibleRequests(prisma);
 
 		const games = await prisma.game.findMany({
@@ -24,7 +31,7 @@ export class GameResolver {
 		});
 
 		if (games.length === 0) {
-			return [];
+			return 0;
 		}
 
 		await prisma.lolRequest.create({ data: { count: games.length } });
@@ -104,6 +111,7 @@ export class GameResolver {
 					data: {
 						duration: match.info.gameDuration,
 						gameCreation: new Date(match.info.gameCreation),
+						gameMode: match.info.gameMode,
 						isMatchLoaded: true,
 						players: {
 							create: players
@@ -124,6 +132,6 @@ export class GameResolver {
 			console.log(error);
 			throw new GraphQLError(error.message);
 		}
-		return games;
+		return games.length;
 	}
 }

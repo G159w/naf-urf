@@ -14,19 +14,19 @@
 	<div class="flex flex-row justify-items-center items-center gap-4">
 		<a
 			href="/ranking"
-			class="block p-6 max-w-sm hover:border bg-neutral-400 dark:bg-neutral-800 border-amber-500 hover:bg-neutral-700"
+			class="block p-6 max-w-sm hover:border bg-neutral-800 border-amber-500 hover:bg-neutral-700"
 		>
-			<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Classement</h5>
-			<p class="font-normal text-gray-700 dark:text-gray-400">
+			<h5 class="mb-2 text-2xl font-bold tracking-tight text-white">Classement</h5>
+			<p class="font-normal  text-gray-400">
 				Classement OBJECTIF ente les differents utilisateurs, "all time" ou par session.
 			</p>
 		</a>
 		<a
 			href="/stats"
-			class="block p-6 max-w-sm hover:border bg-neutral-400 dark:bg-neutral-800 border-amber-500 hover:bg-neutral-700"
+			class="block p-6 max-w-sm hover:border bg-neutral-800 border-amber-500 hover:bg-neutral-700"
 		>
-			<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Statistiques</h5>
-			<p class="font-normal text-gray-700 dark:text-gray-400">
+			<h5 class="mb-2 text-2xl font-bold tracking-tight text-white">Statistiques</h5>
+			<p class="font-normal text-gray-400">
 				Statistiques FACTUELLES diverses et variées globales ou par joueurs.
 			</p>
 		</a>

@@ -1,40 +1,49 @@
 <script lang="ts">
-	import { Select, Button, Label, Input } from 'flowbite-svelte';
+	import Button, { Label, Icon } from '@smui/button';
 
+	import Autocomplete from '@smui-extra/autocomplete';
 	import { GQL_AllUsers, QueryMode } from '$houdini';
-	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	export let defaultValue = '';
+	export let defaultValue = undefined;
 
-	$: search = defaultValue.toString();
-	$: browser && GQL_AllUsers.fetch();
+	let value = defaultValue;
 
-	const defaulSelecttValue = {
-		value: '',
-		name: 'Général (par default)'
-	};
-	const getUsers = (users: typeof $GQL_AllUsers.data.users) => {
-		return (
-			users?.map((user) => ({
-				value: user.id.toString(),
-				name: user.ign
-			})) || []
-		);
+	const goToDetail = async (option) => {
+		const user = option.detail;
+		if (user) {
+			const url = new URL(location.toString());
+			url.searchParams.set('user', user.id);
+			await goto(url);
+		}
 	};
 
-	const goToDetail = () => {
-		goto(`/stats${search ? `/${search}` : ''}`);
+	const reset = async () => {
+		value = undefined;
+		const url = new URL(location.toString());
+		url.searchParams.delete('user');
+		await goto(url.href, { replaceState: true });
+	};
+
+	const fetch = async () => {
+		const response = await GQL_AllUsers.fetch();
+		return response.data.users;
 	};
 </script>
 
-<div>
-	<Select
-		bind:value={search}
-		placeholder={'Général (par default)'}
-		id="select-sm"
-		size="lg"
+<div class="flex relative">
+	<Autocomplete
+		options={() => fetch()}
+		class="w-full"
+		textfield$class="w-full"
+		textfield$variant="outlined"
+		toggle
+		on:SMUIAutocomplete:selected={(option) => goToDetail(option)}
+		bind:value
 		on:change={goToDetail}
-		items={[...(search ? [defaulSelecttValue] : []), ...getUsers($GQL_AllUsers.data?.users)]}
-		class="mb-6"
+		getOptionLabel={(option) => (option ? `${option.name} (${option.ign})` : '')}
+		label="Utilisateur (Général par default)"
 	/>
+	<Button class="absolute right-0 h-full" color="secondary" on:click={reset}>
+		<Icon class="material-icons">cancel</Icon>
+	</Button>
 </div>
