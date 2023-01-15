@@ -1,18 +1,21 @@
-const colors = require('tailwindcss/colors')
-
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+const config = {
+	darkMode: 'class',
 	content: [
-		"./src/**/*.{html,js,svelte,ts}",
-	  ],
-	
-		darkMode: 'class',
-	  theme: {
-			screens: {},
-		  fontFamily: {
-				sans: ['Graphik', 'sans-serif'],
-				serif: ['Merriweather', 'serif'],
-		  },
-		  extend: {},
-	  },
+		'./src/**/*.{html,js,svelte,ts}', 
+		require('path').join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')
+	],
+
+	theme: {
+		extend: {}
+	},
+
+	plugins: [
+		require('@skeletonlabs/skeleton/tailwind/skeleton.cjs'),
+		require('@tailwindcss/typography'),
+		require('@tailwindcss/line-clamp'),
+		require('@tailwindcss/forms'),
+	]
 };
+
+module.exports = config;

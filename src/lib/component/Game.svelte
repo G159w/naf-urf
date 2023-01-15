@@ -1,32 +1,58 @@
 <script lang="ts">
-	import Button, { Label, Icon } from '@smui/button';
-	import Card, { Content } from '@smui/card';
-	import Autocomplete from '@smui-extra/autocomplete';
-	import { GQL_AllUsers, QueryMode } from '$houdini';
-	import { goto } from '$app/navigation';
-	import type { Game } from '$type-graphql';
-	export let game: Game;
+	import { format, intervalToDuration } from 'date-fns';
+	import type { Champion, Game, PlayerStat, User } from '@prisma/client';
+	import { getChampionName } from '$lib/utils';
+	import _ from 'lodash';
 
+	export let game: Game & {
+		players: (PlayerStat & {
+			champion: Champion;
+		})[];
+	};
+
+	export let mainUsers: User[];
+
+	const duration = intervalToDuration({ start: 0, end: (game.duration || 0) * 1000 });
 	const allyTeam = game.players.filter((player) => player.isAllyTeam);
 	const enemyTeam = game.players.filter((player) => !player.isAllyTeam);
 	const isWin = allyTeam[0].isWin;
 </script>
 
-<Card class={`flex text-white ${isWin ? 'bg-indigo-900/50' : 'bg-rose-800/50'}`} padded>
-	<div class="flex flex-col">
+<div
+	class={`card flex border-2	 ${isWin ? 'border-indigo-700' : 'border-rose-600'} ${
+		isWin ? 'bg-indigo-200/50' : 'bg-rose-200/50'
+	}`}
+>
+	<div class="flex flex-col w-full p-4">
 		<div class="flex justify-between text-xs  mb-4">
 			<p>
-				{game.duration}
+				{`${duration.minutes}:${duration.seconds}`}
 			</p>
 			<p>
-				{game.gameCreation}
+				{format(game.gameCreation || new Date(), 'dd/MM/yyyy')}
 			</p>
 		</div>
 		<div class="flex">
-			<div class="basis-1/2">
+			<div class="basis-1/2 flex flex-col gap-1">
 				{#each allyTeam || [] as player}
-					<div class="flex text-xs">
-						<div class="basis-8/12">
+					<div
+						class={`flex text-xs gap-1 items-center  ${
+							_.includes(
+								mainUsers.map((p) => p.ign),
+								player.sumName
+							)
+								? 'font-bold'
+								: ''
+						}`}
+					>
+						<img
+							class="basis-1/12 w-4"
+							alt={player.champion.name}
+							src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${getChampionName(
+								player.champion.name
+							)}.png`}
+						/>
+						<div class="basis-7/12">
 							{player.sumName}
 						</div>
 						<div>
@@ -35,10 +61,17 @@
 					</div>
 				{/each}
 			</div>
-			<div class="basis-1/2">
+			<div class="basis-1/2 flex flex-col gap-1">
 				{#each enemyTeam || [] as player}
-					<div class="flex text-xs">
-						<div class="basis-8/12">
+					<div class="flex text-xs gap-1">
+						<img
+							class="basis-1/12 w-4"
+							alt={player.champion.name}
+							src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${getChampionName(
+								player.champion.name
+							)}.png`}
+						/>
+						<div class="basis-7/12">
 							{player.sumName}
 						</div>
 						<div>
@@ -50,4 +83,4 @@
 		</div>
 		<div />
 	</div>
-</Card>
+</div>

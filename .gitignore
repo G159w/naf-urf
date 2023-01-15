@@ -10,5 +10,5 @@ node_modules
 .output
 .vscode
 info.log
-$houdini
-$type-graphql
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

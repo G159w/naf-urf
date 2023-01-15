@@ -12,9 +12,9 @@ export const numberOfPossibleRequests = async (prisma: PrismaClient) => {
 			count: true
 		}
 	});
-	return 95 - requests._sum.count;
+	return 95 - (requests._sum.count || 0);
 };
 
-export function delay(ms: number) {
+export function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }

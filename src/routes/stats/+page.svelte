@@ -1,76 +1,68 @@
 <script lang="ts">
-	import CircularProgress from '@smui/circular-progress';
-	import SearchUser from '$lib/component/SearchUser.svelte';
+	import { fade } from 'svelte/transition';
+	import { RefreshCcw, Download } from 'lucide-svelte';
+	import type { ActionData, PageData } from './$types';
 	import Game from '$lib/component/Game.svelte';
-	import Fab, { Icon } from '@smui/fab';
+	import { Paginator } from '@skeletonlabs/skeleton';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { graphql, LoadGamesStore, type SyncUsersMatchesStore } from '$houdini';
-	import { forEach } from 'lodash';
-	export let data;
 
-	let loading = false;
-	const syncGamesMutation: SyncUsersMatchesStore = graphql`
-		mutation SyncUsersMatches($args: UserWhereUniqueInput, $full: Boolean) {
-			syncUsersMatches(args: $args, full: $full) {
-				id
-				matchId
-			}
-		}
-	`;
+	export let form: ActionData;
+	export let data: PageData;
 
-	const loadGamesMutation: LoadGamesStore = graphql`
-		mutation LoadGames {
-			loadGames
-		}
-	`;
-
-	const syncGames = async () => {
-		loading = true;
-		const user = $page.url.searchParams.get('user');
-		await syncGamesMutation.mutate({
-			args: user
-				? {
-						id: +user
-				  }
-				: undefined
-		});
-		loading = false;
+	$: currentPage = +($page.url.searchParams.get('page') || 0);
+	$: limit = 20;
+	$: paginatorSettings = {
+		offset: currentPage,
+		limit: limit,
+		size: data.totalLoadedGames,
+		amounts: [10, 20, 50]
 	};
-
-	const loadGames = async () => {
-		loading = true;
-		await loadGamesMutation.mutate(null);
-		loading = false;
-	};
-
-	$: ({ AllUsers, User, CountGames, Games } = data);
 </script>
 
-<svelte:head>
-	<title>URF | Stats</title>
-	<meta name="statistiques" content="Urf statistiques" />
-</svelte:head>
-
-<div class="page-content pt-10">
-	<SearchUser />
-	<div class="text-white mt-4">
-		{$CountGames?.data?.countGames} games non chargées
+<section
+	class="container h-full mx-auto flex flex-col gap-8 w-full items-center"
+	in:fade={{ duration: 200 }}
+>
+	<div class="flex gap-4 justify-between w-full items-center">
+		<div class="flex gap-2 flex-col">
+			<p>Total games: {data.totalGames}</p>
+			<p>Games chargées: {data.totalLoadedGames}</p>
+		</div>
+		<h1 class="font-bold">Stats</h1>
+		<div class="flex gap-2">
+			<form method="POST" action="?/loadGamesDetail">
+				<button class="btn-icon btn-filled-primary p-0">
+					<Download size={20} />
+				</button>
+			</form>
+			<form method="POST" action="?/loadUserGames">
+				<button class="btn-icon btn-filled-primary p-0">
+					<RefreshCcw size={20} />
+				</button>
+			</form>
+		</div>
 	</div>
+	<hr class="w-full" />
 	<div class="flex flex-wrap">
-		{#each $Games?.data?.games || [] as game}
+		{#each data?.games || [] as game (game.id)}
 			<div class="basis-1/2 p-2">
-				<Game {game} />
+				<Game {game} mainUsers={data.users} />
 			</div>
 		{/each}
 	</div>
-	<div class="flex gap-4 fixed bottom-10 right-10">
-		<Fab on:click={() => syncGames()}>
-			<Icon class="material-icons">sync</Icon>
-		</Fab>
-		{#if $CountGames?.data?.countGames || 0 > 0}
-			<Fab on:click={() => loadGames()}>
-				<Icon class="material-icons">cloud_download</Icon>
-			</Fab>
-		{/if}
+	<div class="w-full">
+		<Paginator
+			bind:settings={paginatorSettings}
+			on:page={async (event) => {
+				const url = $page.url.searchParams;
+				url.set('page', event.detail);
+				console.log(`?${url}`);
+				await goto(`?${url}`);
+			}}
+			on:amount={(event) => {
+				limit = event.detail;
+			}}
+		/>
 	</div>
-</div>
+</section>

@@ -1,57 +1,39 @@
 <script>
-	import { fade } from 'svelte/transition';
+	import '@skeletonlabs/skeleton/themes/theme-modern.css';
+	import '@skeletonlabs/skeleton/styles/all.css';
 	import '../app.postcss';
-	import Header from './Header.svelte';
-	import './styles.css';
+	import { AppShell, AppRail, AppRailTile } from '@skeletonlabs/skeleton';
+	import { Github, BarChart, List, UserPlus } from 'lucide-svelte';
+
+	import { appRailIndex } from '$lib/store/appRailStore';
+	import logo from '$lib/images/urf_emote.png';
 </script>
 
-<div class="app  bg-neutral-900">
-	<Header />
-
-	<main in:fade={{ duration: 200 }}>
+<AppShell class="h-full">
+	<svelte:fragment slot="sidebarLeft">
+		<AppRail selected={appRailIndex}>
+			<svelte:fragment slot="lead">
+				<AppRailTile tag="a" href="/">
+					<img class="  w-12	" alt="Home" src={logo} />
+				</AppRailTile>
+			</svelte:fragment>
+			<AppRailTile label="Stats" tag="a" href="/stats" value={2}>
+				<List />
+			</AppRailTile>
+			<AppRailTile label="Ranks" tag="a" href="/ranks" value={3}>
+				<BarChart />
+			</AppRailTile>
+			<AppRailTile label="Add" tag="a" href="/creation/user" value={4}>
+				<UserPlus />
+			</AppRailTile>
+			<svelte:fragment slot="trail">
+				<AppRailTile tag="a" href="https://github.com/G159w/naf-urf">
+					<Github />
+				</AppRailTile>
+			</svelte:fragment>
+		</AppRail>
+	</svelte:fragment>
+	<div class="h-full p-24">
 		<slot />
-	</main>
-
-	<footer>
-		<p class="text-gray-400">
-			Vous pouvez aussi requêter notre <a href="/api/graphql">API Graphql</a>
-		</p>
-	</footer>
-</div>
-
-<style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
-	}
-</style>
+	</div>
+</AppShell>

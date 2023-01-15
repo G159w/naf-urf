@@ -1,8 +1,0 @@
-query AllUsers($where: UserWhereInput) {
-  users(where: $where) {
-    id
-    name
-    ign
-    lolId
-  }
-}
