@@ -23,5 +23,4 @@
 	<hr class="w-full" />
 	<hr />
 	<Table source={simpleTable} />
-	{data.users[0].name}
 </section>

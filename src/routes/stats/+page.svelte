@@ -4,20 +4,32 @@
 	import type { ActionData, PageData } from './$types';
 	import Game from '$lib/component/Game.svelte';
 	import { Paginator } from '@skeletonlabs/skeleton';
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { afterUpdate } from 'svelte';
 
 	export let form: ActionData;
 	export let data: PageData;
 
 	$: currentPage = +($page.url.searchParams.get('page') || 0);
-	$: limit = 20;
+	$: limit = +($page.url.searchParams.get('limit') || 20);
 	$: paginatorSettings = {
 		offset: currentPage,
 		limit: limit,
 		size: data.totalLoadedGames,
 		amounts: [10, 20, 50]
 	};
+	afterNavigate(() => {
+		currentPage = +($page.url.searchParams.get('page') || 0);
+		limit = +($page.url.searchParams.get('take') || 0);
+
+		paginatorSettings = {
+			offset: currentPage,
+			limit: limit,
+			size: data.totalLoadedGames,
+			amounts: [10, 20, 50]
+		};
+	});
 </script>
 
 <section
@@ -51,17 +63,19 @@
 			</div>
 		{/each}
 	</div>
+	{currentPage}
 	<div class="w-full">
 		<Paginator
 			bind:settings={paginatorSettings}
 			on:page={async (event) => {
-				const url = $page.url.searchParams;
-				url.set('page', event.detail);
-				console.log(`?${url}`);
-				await goto(`?${url}`);
+				const newUrl = new URL($page.url);
+				newUrl?.searchParams?.set('page', event.detail);
+				await goto(newUrl);
 			}}
-			on:amount={(event) => {
-				limit = event.detail;
+			on:amount={async (event) => {
+				const newUrl = new URL($page.url);
+				newUrl?.searchParams?.set('take', event.detail);
+				await goto(newUrl);
 			}}
 		/>
 	</div>

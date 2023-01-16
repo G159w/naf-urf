@@ -15,6 +15,7 @@ export const load = (async ({ url }) => {
 		games: await prisma.game.findMany({
 			where: { isMatchLoaded: true },
 			include: { players: { include: { champion: true } } },
+			orderBy: [{ gameCreation: 'desc' }],
 			take,
 			skip: page * take
 		}),
@@ -70,6 +71,7 @@ export const actions: Actions = {
 								start: urfGameRequests * 100
 							}
 						});
+
 						urfMatchIds.push(...response);
 					}
 

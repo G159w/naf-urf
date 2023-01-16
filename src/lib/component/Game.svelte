@@ -19,8 +19,8 @@
 </script>
 
 <div
-	class={`card flex border-2	 ${isWin ? 'border-indigo-700' : 'border-rose-600'} ${
-		isWin ? 'bg-indigo-200/50' : 'bg-rose-200/50'
+	class={`card flex border-2	 ${isWin ? 'border-emerald-300' : 'border-rose-300'} ${
+		isWin ? 'bg-emerald-200/30' : 'bg-rose-200/30'
 	}`}
 >
 	<div class="flex flex-col w-full p-4">
@@ -63,7 +63,7 @@
 			</div>
 			<div class="basis-1/2 flex flex-col gap-1">
 				{#each enemyTeam || [] as player}
-					<div class="flex text-xs gap-1">
+					<div class="flex text-xs gap-1 items-center">
 						<img
 							class="basis-1/12 w-4"
 							alt={player.champion.name}

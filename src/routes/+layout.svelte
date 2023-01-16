@@ -4,17 +4,32 @@
 	import '../app.postcss';
 	import { AppShell, AppRail, AppRailTile } from '@skeletonlabs/skeleton';
 	import { Github, BarChart, List, UserPlus } from 'lucide-svelte';
+	import { page } from '$app/stores';
+	import { writable } from 'svelte/store';
+	import { beforeUpdate } from 'svelte';
 
-	import { appRailIndex } from '$lib/store/appRailStore';
 	import logo from '$lib/images/urf_emote.png';
+
+	$: index = writable(1);
+	beforeUpdate(async () => {
+		if ($page.url.pathname === '/stats') {
+			index.set(2);
+		} else if ($page.url.pathname === '/ranks') {
+			index.set(3);
+		} else if ($page.url.pathname === '/creation/user') {
+			index.set(4);
+		} else {
+			index.set(1);
+		}
+	});
 </script>
 
 <AppShell class="h-full">
 	<svelte:fragment slot="sidebarLeft">
-		<AppRail selected={appRailIndex}>
+		<AppRail selected={index}>
 			<svelte:fragment slot="lead">
 				<AppRailTile tag="a" href="/">
-					<img class="  w-12	" alt="Home" src={logo} />
+					<img class="w-12" alt="Home" src={logo} />
 				</AppRailTile>
 			</svelte:fragment>
 			<AppRailTile label="Stats" tag="a" href="/stats" value={2}>
