@@ -12,7 +12,7 @@
 
 	$: index = writable(1);
 	beforeUpdate(async () => {
-		if ($page.url.pathname === '/historic') {
+		if ($page.url.pathname === '/history') {
 			index.set(2);
 		} else if ($page.url.pathname === '/ranks') {
 			index.set(3);
@@ -33,7 +33,7 @@
 					<img class="w-12" alt="Home" src={logo} />
 				</AppRailTile>
 			</svelte:fragment>
-			<AppRailTile label="Historic" tag="a" href="/historic" value={2}>
+			<AppRailTile label="Historique" tag="a" href="/history" value={2}>
 				<List />
 			</AppRailTile>
 			<AppRailTile label="Ranks" tag="a" href="/ranks" value={3}>
