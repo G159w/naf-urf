@@ -19,7 +19,7 @@
 	<div class="flex gap-4 w-full align-middle justify-center">
 		<a href="/ranks" class="card p-4 w-96">
 			<h3 class="font-bold">Classement</h3>
-			<p>Classement OBJECTIF ente les différents utilisateurs, "all time" ou par session.</p>
+			<p>Classement OBJECTIF entre les différents utilisateurs, "all time" ou par session.</p>
 		</a>
 		<a href="/stats" class="card p-4 w-96">
 			<h3 class="font-bold">Statistiques</h3>

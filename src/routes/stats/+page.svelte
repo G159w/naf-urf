@@ -28,7 +28,7 @@
 >
 	<div class="flex gap-4 justify-between w-full items-center">
 		<div class="flex gap-2 flex-col" />
-		<h1 class="font-bold">Statistiques Globale</h1>
+		<h1 class="font-bold">Statistiques globales</h1>
 		<button class="btn-icon btn-filled-primary p-0" on:click={triggerCustomModal}>
 			<UserPlus size={20} />
 		</button>
@@ -119,13 +119,13 @@
 					</div>
 				</div>
 				<div class="flex flex-col">
-					<div class="font-bold">Champions le plus joué:</div>
+					<div class="font-bold">Champion le plus joué:</div>
 					<div>
 						{data.max.champion.name} ({data.max.champion._count.players} picks)
 					</div>
 				</div>
 				<div class="flex flex-col">
-					<div class="font-bold">Champions qui a le plus gagné:</div>
+					<div class="font-bold">Champion qui a le plus gagné:</div>
 					<div>
 						{data.max.championWin.name} ({data.max.championWin._count.players} wins)
 					</div>

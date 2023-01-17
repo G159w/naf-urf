@@ -65,8 +65,6 @@ export const load = (async () => {
 		}
 	});
 
-	console.log(gamesWon, totalGames);
-
 	const champion = await prisma.champion.findMany({
 		include: {
 			_count: {
