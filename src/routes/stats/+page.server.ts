@@ -4,8 +4,32 @@ import { z } from 'zod';
 import { PlatformId } from '@fightmegg/riot-api';
 const { prisma, riotApi } = await createContext();
 export const load = (async () => {
+	const avg = await prisma.playerStat.aggregate({
+		where: {
+			user: {
+				is: {
+					id: {
+						gt: 0
+					}
+				}
+			}
+		},
+		_avg: {
+			kills: true,
+			deaths: true,
+			assists: true,
+			damage: true,
+			goldEarned: true,
+			doubleKills: true,
+			tripleKills: true,
+			quadraKills: true,
+			pentaKills: true
+		}
+	});
+
 	return {
-		users: await prisma.user.findMany({ include: { _count: { select: { gameStats: true } } } })
+		users: await prisma.user.findMany({ include: { _count: { select: { gameStats: true } } } }),
+		avg: avg._avg
 	};
 }) satisfies PageServerLoad;
 
