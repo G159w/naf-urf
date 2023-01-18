@@ -6,9 +6,12 @@
 	import CreateUser from '$lib/component/CreateUser.svelte';
 	import { UserPlus } from 'lucide-svelte';
 	import { getChampionName } from '$lib/utils';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	export let data: PageData;
 
+	let selectedUserId: number | undefined = +($page.url.searchParams.get('user') || 0) || undefined;
 	function triggerCustomModal(): void {
 		const modalComponent: ModalComponent = {
 			ref: CreateUser,
@@ -27,8 +30,28 @@
 	in:fade={{ duration: 200 }}
 >
 	<div class="flex gap-4 justify-between w-full items-center">
-		<div class="flex gap-2 flex-col" />
-		<h1 class="font-bold">Statistiques globales</h1>
+		<select
+			bind:value={selectedUserId}
+			on:change={async () => {
+				const newUrl = new URL($page.url);
+				if (selectedUserId) {
+					newUrl?.searchParams?.set('user', selectedUserId.toString());
+				} else {
+					newUrl?.searchParams?.delete('user');
+				}
+				await goto(newUrl);
+			}}
+			class=" w-60"
+			style="width: 150px"
+		>
+			<option value={undefined}> Global </option>
+			{#each data.users as user}
+				<option value={user.id}>
+					{user.name}
+				</option>
+			{/each}
+		</select>
+		<h1 class="font-bold">Statistiques</h1>
 		<button class="btn-icon btn-filled-primary p-0" on:click={triggerCustomModal}>
 			<UserPlus size={20} />
 		</button>

@@ -2,13 +2,29 @@ import { createContext } from '$lib/server/context';
 import type { PageServerLoad, Actions } from './$types';
 import { z } from 'zod';
 import { PlatformId } from '@fightmegg/riot-api';
+import type { Prisma } from '@prisma/client';
 const { prisma, riotApi } = await createContext();
-export const load = (async () => {
+
+type UserWhereInput =
+	| (Prisma.Without<Prisma.UserRelationFilter, Prisma.UserWhereInput> & Prisma.UserWhereInput)
+	| (Prisma.Without<Prisma.UserWhereInput, Prisma.UserRelationFilter> & Prisma.UserRelationFilter)
+	| null
+	| undefined;
+
+export const load = (async ({ url }) => {
+	const userId = +(url.searchParams.get('user') || 0);
+
+	const userWhereInput: UserWhereInput = userId
+		? {
+				id: { equals: userId }
+		  }
+		: {
+				isNot: null
+		  };
+
 	const avg = await prisma.playerStat.aggregate({
 		where: {
-			user: {
-				isNot: null
-			}
+			user: userWhereInput
 		},
 		_avg: {
 			kills: true,
@@ -38,12 +54,10 @@ export const load = (async () => {
 		where: {
 			players: {
 				some: {
-					user: {
-						id: { gt: 0 }
-					},
 					isWin: {
 						equals: true
-					}
+					},
+					user: userWhereInput
 				}
 			}
 		}
@@ -53,9 +67,7 @@ export const load = (async () => {
 		where: {
 			players: {
 				some: {
-					user: {
-						id: { gt: 0 }
-					}
+					user: userWhereInput
 				}
 			}
 		}
@@ -63,9 +75,7 @@ export const load = (async () => {
 
 	const maxPlayedOccurrenceChampion = await prisma.playerStat.groupBy({
 		where: {
-			user: {
-				isNot: null
-			}
+			user: userWhereInput
 		},
 		by: ['championId'],
 		_count: {
@@ -92,9 +102,7 @@ export const load = (async () => {
 
 	const maxWonOccurrenceChampion = await prisma.playerStat.groupBy({
 		where: {
-			user: {
-				isNot: null
-			},
+			user: userWhereInput,
 			isWin: true
 		},
 		by: ['championId'],
@@ -122,9 +130,7 @@ export const load = (async () => {
 
 	const maxKillStat = await prisma.playerStat.findFirst({
 		where: {
-			user: {
-				isNot: null
-			},
+			user: userWhereInput,
 			kills: avg._max.kills || undefined
 		},
 		include: {
@@ -135,9 +141,7 @@ export const load = (async () => {
 
 	const maxDeathStat = await prisma.playerStat.findFirst({
 		where: {
-			user: {
-				isNot: null
-			},
+			user: userWhereInput,
 			deaths: avg._max.deaths || undefined
 		},
 		include: {
@@ -148,9 +152,7 @@ export const load = (async () => {
 
 	const maxAssistStat = await prisma.playerStat.findFirst({
 		where: {
-			user: {
-				isNot: null
-			},
+			user: userWhereInput,
 			assists: avg._max.assists || undefined
 		},
 		include: {
@@ -161,9 +163,7 @@ export const load = (async () => {
 
 	const maxDamageStat = await prisma.playerStat.findFirst({
 		where: {
-			user: {
-				isNot: null
-			},
+			user: userWhereInput,
 			damage: avg._max.damage || undefined
 		},
 		include: {
