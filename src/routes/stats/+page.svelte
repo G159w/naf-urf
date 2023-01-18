@@ -97,37 +97,41 @@
 				<div class="flex flex-col">
 					<div class="font-bold">Max kills:</div>
 					<div>
-						{data.max.kills?.toLocaleString()}
+						{data.max.kills?.toLocaleString()} - {data.max.maxKillStat?.user?.name}, {data.max
+							.maxKillStat?.champion.name}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Max deaths:</div>
 					<div>
-						{data.max.deaths?.toLocaleString()}
+						{data.max.deaths?.toLocaleString()} - {data.max.maxDeathStat?.user?.name}, {data.max
+							.maxDeathStat?.champion.name}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Max assists:</div>
 					<div>
-						{data.max.assists?.toLocaleString()}
+						{data.max.assists?.toLocaleString()} - {data.max.maxAssistStat?.user?.name}, {data.max
+							.maxAssistStat?.champion.name}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Max dégâts:</div>
 					<div>
-						{data.max.damage?.toLocaleString()}
+						{data.max.damage?.toLocaleString()} - {data.max.maxDamageStat?.user?.name}, {data.max
+							.maxDamageStat?.champion.name}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Champion le plus joué:</div>
 					<div>
-						{data.max.champion.name} ({data.max.champion._count.players} picks)
+						{data.max.championMaxPlayed.champion?.name} - {data.max.championMaxPlayed?.occurrence} picks
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Champion qui a le plus gagné:</div>
 					<div>
-						{data.max.championWin.name} ({data.max.championWin._count.players} wins)
+						{data.max.championMaxWin.champion?.name} - {data.max.championMaxWin?.occurrence} wins
 					</div>
 				</div>
 			</div>
@@ -135,9 +139,9 @@
 		<div>
 			<img
 				class="basis-1/12s"
-				alt={data.max.champion.name}
+				alt={data.max.championMaxPlayed.champion?.name}
 				src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${getChampionName(
-					data.max.champion.name
+					data.max.championMaxPlayed.champion?.name || ''
 				)}_0.jpg`}
 			/>
 		</div>

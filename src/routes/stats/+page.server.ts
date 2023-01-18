@@ -7,11 +7,7 @@ export const load = (async () => {
 	const avg = await prisma.playerStat.aggregate({
 		where: {
 			user: {
-				is: {
-					id: {
-						gt: 0
-					}
-				}
+				isNot: null
 			}
 		},
 		_avg: {
@@ -65,49 +61,115 @@ export const load = (async () => {
 		}
 	});
 
-	const champion = await prisma.champion.findMany({
-		include: {
-			_count: {
-				select: {
-					players: {
-						where: {
-							user: { id: { gt: 0 } }
-						}
-					}
-				}
+	const maxPlayedOccurrenceChampion = await prisma.playerStat.groupBy({
+		where: {
+			user: {
+				isNot: null
 			}
+		},
+		by: ['championId'],
+		_count: {
+			championId: true
 		},
 		orderBy: [
 			{
-				players: {
-					_count: 'desc'
+				_count: {
+					championId: 'desc'
 				}
 			}
 		],
 		take: 1
 	});
 
-	const championWin = await prisma.champion.findMany({
+	const championMaxPlayed = await prisma.champion.findUnique({
+		where: {
+			id: maxPlayedOccurrenceChampion[0].championId
+		},
 		include: {
-			_count: {
-				select: {
-					players: {
-						where: {
-							user: { id: { gt: 0 } },
-							isWin: true
-						}
-					}
-				}
-			}
+			players: true
+		}
+	});
+
+	const maxWonOccurrenceChampion = await prisma.playerStat.groupBy({
+		where: {
+			user: {
+				isNot: null
+			},
+			isWin: true
+		},
+		by: ['championId'],
+		_count: {
+			championId: true
 		},
 		orderBy: [
 			{
-				players: {
-					_count: 'desc'
+				_count: {
+					championId: 'desc'
 				}
 			}
 		],
 		take: 1
+	});
+
+	const championMaxWin = await prisma.champion.findUnique({
+		where: {
+			id: maxWonOccurrenceChampion[0].championId
+		},
+		include: {
+			players: true
+		}
+	});
+
+	const maxKillStat = await prisma.playerStat.findFirst({
+		where: {
+			user: {
+				isNot: null
+			},
+			kills: avg._max.kills || undefined
+		},
+		include: {
+			champion: true,
+			user: true
+		}
+	});
+
+	const maxDeathStat = await prisma.playerStat.findFirst({
+		where: {
+			user: {
+				isNot: null
+			},
+			deaths: avg._max.deaths || undefined
+		},
+		include: {
+			champion: true,
+			user: true
+		}
+	});
+
+	const maxAssistStat = await prisma.playerStat.findFirst({
+		where: {
+			user: {
+				isNot: null
+			},
+			assists: avg._max.assists || undefined
+		},
+		include: {
+			champion: true,
+			user: true
+		}
+	});
+
+	const maxDamageStat = await prisma.playerStat.findFirst({
+		where: {
+			user: {
+				isNot: null
+			},
+			damage: avg._max.damage || undefined
+		},
+		include: {
+			champion: true,
+			user: true
+		}
 	});
 
 	return {
@@ -115,8 +177,18 @@ export const load = (async () => {
 		avg: avg._avg,
 		max: {
 			...avg._max,
-			champion: champion[0],
-			championWin: championWin[0]
+			maxKillStat,
+			maxDeathStat,
+			maxAssistStat,
+			maxDamageStat,
+			championMaxPlayed: {
+				occurrence: maxPlayedOccurrenceChampion[0]._count.championId,
+				champion: championMaxPlayed
+			},
+			championMaxWin: {
+				occurrence: maxWonOccurrenceChampion[0]._count.championId,
+				champion: championMaxWin
+			}
 		},
 		wr: (gamesWon / totalGames) * 100
 	};

@@ -23,7 +23,7 @@
 		</a>
 		<a href="/stats" class="card p-4 w-96">
 			<h3 class="font-bold">Statistiques</h3>
-			<p>Statistiques FACTUELLES diverses et variées globales ou par joueurs.</p>
+			<p>Statistiques FACTUELLES diverses et variées globales ou par joueur.</p>
 		</a>
 	</div>
 </section>
