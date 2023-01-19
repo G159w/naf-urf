@@ -31,6 +31,11 @@
 	});
 </script>
 
+<svelte:head>
+	<title>URF | History</title>
+	<meta name="URF History" content="NAF History" />
+</svelte:head>
+
 <section
 	class="container h-full mx-auto flex flex-col gap-8 w-full items-center"
 	in:fade={{ duration: 200 }}

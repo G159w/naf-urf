@@ -3,7 +3,7 @@
 	import '@skeletonlabs/skeleton/styles/all.css';
 	import '../app.postcss';
 	import { AppShell, AppRail, AppRailTile, Modal } from '@skeletonlabs/skeleton';
-	import { Github, BarChart, List, User } from 'lucide-svelte';
+	import { Github, BarChart, List, User, Gavel } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { writable } from 'svelte/store';
 	import { beforeUpdate } from 'svelte';
@@ -18,11 +18,18 @@
 			index.set(3);
 		} else if ($page.url.pathname === '/stats') {
 			index.set(4);
+		} else if ($page.url.pathname === '/tribunal') {
+			index.set(5);
 		} else {
 			index.set(1);
 		}
 	});
 </script>
+
+<svelte:head>
+	<title>URF | NAF</title>
+	<meta name="URF NAF" content="NAF Urf naf" />
+</svelte:head>
 
 <AppShell class="h-full">
 	<Modal />
@@ -41,6 +48,9 @@
 			</AppRailTile>
 			<AppRailTile label="Stats" tag="a" href="stats" value={4}>
 				<User />
+			</AppRailTile>
+			<AppRailTile label="Tribs" tag="a" href="tribunal" value={5}>
+				<Gavel />
 			</AppRailTile>
 			<svelte:fragment slot="trail">
 				<AppRailTile tag="a" href="https://github.com/G159w/naf-urf">

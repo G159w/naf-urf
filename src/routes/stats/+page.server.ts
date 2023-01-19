@@ -32,6 +32,8 @@ export const load = (async ({ url }) => {
 			assists: true,
 			damage: true,
 			goldEarned: true,
+			totalMinionsKilled: true,
+			neutralMinionsKilled: true,
 			doubleKills: true,
 			tripleKills: true,
 			quadraKills: true,
@@ -41,12 +43,20 @@ export const load = (async ({ url }) => {
 			kills: true,
 			deaths: true,
 			assists: true,
-			damage: true
+			damage: true,
+			totalMinionsKilled: true,
+			neutralMinionsKilled: true
 		},
 		_min: {
 			kills: true,
 			deaths: true,
 			assists: true
+		},
+		_sum: {
+			doubleKills: true,
+			tripleKills: true,
+			quadraKills: true,
+			pentaKills: true
 		}
 	});
 
@@ -128,6 +138,17 @@ export const load = (async ({ url }) => {
 		}
 	});
 
+	const maxFarmStat = await prisma.playerStat.findFirst({
+		where: {
+			user: userWhereInput,
+			totalMinionsKilled: avg._max.totalMinionsKilled || undefined
+		},
+		include: {
+			champion: true,
+			user: true
+		}
+	});
+
 	const maxKillStat = await prisma.playerStat.findFirst({
 		where: {
 			user: userWhereInput,
@@ -174,13 +195,16 @@ export const load = (async ({ url }) => {
 
 	return {
 		users: await prisma.user.findMany({ include: { _count: { select: { gameStats: true } } } }),
+		totalGames: totalGames,
 		avg: avg._avg,
+		sum: avg._sum,
 		max: {
 			...avg._max,
 			maxKillStat,
 			maxDeathStat,
 			maxAssistStat,
 			maxDamageStat,
+			maxFarmStat,
 			championMaxPlayed: {
 				occurrence: maxPlayedOccurrenceChampion[0]._count.championId,
 				champion: championMaxPlayed

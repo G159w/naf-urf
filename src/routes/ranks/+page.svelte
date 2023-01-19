@@ -15,6 +15,11 @@
 	};
 </script>
 
+<svelte:head>
+	<title>URF | Ranks</title>
+	<meta name="URF Ranks" content="NAF Ranks" />
+</svelte:head>
+
 <section
 	class="container h-full mx-auto flex flex-col gap-8 w-full items-center"
 	in:fade={{ duration: 200 }}

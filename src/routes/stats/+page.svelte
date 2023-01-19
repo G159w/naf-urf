@@ -25,6 +25,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>URF | Stats</title>
+	<meta name="URF Stats" content="NAF Stats" />
+</svelte:head>
+
 <section
 	class="container h-full mx-auto flex flex-col gap-8 w-full items-center"
 	in:fade={{ duration: 200 }}
@@ -68,49 +73,66 @@
 					<div>
 						{data.avg.kills?.toFixed(1)}/{data.avg.deaths?.toFixed(1)}/{data.avg.assists?.toFixed(
 							1
-						)}
+						)} - {(
+							((data.avg.kills || 0) + (data.avg.assists || 0)) /
+							(data.avg.deaths || 1)
+						).toFixed(2)}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Dégâts:</div>
 					<div>
-						{data.avg.damage?.toLocaleString()}
+						{data.avg.damage?.toLocaleString(undefined, { maximumFractionDigits: 0 })}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Gold:</div>
 					<div>
-						{data.avg.goldEarned?.toLocaleString()}
+						{data.avg.goldEarned?.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+					</div>
+				</div>
+				<div class="flex flex-col">
+					<div class="font-bold">Farm:</div>
+					<div>
+						{(
+							(data.avg.totalMinionsKilled || 0) + (data.avg.neutralMinionsKilled || 0)
+						).toLocaleString(undefined, { maximumFractionDigits: 0 })} cs
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Double kills:</div>
 					<div>
-						{((data.avg.doubleKills || 0) * 100).toFixed(2)} %
+						{((data.avg.doubleKills || 0) * 100).toFixed(2)} % - {data.sum.doubleKills}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Triple kills:</div>
 					<div>
-						{((data.avg.tripleKills || 0) * 100).toFixed(2)} %
+						{((data.avg.tripleKills || 0) * 100).toFixed(2)} % - {data.sum.tripleKills}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Quadrakill:</div>
 					<div>
-						{((data.avg.quadraKills || 0) * 100).toFixed(2)} %
+						{((data.avg.quadraKills || 0) * 100).toFixed(2)} % - {data.sum.quadraKills}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Pentakills:</div>
 					<div>
-						{((data.avg.pentaKills || 0) * 100).toFixed(2)} %
+						{((data.avg.pentaKills || 0) * 100).toFixed(2)} % - {data.sum.pentaKills}
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="flex flex-col gap-4 ">
 			<div class="flex flex-col gap-4">
+				<div class="flex flex-col">
+					<div class="font-bold">Games :</div>
+					<div>
+						{data.totalGames}
+					</div>
+				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Win Rate:</div>
 					<div>
@@ -143,6 +165,15 @@
 					<div>
 						{data.max.damage?.toLocaleString()} - {data.max.maxDamageStat?.user?.name}, {data.max
 							.maxDamageStat?.champion.name}
+					</div>
+				</div>
+				<div class="flex flex-col">
+					<div class="font-bold">Max farm:</div>
+					<div>
+						{(
+							(data.max.totalMinionsKilled || 0) + (data.max.neutralMinionsKilled || 0)
+						).toLocaleString(undefined, { maximumFractionDigits: 0 })} cs - {data.max.maxFarmStat
+							?.user?.name}, {data.max.maxFarmStat?.champion.name}
 					</div>
 				</div>
 				<div class="flex flex-col">
