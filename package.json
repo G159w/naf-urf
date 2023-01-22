@@ -47,6 +47,7 @@
 		"date-fns": "^2.29.3",
 		"lodash": "^4.17.21",
 		"lucide-svelte": "^0.104.0",
+		"svelte-game-icons": "^1.0.3",
 		"zod": "^3.20.2"
 	}
 }

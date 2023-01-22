@@ -1,5 +1,5 @@
 <script>
-	import '@skeletonlabs/skeleton/themes/theme-modern.css';
+	import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
 	import '@skeletonlabs/skeleton/styles/all.css';
 	import '../app.postcss';
 	import { AppShell, AppRail, AppRailTile, Modal } from '@skeletonlabs/skeleton';
@@ -59,7 +59,7 @@
 			</svelte:fragment>
 		</AppRail>
 	</svelte:fragment>
-	<div class="h-full p-24">
+	<div class="h-full p-12">
 		<slot />
 	</div>
 </AppShell>
