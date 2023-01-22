@@ -2,11 +2,12 @@
 	import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
 	import '@skeletonlabs/skeleton/styles/all.css';
 	import '../app.postcss';
-	import { AppShell, AppRail, AppRailTile, Modal } from '@skeletonlabs/skeleton';
-	import { Github, BarChart, List, User, Gavel } from 'lucide-svelte';
+	import { AppShell, AppRail, AppRailTile, Modal, LightSwitch} from '@skeletonlabs/skeleton';
+	import { Github, BarChart, List, User, Gavel} from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { writable } from 'svelte/store';
 	import { beforeUpdate } from 'svelte';
+
 
 	import logo from '$lib/images/urf_emote.png';
 
@@ -53,6 +54,9 @@
 				<Gavel />
 			</AppRailTile>
 			<svelte:fragment slot="trail">
+				<AppRailTile>
+					<LightSwitch />
+				</AppRailTile>
 				<AppRailTile tag="a" href="https://github.com/G159w/naf-urf">
 					<Github />
 				</AppRailTile>
