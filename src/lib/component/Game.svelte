@@ -20,7 +20,7 @@
 
 <div
 	class={`card flex border-2	 ${isWin ? 'border-emerald-300' : 'border-rose-300'} ${
-		isWin ? 'bg-emerald-200/30' : 'bg-rose-200/30'
+		isWin ? 'bg-emerald-200/30 dark:bg-emerald-400/30' : 'bg-rose-200/30 dark:bg-rose-400/30'
 	}`}
 >
 	<div class="flex flex-col w-full p-4">
