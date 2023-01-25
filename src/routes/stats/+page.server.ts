@@ -13,6 +13,7 @@ type UserWhereInput =
 
 export const load = (async ({ url }) => {
 	const userId = +(url.searchParams.get('user') || 0);
+	const periodId = +(url.searchParams.get('period') || 0) || undefined;
 
 	const userWhereInput: UserWhereInput = userId
 		? {
@@ -24,7 +25,8 @@ export const load = (async ({ url }) => {
 
 	const avg = await prisma.playerStat.aggregate({
 		where: {
-			user: userWhereInput
+			user: userWhereInput,
+			game: { periodId }
 		},
 		_avg: {
 			kills: true,
@@ -62,6 +64,7 @@ export const load = (async ({ url }) => {
 
 	const gamesWon = await prisma.game.count({
 		where: {
+			periodId,
 			players: {
 				some: {
 					isWin: {
@@ -75,6 +78,7 @@ export const load = (async ({ url }) => {
 
 	const totalGames = await prisma.game.count({
 		where: {
+			periodId,
 			players: {
 				some: {
 					user: userWhereInput
@@ -85,7 +89,8 @@ export const load = (async ({ url }) => {
 
 	const maxPlayedOccurrenceChampion = await prisma.playerStat.groupBy({
 		where: {
-			user: userWhereInput
+			user: userWhereInput,
+			game: { periodId }
 		},
 		by: ['championId'],
 		_count: {
@@ -102,18 +107,14 @@ export const load = (async ({ url }) => {
 	});
 
 	const championMaxPlayed = await prisma.champion.findUnique({
-		where: {
-			id: maxPlayedOccurrenceChampion[0].championId
-		},
-		include: {
-			players: true
-		}
+		where: { id: maxPlayedOccurrenceChampion[0].championId }
 	});
 
 	const maxWonOccurrenceChampion = await prisma.playerStat.groupBy({
 		where: {
 			user: userWhereInput,
-			isWin: true
+			isWin: true,
+			game: { periodId }
 		},
 		by: ['championId'],
 		_count: {
@@ -130,18 +131,14 @@ export const load = (async ({ url }) => {
 	});
 
 	const championMaxWin = await prisma.champion.findUnique({
-		where: {
-			id: maxWonOccurrenceChampion[0].championId
-		},
-		include: {
-			players: true
-		}
+		where: { id: maxWonOccurrenceChampion[0].championId }
 	});
 
 	const maxFarmStat = await prisma.playerStat.findFirst({
 		where: {
 			user: userWhereInput,
-			totalMinionsKilled: avg._max.totalMinionsKilled || undefined
+			totalMinionsKilled: avg._max.totalMinionsKilled || undefined,
+			game: { periodId }
 		},
 		include: {
 			champion: true,
@@ -152,7 +149,8 @@ export const load = (async ({ url }) => {
 	const maxKillStat = await prisma.playerStat.findFirst({
 		where: {
 			user: userWhereInput,
-			kills: avg._max.kills || undefined
+			kills: avg._max.kills || undefined,
+			game: { periodId }
 		},
 		include: {
 			champion: true,
@@ -163,7 +161,8 @@ export const load = (async ({ url }) => {
 	const maxDeathStat = await prisma.playerStat.findFirst({
 		where: {
 			user: userWhereInput,
-			deaths: avg._max.deaths || undefined
+			deaths: avg._max.deaths || undefined,
+			game: { periodId }
 		},
 		include: {
 			champion: true,
@@ -174,7 +173,8 @@ export const load = (async ({ url }) => {
 	const maxAssistStat = await prisma.playerStat.findFirst({
 		where: {
 			user: userWhereInput,
-			assists: avg._max.assists || undefined
+			assists: avg._max.assists || undefined,
+			game: { periodId }
 		},
 		include: {
 			champion: true,
@@ -185,7 +185,8 @@ export const load = (async ({ url }) => {
 	const maxDamageStat = await prisma.playerStat.findFirst({
 		where: {
 			user: userWhereInput,
-			damage: avg._max.damage || undefined
+			damage: avg._max.damage || undefined,
+			game: { periodId }
 		},
 		include: {
 			champion: true,
@@ -194,6 +195,7 @@ export const load = (async ({ url }) => {
 	});
 
 	return {
+		periods: await prisma.period.findMany({ orderBy: [{ date: 'desc' }] }),
 		users: await prisma.user.findMany({ include: { _count: { select: { gameStats: true } } } }),
 		totalGames: totalGames,
 		avg: avg._avg,

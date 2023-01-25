@@ -5,13 +5,16 @@
 	import { fade } from 'svelte/transition';
 	import CreateUser from '$lib/component/CreateUser.svelte';
 	import { UserPlus } from 'lucide-svelte';
-	import { getChampionName } from '$lib/utils';
+	import { championMapDbToDisplay, getChampionName } from '$lib/utils';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
 	export let data: PageData;
 
 	let selectedUserId: number | undefined = +($page.url.searchParams.get('user') || 0) || undefined;
+	let selectedPeriodId: number | undefined =
+		+($page.url.searchParams.get('period') || 0) || undefined;
+
 	function triggerCustomModal(): void {
 		const modalComponent: ModalComponent = {
 			ref: CreateUser,
@@ -35,27 +38,52 @@
 	in:fade={{ duration: 200 }}
 >
 	<div class="flex gap-4 justify-between w-full items-center">
-		<select
-			bind:value={selectedUserId}
-			on:change={async () => {
-				const newUrl = new URL($page.url);
-				if (selectedUserId) {
-					newUrl?.searchParams?.set('user', selectedUserId.toString());
-				} else {
-					newUrl?.searchParams?.delete('user');
-				}
-				await goto(newUrl);
-			}}
-			class=" w-60"
-			style="width: 150px"
-		>
-			<option value={undefined}> Global </option>
-			{#each data.users as user}
-				<option value={user.id}>
-					{user.name}
-				</option>
-			{/each}
-		</select>
+		<div class="flex flex-col gap-2">
+			<select
+				bind:value={selectedPeriodId}
+				on:change={async () => {
+					const newUrl = new URL($page.url);
+					newUrl?.searchParams?.delete('page');
+					if (selectedPeriodId) {
+						newUrl?.searchParams?.set('period', selectedPeriodId.toString());
+					} else {
+						newUrl?.searchParams?.delete('period');
+					}
+					await goto(newUrl);
+				}}
+				class=" w-60"
+				style="width: 180px"
+			>
+				<option value={undefined}> Global </option>
+				{#each data.periods as period}
+					<option value={period.id}>
+						{period.name}
+					</option>
+				{/each}
+			</select>
+
+			<select
+				bind:value={selectedUserId}
+				on:change={async () => {
+					const newUrl = new URL($page.url);
+					if (selectedUserId) {
+						newUrl?.searchParams?.set('user', selectedUserId.toString());
+					} else {
+						newUrl?.searchParams?.delete('user');
+					}
+					await goto(newUrl);
+				}}
+				class=" w-60"
+				style="width: 150px"
+			>
+				<option value={undefined}> Global </option>
+				{#each data.users as user}
+					<option value={user.id}>
+						{user.name}
+					</option>
+				{/each}
+			</select>
+		</div>
 		<h1 class="font-bold">Statistiques</h1>
 		<button class="btn-icon btn-filled-primary p-0" on:click={triggerCustomModal}>
 			<UserPlus size={20} />
@@ -142,29 +170,33 @@
 				<div class="flex flex-col">
 					<div class="font-bold">Max kills:</div>
 					<div>
-						{data.max.kills?.toLocaleString()} - {data.max.maxKillStat?.user?.name}, {data.max
-							.maxKillStat?.champion.name}
+						{data.max.kills?.toLocaleString()} - {data.max.maxKillStat?.user?.name}, {championMapDbToDisplay[
+							data.max.maxKillStat?.champion.name || ''
+						]}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Max deaths:</div>
 					<div>
-						{data.max.deaths?.toLocaleString()} - {data.max.maxDeathStat?.user?.name}, {data.max
-							.maxDeathStat?.champion.name}
+						{data.max.deaths?.toLocaleString()} - {data.max.maxDeathStat?.user?.name}, {championMapDbToDisplay[
+							data.max.maxDeathStat?.champion.name || ''
+						]}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Max assists:</div>
 					<div>
-						{data.max.assists?.toLocaleString()} - {data.max.maxAssistStat?.user?.name}, {data.max
-							.maxAssistStat?.champion.name}
+						{data.max.assists?.toLocaleString()} - {data.max.maxAssistStat?.user?.name}, {championMapDbToDisplay[
+							data.max.maxAssistStat?.champion.name || ''
+						]}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Max dégâts:</div>
 					<div>
-						{data.max.damage?.toLocaleString()} - {data.max.maxDamageStat?.user?.name}, {data.max
-							.maxDamageStat?.champion.name}
+						{data.max.damage?.toLocaleString()} - {data.max.maxDamageStat?.user?.name}, {championMapDbToDisplay[
+							data.max.maxDamageStat?.champion.name || ''
+						]}
 					</div>
 				</div>
 				<div class="flex flex-col">
@@ -173,19 +205,21 @@
 						{(
 							(data.max.totalMinionsKilled || 0) + (data.max.neutralMinionsKilled || 0)
 						).toLocaleString(undefined, { maximumFractionDigits: 0 })} cs - {data.max.maxFarmStat
-							?.user?.name}, {data.max.maxFarmStat?.champion.name}
+							?.user?.name}, {championMapDbToDisplay[data.max.maxFarmStat?.champion.name || '']}
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Champion le plus joué:</div>
 					<div>
-						{data.max.championMaxPlayed.champion?.name} - {data.max.championMaxPlayed?.occurrence} picks
+						{championMapDbToDisplay[data.max.championMaxPlayed.champion?.name || '']} - {data.max
+							.championMaxPlayed?.occurrence} picks
 					</div>
 				</div>
 				<div class="flex flex-col">
 					<div class="font-bold">Champion qui a le plus gagné:</div>
 					<div>
-						{data.max.championMaxWin.champion?.name} - {data.max.championMaxWin?.occurrence} wins
+						{championMapDbToDisplay[data.max.championMaxWin.champion?.name || '']} - {data.max
+							.championMaxWin?.occurrence} wins
 					</div>
 				</div>
 			</div>

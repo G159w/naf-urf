@@ -4,9 +4,9 @@
 	import type { PageData } from './$types';
 	import { fade } from 'svelte/transition';
 	import CreateUser from '$lib/component/CreateUser.svelte';
-	import { Coins } from 'lucide-svelte';
-	import { Cowled } from 'svelte-game-icons';
-	import { getChampionName } from '$lib/utils';
+	import { Coins, Gavel } from 'lucide-svelte';
+	import { Cowled, CrossedSwords } from 'svelte-game-icons';
+	import { championMapDbToDisplay, getChampionName } from '$lib/utils';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import Game from '$lib/component/Game.svelte';
@@ -19,6 +19,8 @@
 	const enemyTeam = data.stat.game.players.filter((player) => !player.isAllyTeam);
 	const maxDamage = _.maxBy(data.stat.game.players, 'damage')?.damage || 0;
 	const isWin = allyTeam[0].isWin;
+
+	let damageBonus: number = 0;
 </script>
 
 <svelte:head>
@@ -46,31 +48,44 @@
 			>
 		</h4>
 	</div>
-	<div class="flex w-2/3 mt-8">
+	<div class="flex w-2/3 mt-8 bg-slate-900 z-[1] rounded-lg text-white drop-shadow-2xl">
 		<div
 			class={`basis-1/2 flex flex-col 
 			${isWin ? 'border-green-600' : 'border-red-600'}
-			border-4	rounded-lg border-r-0 rounded-r-none`}
+				rounded-lg border-r-0 rounded-r-none`}
 		>
-			{#each allyTeam || [] as player}
-				<div class="w-full relative h-28  text-black flex flex-col justify-between">
+			{#each allyTeam || [] as player, index}
+				<div class="w-full relative h-28  flex flex-col justify-between">
 					<div class="p-2 flex flex-row content-evenly justify-between h-full">
 						<img
-							class="h-28 w-full opacity-40 object-cover object-top absolute top-0 left-0 z-[-1] font-roboto "
+							class={`h-28 w-full opacity-60 object-cover object-top absolute top-0 left-0 z-[-1] font-roboto
+								${index === 0 ? 'rounded-tl-lg' : ''}
+								${index === 4 ? 'rounded-bl-lg' : ''}
+							`}
 							alt={player.champion?.name}
 							src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${getChampionName(
 								player.champion?.name || ''
 							)}_0.jpg`}
 						/>
-						<div class=" flex flex-col ">
+						<div class=" flex flex-col gap-1 ">
 							<span class="text-xl font-semibold">
 								{player.sumName}
 							</span>
-							<span class="text-lg">
+							<span class="text-lg flex flex-row gap-2 align-middle">
+								<CrossedSwords
+									strokeWidth="4px"
+									fg="#fff"
+									style={'width: 20px'}
+									bg="rgba(0,0,0,0)"
+								/>
+
 								{player.kills} / {player.deaths} / {player.assists} ({(
 									(player.kills + player.assists) /
 									(player.deaths || 0)
 								).toFixed(1)})
+							</span>
+							<span class="text-xs flex flex-row gap-2 align-middle">
+								{championMapDbToDisplay[player.champion.name]} - {player.champion.stats[0].winrate} %
 							</span>
 						</div>
 						<div class=" flex flex-col h-full justify-center font-semibold gap-2 pr-4">
@@ -79,13 +94,18 @@
 								{(player.goldEarned / 1000).toFixed(1).replace('.', ',')} k
 							</span>
 							<span class="flex flex-row gap-2 align-middle text-md text-right">
-								<Cowled strokeWidth="4px" style={'width: 22px'} bg="rgba(0,0,0,0)" />
+								<Cowled strokeWidth="4px" fg="#fff" style={'width: 22px'} bg="rgba(0,0,0,0)" />
 								{player.totalMinionsKilled + player.neutralMinionsKilled} cs
 							</span>
 						</div>
 					</div>
 					<div
-						class="h-4 bg-blue-200 absolute bottom-0 left-0 opacity-90 shadow-inner rounded-tr-md font-semibold text-xs text-right pr-4"
+						class={`h-4  
+						${
+							isWin ? 'bg-green-700' : ' bg-red-700'
+						} absolute bottom-0 left-0 opacity-90 shadow-inner rounded-tr-md font-semibold text-xs text-right pr-4
+							${index === 4 ? 'rounded-bl-lg' : ''}
+						`}
 						style={`width: ${(player.damage / maxDamage) * 95}%`}
 					>
 						{player.damage.toLocaleString()}
@@ -96,13 +116,16 @@
 		<div
 			class={`basis-1/2 flex flex-col
 			 ${isWin ? 'border-red-600' : 'border-green-600'}
-			border-4 rounded-lg border-l-0 rounded-l-none`}
+			border-6 rounded-lg border-l-0 rounded-l-none`}
 		>
-			{#each enemyTeam || [] as player}
-				<div class="w-full relative h-28 text-black flex flex-col justify-between items-end">
+			{#each enemyTeam || [] as player, index}
+				<div class="w-full relative h-28 flex flex-col justify-between items-end">
 					<div class="p-2 flex flex-row content-evenly justify-between h-full w-full">
 						<img
-							class="h-28 w-full opacity-40 object-cover object-top absolute top-0 left-0 z-[-1]"
+							class={`h-28 w-full opacity-60 object-cover object-top absolute top-0 left-0 z-[-1]
+								${index === 0 ? 'rounded-tr-lg' : ''}
+								${index === 4 ? 'rounded-br-lg' : ''}
+							`}
 							alt={player.champion?.name}
 							src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${getChampionName(
 								player.champion?.name || ''
@@ -115,23 +138,33 @@
 							</span>
 							<span class="flex flex-row gap-2 align-middle text-md text-right">
 								{player.totalMinionsKilled + player.neutralMinionsKilled} cs
-								<Cowled strokeWidth="4px" style={'width: 22px'} bg="rgba(0,0,0,0)" />
+								<Cowled strokeWidth="4px" fg="#fff" style={'width: 22px'} bg="rgba(0,0,0,0)" />
 							</span>
 						</div>
-						<div class=" flex flex-col items-end">
+						<div class=" flex flex-col items-end gap-1">
 							<span class="text-xl font-semibold">
 								{player.sumName}
 							</span>
-							<span class="text-lg">
+							<span class="text-lg flex flex-row gap-2 align-middle">
 								{player.kills} / {player.deaths} / {player.assists} ({(
 									(player.kills + player.assists) /
 									(player.deaths || 0)
 								).toFixed(1)})
+								<CrossedSwords
+									strokeWidth="4px"
+									fg="#fff"
+									style={'width: 20px'}
+									bg="rgba(0,0,0,0)"
+								/>
 							</span>
 						</div>
 					</div>
 					<div
-						class="h-4 bg-blue-200 absolute bottom-0 right-0 opacity-90 shadow-inner	 rounded-tl-md font-semibold  text-xs  pl-4"
+						class={`h-4 ${
+							isWin ? 'bg-red-700' : ' bg-green-700'
+						} absolute bottom-0 right-0  shadow-inner	 rounded-tl-md font-semibold  text-xs  pl-4 
+								${index === 4 ? 'rounded-br-lg' : ''}
+						`}
 						style={`width: ${(player.damage / maxDamage) * 95}%`}
 					>
 						{player.damage.toLocaleString()}
@@ -139,5 +172,55 @@
 				</div>
 			{/each}
 		</div>
+	</div>
+
+	<div class="flex mt-2">
+		<select bind:value={damageBonus} class=" w-60" style="width: 80px; border-radius: 0">
+			<option value={2}> +2 </option>
+			<option value={0}> 0 </option>
+			<option value={-2}> -2 </option>
+			<option value={-3}> -3 </option>
+			<option value={-5}> -5 </option>
+		</select>
+		<select
+			bind:value={damageBonus}
+			disabled
+			class=" w-60 rounded-none"
+			style="width: 80px; border-radius: 0"
+		>
+			<option value={3}> +3 </option>
+			<option value={2}> +2 </option>
+			<option value={0}> 0 </option>
+			<option value={-2}> -2 </option>
+		</select>
+		<select
+			bind:value={damageBonus}
+			class=" w-60 rounded-none"
+			style="width: 80px; border-radius: 0"
+		>
+			<option value={2}> +2 </option>
+			<option value={0}> 0 </option>
+			<option value={-2}> -2 </option>
+		</select>
+		<select
+			bind:value={damageBonus}
+			class=" w-60 rounded-none"
+			style="width: 80px; border-radius: 0"
+		>
+			<option value={-4}> +4 </option>
+			<option value={0}> 0 </option>
+			<option value={4}> -4 </option>
+		</select>
+		<input
+			style="width: 200px; border-radius: 0"
+			placeholder="Remarques"
+			type="text"
+			minlength="2"
+		/>
+		<button
+			class="icon-btn btn-filled-primary p-0 rounded-none w-12 flex justify-center items-center"
+		>
+			<Gavel />
+		</button>
 	</div>
 </section>

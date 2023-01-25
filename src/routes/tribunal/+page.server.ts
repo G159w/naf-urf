@@ -23,7 +23,11 @@ export const load = (async ({ url }) => {
 					players: {
 						include: {
 							user: true,
-							champion: true
+							champion: {
+								include: {
+									stats: true
+								}
+							}
 						}
 					}
 				}

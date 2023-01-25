@@ -105,6 +105,7 @@ model Stat {
   kda            Int
   perf           Int
   xClass         Int
+  comment        String?
   updatedAt      DateTime     @updatedAt
   createdAt      DateTime     @default(now())
 }
@@ -114,6 +115,7 @@ model Champion {
   name      String         @unique
   players   PlayerStat[]
   stats     ChampionStat[]
+  support   Boolean        @default(false)
   updatedAt DateTime       @updatedAt
   createdAt DateTime       @default(now())
 }
@@ -123,16 +125,18 @@ model ChampionStat {
   periodId   Int
   period     Period   @relation(fields: [periodId], references: [id])
   winrate    Float
-  support    Boolean
   championId Int
   champion   Champion @relation(fields: [championId], references: [id])
   userStats  Stat[]
   updatedAt  DateTime @updatedAt
   createdAt  DateTime @default(now())
+
+  @@unique([championId, periodId])
 }
 
 model Period {
   id            Int            @id @default(autoincrement())
+  name          String
   date          DateTime
   games         Game[]
   championStats ChampionStat[]

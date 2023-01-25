@@ -1,32 +1,48 @@
 import { createContext } from '$lib/server/context';
 import { numberOfPossibleRequests, sleep } from '$lib/server/utils';
 import { PlatformId } from '@fightmegg/riot-api';
-import type { Prisma, User } from '@prisma/client';
+import type { Champion, Prisma, User } from '@prisma/client';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
-const { prisma, riotApi } = await createContext();
 import _ from 'lodash';
+import * as cheerio from 'cheerio';
+import { championMapDbToDisplay, championMapDisplayToDb } from '$lib/utils';
+
+const { prisma, riotApi } = await createContext();
 
 export const load = (async ({ url }) => {
 	const page = +(url.searchParams.get('page') || 0);
 	const take = +(url.searchParams.get('take') || 20);
+	const periodId = +(url.searchParams.get('period') || 0) || undefined;
+
+	const where: Prisma.GameWhereInput = {
+		isMatchLoaded: true,
+		periodId
+	};
+
 	return {
 		users: await prisma.user.findMany(),
 		games: await prisma.game.findMany({
-			where: { isMatchLoaded: true },
+			where,
 			include: { players: { include: { champion: true } } },
 			orderBy: [{ gameCreation: 'desc' }],
 			take,
 			skip: page * take
 		}),
 		totalGames: await prisma.game.count(),
-		totalLoadedGames: await prisma.game.count({ where: { isMatchLoaded: true } })
+		totalLoadedGames: await prisma.game.count({ where }),
+		periods: await prisma.period.findMany({ orderBy: [{ date: 'desc' }] })
 	};
 }) satisfies PageServerLoad;
 
 const userGamesSchema = z.object({
 	id: z.number().nullish(),
 	full: z.boolean().default(true)
+});
+
+const createPeriodsSchema = z.object({
+	date: z.coerce.date(),
+	name: z.string()
 });
 
 export const actions: Actions = {
@@ -237,5 +253,76 @@ export const actions: Actions = {
 			console.log(err);
 			return { success: false };
 		}
+	},
+	createPeriod: async ({ request }) => {
+		try {
+			const formaData = Object.fromEntries(await request.formData());
+			const { date, name } = createPeriodsSchema.parse(formaData);
+			const newPeriod = await prisma.period.create({ data: { date, name } });
+			return { success: true, newPeriod };
+		} catch (err) {
+			console.log(err);
+		}
+	},
+	loadWinRates: async () => {
+		const response = await fetch('https://www.metasrc.com/urf/stats');
+		const body = await response.text();
+		const cheerioApi = cheerio.load(body);
+		const champions: { champion: Champion; winRate: number }[] = [];
+		const dbChampions = await prisma.champion.findMany({ orderBy: [{ name: 'asc' }] });
+
+		cheerioApi('.stats-table > tbody > tr').map((i, el) => {
+			const children = cheerioApi(el).children();
+			const champion = cheerioApi(children).first().children().first().text();
+			const winRateTd = cheerioApi(children).toArray()[6];
+			const winRate = parseFloat(cheerioApi(winRateTd).text());
+			const dbChampion = dbChampions.find((c) => championMapDisplayToDb[champion] === c.name);
+			if (dbChampion) {
+				champions.push({ champion: dbChampion, winRate });
+			}
+		});
+
+		const lastPeriod = await prisma.period.findFirst({ orderBy: [{ date: 'desc' }] });
+
+		if (!lastPeriod) {
+			return { success: false };
+		}
+
+		await prisma.$transaction(
+			champions.map((x) =>
+				prisma.championStat.upsert({
+					where: {
+						championId_periodId: {
+							championId: x.champion.id,
+							periodId: lastPeriod.id
+						}
+					},
+					create: {
+						periodId: lastPeriod.id,
+						championId: x.champion.id,
+						winrate: x.winRate
+					},
+					update: {
+						winrate: x.winRate
+					}
+				})
+			)
+		);
+
+		return { success: true };
+	},
+	sanitize: async () => {
+		const periods = await prisma.period.findMany({ orderBy: [{ date: 'asc' }] });
+
+		await prisma.$transaction(
+			periods.map((period) =>
+				prisma.game.updateMany({
+					where: { gameCreation: { gte: period.date } },
+					data: { periodId: period.id }
+				})
+			)
+		);
+
+		return { success: true };
 	}
 };
