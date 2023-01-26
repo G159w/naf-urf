@@ -85,7 +85,9 @@
 								).toFixed(1)})
 							</span>
 							<span class="text-xs flex flex-row gap-2 align-middle">
-								{championMapDbToDisplay[player.champion.name]} - {player.champion.stats[0].winrate} %
+								{championMapDbToDisplay[player.champion.name]} - {player.champion.stats?.[0]
+									?.winrate}
+								%
 							</span>
 						</div>
 						<div class=" flex flex-col h-full justify-center font-semibold gap-2 pr-4">
