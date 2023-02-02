@@ -2,12 +2,11 @@
 	import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
 	import '@skeletonlabs/skeleton/styles/all.css';
 	import '../app.postcss';
-	import { AppShell, AppRail, AppRailTile, Modal, LightSwitch} from '@skeletonlabs/skeleton';
-	import { Github, BarChart, List, User, Gavel} from 'lucide-svelte';
+	import { AppShell, AppRail, AppRailTile, Modal, LightSwitch } from '@skeletonlabs/skeleton';
+	import { Github, BarChart, List, User, Gavel } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { writable } from 'svelte/store';
 	import { beforeUpdate } from 'svelte';
-
 
 	import logo from '$lib/images/urf_emote.png';
 
@@ -50,7 +49,7 @@
 			<AppRailTile label="Stats" tag="a" href="stats" value={4}>
 				<User />
 			</AppRailTile>
-			<AppRailTile label="Tribs" tag="a" href="tribunal" value={5}>
+			<AppRailTile label="Tribunal" tag="a" href="tribunal" value={5}>
 				<Gavel />
 			</AppRailTile>
 			<svelte:fragment slot="trail">
@@ -63,7 +62,7 @@
 			</svelte:fragment>
 		</AppRail>
 	</svelte:fragment>
-	<div class="h-full p-12">
+	<div class="h-full p-4 sm:p-12">
 		<slot />
 	</div>
 </AppShell>

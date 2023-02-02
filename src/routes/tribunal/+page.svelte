@@ -12,6 +12,7 @@
 	import Game from '$lib/component/Game.svelte';
 	import { format } from 'date-fns';
 	import _ from 'lodash';
+	import CreateStat from '$lib/component/CreateStat.svelte';
 
 	export let data: PageData;
 
@@ -19,8 +20,6 @@
 	const enemyTeam = data.stat.game.players.filter((player) => !player.isAllyTeam);
 	const maxDamage = _.maxBy(data.stat.game.players, 'damage')?.damage || 0;
 	const isWin = allyTeam[0].isWin;
-
-	let damageBonus: number = 0;
 </script>
 
 <svelte:head>
@@ -175,54 +174,5 @@
 			{/each}
 		</div>
 	</div>
-
-	<div class="flex mt-2">
-		<select bind:value={damageBonus} class=" w-60" style="width: 80px; border-radius: 0">
-			<option value={2}> +2 </option>
-			<option value={0}> 0 </option>
-			<option value={-2}> -2 </option>
-			<option value={-3}> -3 </option>
-			<option value={-5}> -5 </option>
-		</select>
-		<select
-			bind:value={damageBonus}
-			disabled
-			class=" w-60 rounded-none"
-			style="width: 80px; border-radius: 0"
-		>
-			<option value={3}> +3 </option>
-			<option value={2}> +2 </option>
-			<option value={0}> 0 </option>
-			<option value={-2}> -2 </option>
-		</select>
-		<select
-			bind:value={damageBonus}
-			class=" w-60 rounded-none"
-			style="width: 80px; border-radius: 0"
-		>
-			<option value={2}> +2 </option>
-			<option value={0}> 0 </option>
-			<option value={-2}> -2 </option>
-		</select>
-		<select
-			bind:value={damageBonus}
-			class=" w-60 rounded-none"
-			style="width: 80px; border-radius: 0"
-		>
-			<option value={-4}> +4 </option>
-			<option value={0}> 0 </option>
-			<option value={4}> -4 </option>
-		</select>
-		<input
-			style="width: 200px; border-radius: 0"
-			placeholder="Remarques"
-			type="text"
-			minlength="2"
-		/>
-		<button
-			class="icon-btn btn-filled-primary p-0 rounded-none w-12 flex justify-center items-center"
-		>
-			<Gavel />
-		</button>
-	</div>
+	<CreateStat />
 </section>

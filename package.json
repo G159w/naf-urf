@@ -49,6 +49,7 @@
 		"lodash": "^4.17.21",
 		"lucide-svelte": "^0.104.0",
 		"svelte-game-icons": "^1.0.3",
+		"timer-node": "^5.0.7",
 		"zod": "^3.20.2"
 	}
 }

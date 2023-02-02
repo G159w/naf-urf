@@ -1,25 +1,23 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { RefreshCcw, Download, FlaskRound, Trophy, FolderPlus } from 'lucide-svelte';
+	import { RefreshCcw, Download, FlaskRound, Trophy, FolderPlus, Settings } from 'lucide-svelte';
 	import type { ActionData, PageData } from './$types';
 	import Game from '$lib/component/Game.svelte';
 	import {
 		Paginator,
 		modalStore,
+		menu,
 		type ModalComponent,
 		type ModalSettings
 	} from '@skeletonlabs/skeleton';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import CreatePeriod from '$lib/component/CreatePeriod.svelte';
-	import { format } from 'date-fns';
+	import Filters from '$lib/component/Filters.svelte';
 
 	export let form: ActionData;
 	export let data: PageData;
 
-	let selectedPeriodId: number | undefined =
-		+($page.url.searchParams.get('period') || 0) || undefined;
-		
 	$: currentPage = +($page.url.searchParams.get('page') || 0);
 	$: limit = +($page.url.searchParams.get('limit') || 20);
 	$: paginatorSettings = {
@@ -28,6 +26,7 @@
 		size: data.totalLoadedGames,
 		amounts: [10, 20, 50]
 	};
+
 	afterNavigate(() => {
 		currentPage = +($page.url.searchParams.get('page') || 0);
 		limit = +($page.url.searchParams.get('take') || 20);
@@ -62,62 +61,63 @@
 	class="container h-full mx-auto flex flex-col gap-8 w-full items-center"
 	in:fade={{ duration: 200 }}
 >
-	<div class="flex gap-4 justify-between w-full items-center">
-		<div class="flex gap-2 flex-col">
+	<div class="flex flex-col-reverse lg:flex-row gap-8 justify-between w-full items-center">
+		<div class="flex gap-2 flex-col items-center lg:items-start">
 			<p>Total games: {data.totalGames}</p>
 			<p>Games chargées: {data.totalLoadedGames}</p>
-			<select
-				bind:value={selectedPeriodId}
-				on:change={async () => {
-					const newUrl = new URL($page.url);
-					newUrl?.searchParams?.delete('page');
-					if (selectedPeriodId) {
-						newUrl?.searchParams?.set('period', selectedPeriodId.toString());
-					} else {
-						newUrl?.searchParams?.delete('period');
-					}
-					await goto(newUrl);
-				}}
-				class=" w-60"
-				style="width: 180px"
-			>
-				<option value={undefined}> Global </option>
-				{#each data.periods as period}
-					<option value={period.id}>
-						{period.name}
-					</option>
-				{/each}
-			</select>
 		</div>
-		<h1 class="font-bold">Historique</h1>
-		<div class="flex gap-2">
-			<form method="POST" action="?/sanitize">
-				<button class="btn-icon btn-filled-primary p-0">
-					<FlaskRound size={20} />
-				</button>
-			</form>
-			<button class="btn-icon btn-filled-primary p-0" on:click={triggerCustomModal}>
-				<FolderPlus size={20} />
-			</button>
-			<form method="POST" action="?/loadWinRates">
-				<button class="btn-icon btn-filled-primary p-0">
-					<Trophy size={20} />
-				</button>
-			</form>
-			<form method="POST" action="?/loadGamesDetail">
-				<button class="btn-icon btn-filled-primary p-0">
-					<Download size={20} />
-				</button>
-			</form>
-			<form method="POST" action="?/loadUserGames">
-				<button class="btn-icon btn-filled-primary p-0">
-					<RefreshCcw size={20} />
-				</button>
-			</form>
+
+		<Filters periods={data.periods} users={data.users} champions={data.champions} />
+
+		<div>
+			<button class="btn btn-icon btn-ringed-primary p-0" use:menu={{ menu: 'menu-action' }}
+				><Settings /></button
+			>
+			<div class=" card p-4 w-48 shadow-xl" data-menu="menu-action">
+				<ul>
+					<li class="p-1">
+						<form method="POST" action="?/sanitize">
+							<button class="p-0 flex gap-2 items-center">
+								<FlaskRound size={20} />
+								Sanitize
+							</button>
+						</form>
+					</li>
+					<li class="p-1">
+						<form method="POST" action="?/loadWinRates">
+							<button class="p-0 flex gap-2 items-center">
+								<Trophy size={20} />
+								Load WinRates
+							</button>
+						</form>
+					</li>
+					<li class="p-1">
+						<button class="p-0 flex gap-2 items-center" on:click={triggerCustomModal}>
+							<FolderPlus size={20} />
+							Create Period
+						</button>
+					</li>
+					<li class="p-1">
+						<form method="POST" action="?/loadGamesDetail">
+							<button class="p-0 flex gap-2 items-center">
+								<Download size={20} />
+								Download details
+							</button>
+						</form>
+					</li>
+					<li class="p-1">
+						<form method="POST" action="?/loadUserGames">
+							<button class="p-0 flex gap-2 items-center">
+								<RefreshCcw size={20} />
+								Fetch all games
+							</button>
+						</form>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</div>
-	<hr class="w-full" />
-	<div class="w-full">
+	<div class="w-full m-8">
 		<Paginator
 			bind:settings={paginatorSettings}
 			on:page={async (event) => {
@@ -132,14 +132,14 @@
 			}}
 		/>
 	</div>
-	<div class="flex flex-wrap">
+	<div class="flex flex-wrap w-full">
 		{#each data?.games || [] as game (game.id)}
-			<div class="basis-1/2 p-2">
+			<div class="lg:basis-1/2 w-full p-2">
 				<Game {game} mainUsers={data.users} />
 			</div>
 		{/each}
 	</div>
-	<div class="w-full">
+	<div class="w-full mt-8">
 		<Paginator
 			bind:settings={paginatorSettings}
 			on:page={async (event) => {

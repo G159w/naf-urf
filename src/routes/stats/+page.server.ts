@@ -107,7 +107,7 @@ export const load = (async ({ url }) => {
 	});
 
 	const championMaxPlayed = await prisma.champion.findUnique({
-		where: { id: maxPlayedOccurrenceChampion[0].championId }
+		where: { id: maxPlayedOccurrenceChampion?.[0]?.championId || 0 }
 	});
 
 	const maxWonOccurrenceChampion = await prisma.playerStat.groupBy({
@@ -131,7 +131,7 @@ export const load = (async ({ url }) => {
 	});
 
 	const championMaxWin = await prisma.champion.findUnique({
-		where: { id: maxWonOccurrenceChampion[0].championId }
+		where: { id: maxWonOccurrenceChampion?.[0]?.championId || 0 }
 	});
 
 	const maxFarmStat = await prisma.playerStat.findFirst({
@@ -196,7 +196,6 @@ export const load = (async ({ url }) => {
 
 	return {
 		periods: await prisma.period.findMany({ orderBy: [{ date: 'desc' }] }),
-		users: await prisma.user.findMany({ include: { _count: { select: { gameStats: true } } } }),
 		totalGames: totalGames,
 		avg: avg._avg,
 		sum: avg._sum,
@@ -208,11 +207,11 @@ export const load = (async ({ url }) => {
 			maxDamageStat,
 			maxFarmStat,
 			championMaxPlayed: {
-				occurrence: maxPlayedOccurrenceChampion[0]._count.championId,
+				occurrence: maxPlayedOccurrenceChampion[0]?._count?.championId || 0,
 				champion: championMaxPlayed
 			},
 			championMaxWin: {
-				occurrence: maxWonOccurrenceChampion[0]._count.championId,
+				occurrence: maxWonOccurrenceChampion[0]?._count?.championId || 0,
 				champion: championMaxWin
 			}
 		},

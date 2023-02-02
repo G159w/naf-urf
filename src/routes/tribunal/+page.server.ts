@@ -49,5 +49,8 @@ export const load = (async ({ url }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	createStat: async ({ request }) => {}
+	createStat: async ({ request }) => {
+		const formData = await request.formData()
+		console.log(formData)
+	}
 };

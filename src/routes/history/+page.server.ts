@@ -1,12 +1,13 @@
 import { createContext } from '$lib/server/context';
 import { numberOfPossibleRequests, sleep } from '$lib/server/utils';
 import { PlatformId } from '@fightmegg/riot-api';
-import type { Champion, Prisma, User } from '@prisma/client';
+import type { Champion, Game, Prisma, PrismaPromise, User } from '@prisma/client';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 import _ from 'lodash';
 import * as cheerio from 'cheerio';
-import { championMapDbToDisplay, championMapDisplayToDb } from '$lib/utils';
+import { Timer } from 'timer-node';
+import { championMapDisplayToDb } from '$lib/utils';
 
 const { prisma, riotApi } = await createContext();
 
@@ -14,14 +15,20 @@ export const load = (async ({ url }) => {
 	const page = +(url.searchParams.get('page') || 0);
 	const take = +(url.searchParams.get('take') || 20);
 	const periodId = +(url.searchParams.get('period') || 0) || undefined;
+	const userId = +(url.searchParams.get('user') || 0) || undefined;
+	const championId = +(url.searchParams.get('champion') || 0) || undefined;
 
 	const where: Prisma.GameWhereInput = {
 		isMatchLoaded: true,
-		periodId
+		periodId,
+		players: {
+			some: {
+				AND: [{ userId }, { championId, userId: { not: null } }]
+			}
+		}
 	};
 
 	return {
-		users: await prisma.user.findMany(),
 		games: await prisma.game.findMany({
 			where,
 			include: { players: { include: { champion: true } } },
@@ -30,8 +37,7 @@ export const load = (async ({ url }) => {
 			skip: page * take
 		}),
 		totalGames: await prisma.game.count(),
-		totalLoadedGames: await prisma.game.count({ where }),
-		periods: await prisma.period.findMany({ orderBy: [{ date: 'desc' }] })
+		totalLoadedGames: await prisma.game.count({ where })
 	};
 }) satisfies PageServerLoad;
 
@@ -47,6 +53,8 @@ const createPeriodsSchema = z.object({
 
 export const actions: Actions = {
 	loadUserGames: async ({ request }) => {
+		const timer = new Timer();
+		timer.start();
 		try {
 			const formaData = Object.fromEntries(await request.formData());
 			const { id, full } = userGamesSchema.parse(formaData);
@@ -61,21 +69,24 @@ export const actions: Actions = {
 				users.push(...(await prisma.user.findMany({ include: { gameStats: { take: 1 } } })));
 			}
 
+			console.log(timer.time(), 'Start calling riot API');
 			const totalMatchIds: string[] = [];
 			const getUserMatch = async (user: User) => {
+				console.log('loading games for', user.name);
 				try {
 					if (!user.lolId) {
 						return;
 					}
 					const requests = await numberOfPossibleRequests(prisma);
+					console.log(requests, 'possible requests before call riot API');
 					const urfMatchIds: string[] = [];
 					const arurfMatchIds: string[] = [];
-					let urfGameRequests = 0;
 
+					let urfGameRequests = 0;
+					let oldResponseLength = 100;
 					for (
 						;
-						urfGameRequests < requests &&
-						(full ? urfMatchIds.length % 100 === 0 : urfGameRequests < 1);
+						urfGameRequests < requests && (full ? oldResponseLength === 100 : urfGameRequests < 1);
 						urfGameRequests++
 					) {
 						const response = await riotApi.matchV5.getIdsbyPuuid({
@@ -87,15 +98,17 @@ export const actions: Actions = {
 								start: urfGameRequests * 100
 							}
 						});
-
+						console.log(timer.time(), response.length, 'URF game charged for', user.name);
 						urfMatchIds.push(...response);
+						oldResponseLength = response.length;
 					}
 
 					let arurfGameRequests = 0;
+					oldResponseLength = 100;
 					for (
 						;
 						urfGameRequests + arurfGameRequests < requests &&
-						(full ? arurfMatchIds.length % 100 === 0 : arurfGameRequests < 1);
+						(full ? oldResponseLength === 100 : arurfGameRequests < 1);
 						arurfGameRequests++
 					) {
 						const response = await riotApi.matchV5.getIdsbyPuuid({
@@ -107,11 +120,12 @@ export const actions: Actions = {
 								start: arurfGameRequests * 100
 							}
 						});
+						console.log(timer.time(), response.length, 'ARURF game charged for', user.name);
 						arurfMatchIds.push(...response);
+						oldResponseLength = response.length;
 					}
 					totalMatchIds.push(...urfMatchIds, ...arurfMatchIds);
 					await prisma.lolRequest.create({ data: { count: arurfGameRequests + urfGameRequests } });
-					await sleep(full ? 1000 : 100);
 				} catch (error) {
 					throw new Error(JSON.stringify(error));
 				}
@@ -121,42 +135,48 @@ export const actions: Actions = {
 				await getUserMatch(user);
 			}
 
-			return await prisma.$transaction(
-				totalMatchIds.map((matchId) =>
-					prisma.game.upsert({
-						where: { matchId: matchId },
-						update: {},
-						create: {
-							matchId: matchId
-						}
-					})
-				)
-			);
+			console.log(timer.time(), 'Start upsert games ids');
+			await prisma.game.createMany({
+				data: totalMatchIds.map((matchId) => ({
+					matchId
+				})),
+				skipDuplicates: true
+			});
+			console.log(timer.time(), 'End upsert games ids');
+			return {
+				success: true
+			};
 		} catch (err) {
 			console.log(err);
 		}
 	},
 	loadGamesDetail: async () => {
 		try {
+			const timer = new Timer();
+			timer.start();
 			const requests = await numberOfPossibleRequests(prisma);
 
 			const games = await prisma.game.findMany({
 				where: {
 					isMatchLoaded: false
 				},
-				take: requests
+				take: requests > 20 ? 20 : requests
 			});
 
 			if (games.length === 0) {
+				console.log('No more possible request');
 				return 0;
 			}
 
 			await prisma.lolRequest.create({ data: { count: games.length } });
+			console.log(timer.time(), games.length, 'Number of game requested ');
 
 			const users = await prisma.user.findMany();
 			const userLolIds = users.map((user) => user.lolId);
 
-			const updates: { id: number; data: Prisma.GameUpdateInput }[] = [];
+			const prismaUpdates: (() => PrismaPromise<Game>)[] = [];
+
+			console.log(timer.time(), 'Start calling riot API');
 			for (const game of games) {
 				const match = await riotApi.matchV5.getMatchById({
 					cluster: PlatformId.EUROPE,
@@ -222,28 +242,26 @@ export const actions: Actions = {
 						};
 					}
 				);
-				updates.push({
-					id: game.id,
-					data: {
-						duration: match.info.gameDuration,
-						gameCreation: new Date(match.info.gameCreation),
-						gameMode: match.info.gameMode,
-						isMatchLoaded: true,
-						players: {
-							create: players
+				prismaUpdates.push(() =>
+					prisma.game.update({
+						where: { id: game.id },
+						data: {
+							duration: match.info.gameDuration,
+							gameCreation: new Date(match.info.gameCreation),
+							gameMode: match.info.gameMode,
+							isMatchLoaded: true,
+							players: {
+								create: players
+							}
 						}
-					}
-				});
+					})
+				);
+				console.log(timer.time(), game.id, 'game riot api call done');
 			}
 
-			await prisma.$transaction(
-				updates.map((update) =>
-					prisma.game.update({
-						where: { id: update.id },
-						data: update.data
-					})
-				)
-			);
+			console.log(timer.time(), 'Start awaiting games update');
+			const loadedGames = await prisma.$transaction(prismaUpdates.map((x) => x()));
+			console.log(timer.time(), loadedGames.length, 'End awaiting games update');
 
 			return {
 				success: true,
@@ -312,6 +330,10 @@ export const actions: Actions = {
 		return { success: true };
 	},
 	sanitize: async () => {
+		// Attach periods to games
+		const timer = new Timer();
+		timer.start();
+		console.log(timer.time(), 'Start sanitize periods');
 		const periods = await prisma.period.findMany({ orderBy: [{ date: 'asc' }] });
 
 		await prisma.$transaction(
@@ -323,6 +345,22 @@ export const actions: Actions = {
 			)
 		);
 
+		console.log(timer.time(), 'Start sanitize users');
+		// Attach users to playerStat
+		const users = await prisma.user.findMany({ where: { lolId: { not: null } } });
+
+		await prisma.$transaction(
+			users.map((user) =>
+				prisma.playerStat.updateMany({
+					where: { puuid: { equals: user.lolId || '' } },
+					data: {
+						userId: user.id
+					}
+				})
+			)
+		);
+
+		console.log(timer.time(), 'End sanitize');
 		return { success: true };
 	}
 };
