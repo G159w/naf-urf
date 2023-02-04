@@ -3,9 +3,9 @@
 	import type { Champion, Period, User } from '@prisma/client';
 	import { goto } from '$app/navigation';
 
-	export let periods: Period[] | undefined;
-	export let users: User[] | undefined;
-	export let champions: Champion[] | undefined;
+	export let periods: Period[] | undefined = undefined;
+	export let users: User[] | undefined = undefined;
+	export let champions: Champion[] | undefined = undefined;
 
 	const getRoundedClass = (type: 'user' | 'period' | 'champion') => {
 		if (type === 'user') {
@@ -14,7 +14,7 @@
 			} else if (!periods && champions) {
 				return 'sm:!rounded-r-none';
 			} else if (periods && !champions) {
-				return 'sm:!rounded-r-none';
+				return 'sm:!rounded-l-none';
 			} else {
 				return '';
 			}

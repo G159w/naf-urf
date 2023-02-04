@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import { RefreshCcw, Download, FlaskRound, Trophy, FolderPlus, Settings } from 'lucide-svelte';
 	import type { ActionData, PageData } from './$types';
 	import Game from '$lib/component/Game.svelte';
@@ -14,6 +14,7 @@
 	import { page } from '$app/stores';
 	import CreatePeriod from '$lib/component/CreatePeriod.svelte';
 	import Filters from '$lib/component/Filters.svelte';
+	import { quintIn } from 'svelte/easing';
 
 	export let form: ActionData;
 	export let data: PageData;
@@ -57,11 +58,8 @@
 	<meta name="URF History" content="NAF History" />
 </svelte:head>
 
-<section
-	class="container h-full mx-auto flex flex-col gap-8 w-full items-center"
-	in:fade={{ duration: 200 }}
->
-	<div class="flex flex-col-reverse lg:flex-row gap-8 justify-between w-full items-center">
+<section class="container h-full mx-auto flex flex-col gap-8 w-full items-center">
+	<div in:slide class="flex flex-col-reverse lg:flex-row gap-8 justify-between w-full items-center">
 		<div class="flex gap-2 flex-col items-center lg:items-start">
 			<p>Total games: {data.totalGames}</p>
 			<p>Games chargées: {data.totalLoadedGames}</p>
@@ -117,7 +115,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="w-full m-8">
+	<div in:slide class="w-full m-8">
 		<Paginator
 			bind:settings={paginatorSettings}
 			on:page={async (event) => {
@@ -132,14 +130,14 @@
 			}}
 		/>
 	</div>
-	<div class="flex flex-wrap w-full">
+	<div class="flex flex-wrap w-full" in:slide={{ duration: 500, delay: 100, easing: quintIn }}>
 		{#each data?.games || [] as game (game.id)}
 			<div class="lg:basis-1/2 w-full p-2">
 				<Game {game} mainUsers={data.users} />
 			</div>
 		{/each}
 	</div>
-	<div class="w-full mt-8">
+	<div in:fade class="w-full mt-8">
 		<Paginator
 			bind:settings={paginatorSettings}
 			on:page={async (event) => {

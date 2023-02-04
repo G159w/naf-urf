@@ -4,12 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int          @id @default(autoincrement())
+  id        Int          @id @default(sequence(increment: 1))
   name      String       @unique
   ign       String?      @unique
   lolId     String?      @unique
@@ -20,7 +20,7 @@ model User {
 }
 
 model Game {
-  id            Int          @id @default(autoincrement())
+  id            Int          @id @default(sequence(increment: 1))
   matchId       String       @unique
   gameMode      String?
   isMatchLoaded Boolean      @default(false)
@@ -34,7 +34,7 @@ model Game {
 }
 
 model PlayerStat {
-  id                   Int         @id @default(autoincrement())
+  id                   Int         @id @default(sequence(increment: 1))
   gameId               Int
   game                 Game        @relation(fields: [gameId], references: [id])
   championId           Int
@@ -61,6 +61,7 @@ model PlayerStat {
   goldEarned           Int
   totalMinionsKilled   Int
   neutralMinionsKilled Int
+  totalCs              Int
   isWin                Boolean
   totalTimeSpentDead   Int
   sumSpells            SumSpells[]
@@ -70,7 +71,7 @@ model PlayerStat {
 }
 
 model SumSpells {
-  id        Int          @id @default(autoincrement())
+  id        Int          @id @default(sequence(increment: 1))
   sumId     Int          @unique
   name      String?      @unique
   players   PlayerStat[]
@@ -79,7 +80,7 @@ model SumSpells {
 }
 
 model Item {
-  id        Int          @id @default(autoincrement())
+  id        Int          @id @default(sequence(increment: 1))
   itemId    Int          @unique
   name      String?      @unique
   players   PlayerStat[]
@@ -88,7 +89,7 @@ model Item {
 }
 
 model Stat {
-  id             Int          @id @default(autoincrement())
+  id             Int          @id @default(sequence(increment: 1))
   userId         Int
   user           User         @relation(fields: [userId], references: [id])
   championStatId Int
@@ -111,7 +112,7 @@ model Stat {
 }
 
 model Champion {
-  id        Int            @id @default(autoincrement())
+  id        Int            @id @default(sequence(increment: 1))
   name      String         @unique
   players   PlayerStat[]
   stats     ChampionStat[]
@@ -121,7 +122,7 @@ model Champion {
 }
 
 model ChampionStat {
-  id         Int      @id @default(autoincrement())
+  id         Int      @id @default(sequence(increment: 1))
   periodId   Int
   period     Period   @relation(fields: [periodId], references: [id])
   winrate    Float
@@ -135,7 +136,7 @@ model ChampionStat {
 }
 
 model Period {
-  id            Int            @id @default(autoincrement())
+  id            Int            @id @default(sequence(increment: 1))
   name          String
   date          DateTime
   games         Game[]
@@ -146,7 +147,7 @@ model Period {
 }
 
 model LolRequest {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(sequence(increment: 1))
   count     Int
   createdAt DateTime @default(now())
 }

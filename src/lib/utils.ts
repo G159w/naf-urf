@@ -193,3 +193,14 @@ export const getChampionName = (championName: string) => {
 	}
 	return capitalize(championName);
 };
+
+export const getColor = (position: number) => {
+	if (position === 0) {
+		return 'text-yellow-500 dark:text-amber-300';
+	} else if (position === 1) {
+		return 'text-gray-500';
+	} else if (position === 2) {
+		return 'text-amber-700';
+	}
+	return '';
+};

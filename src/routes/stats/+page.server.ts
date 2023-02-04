@@ -36,23 +36,11 @@ export const load = (async ({ url }) => {
 			goldEarned: true,
 			totalMinionsKilled: true,
 			neutralMinionsKilled: true,
+			totalCs: true,
 			doubleKills: true,
 			tripleKills: true,
 			quadraKills: true,
 			pentaKills: true
-		},
-		_max: {
-			kills: true,
-			deaths: true,
-			assists: true,
-			damage: true,
-			totalMinionsKilled: true,
-			neutralMinionsKilled: true
-		},
-		_min: {
-			kills: true,
-			deaths: true,
-			assists: true
 		},
 		_sum: {
 			doubleKills: true,
@@ -87,7 +75,7 @@ export const load = (async ({ url }) => {
 		}
 	});
 
-	const maxPlayedOccurrenceChampion = await prisma.playerStat.groupBy({
+	const maxPlaysChampions = await prisma.playerStat.groupBy({
 		where: {
 			user: userWhereInput,
 			game: { periodId }
@@ -103,12 +91,17 @@ export const load = (async ({ url }) => {
 				}
 			}
 		],
-		take: 1
+		take: 5
 	});
 
-	const championMaxPlayed = await prisma.champion.findUnique({
-		where: { id: maxPlayedOccurrenceChampion?.[0]?.championId || 0 }
+	const championMaxPlaysQuery = await prisma.champion.findMany({
+		where: { id: { in: maxPlaysChampions.map((x) => x.championId) } }
 	});
+
+	const championMaxPlays = maxPlaysChampions.map((x) => ({
+		occurrence: x._count.championId,
+		...championMaxPlaysQuery.find((y) => x.championId === y.id)
+	}));
 
 	const maxWonOccurrenceChampion = await prisma.playerStat.groupBy({
 		where: {
@@ -127,71 +120,56 @@ export const load = (async ({ url }) => {
 				}
 			}
 		],
-		take: 1
+		take: 5
 	});
 
-	const championMaxWin = await prisma.champion.findUnique({
-		where: { id: maxWonOccurrenceChampion?.[0]?.championId || 0 }
+	const championMaxWinsQuery = await prisma.champion.findMany({
+		where: { id: { in: maxWonOccurrenceChampion.map((x) => x.championId) } }
 	});
 
-	const maxFarmStat = await prisma.playerStat.findFirst({
+	const championMaxWins = maxWonOccurrenceChampion.map((x) => ({
+		occurrence: x._count.championId,
+		...championMaxWinsQuery.find((y) => x.championId === y.id)
+	}));
+
+	const maxKillStats = await prisma.playerStat.findMany({
 		where: {
 			user: userWhereInput,
-			totalMinionsKilled: avg._max.totalMinionsKilled || undefined,
 			game: { periodId }
 		},
-		include: {
-			champion: true,
-			user: true
-		}
+		include: { user: true, champion: true },
+		orderBy: [{ kills: 'desc' }],
+		take: 5
 	});
 
-	const maxKillStat = await prisma.playerStat.findFirst({
+	const maxDeathStats = await prisma.playerStat.findMany({
 		where: {
 			user: userWhereInput,
-			kills: avg._max.kills || undefined,
 			game: { periodId }
 		},
-		include: {
-			champion: true,
-			user: true
-		}
+		include: { user: true, champion: true },
+		orderBy: [{ deaths: 'desc' }],
+		take: 5
 	});
 
-	const maxDeathStat = await prisma.playerStat.findFirst({
+	const maxDamageStats = await prisma.playerStat.findMany({
 		where: {
 			user: userWhereInput,
-			deaths: avg._max.deaths || undefined,
 			game: { periodId }
 		},
-		include: {
-			champion: true,
-			user: true
-		}
+		include: { user: true, champion: true },
+		orderBy: [{ damage: 'desc' }],
+		take: 5
 	});
 
-	const maxAssistStat = await prisma.playerStat.findFirst({
+	const maxFarmStats = await prisma.playerStat.findMany({
 		where: {
 			user: userWhereInput,
-			assists: avg._max.assists || undefined,
 			game: { periodId }
 		},
-		include: {
-			champion: true,
-			user: true
-		}
-	});
-
-	const maxDamageStat = await prisma.playerStat.findFirst({
-		where: {
-			user: userWhereInput,
-			damage: avg._max.damage || undefined,
-			game: { periodId }
-		},
-		include: {
-			champion: true,
-			user: true
-		}
+		include: { user: true, champion: true },
+		orderBy: [{ totalCs: 'desc' }],
+		take: 5
 	});
 
 	return {
@@ -199,22 +177,12 @@ export const load = (async ({ url }) => {
 		totalGames: totalGames,
 		avg: avg._avg,
 		sum: avg._sum,
-		max: {
-			...avg._max,
-			maxKillStat,
-			maxDeathStat,
-			maxAssistStat,
-			maxDamageStat,
-			maxFarmStat,
-			championMaxPlayed: {
-				occurrence: maxPlayedOccurrenceChampion[0]?._count?.championId || 0,
-				champion: championMaxPlayed
-			},
-			championMaxWin: {
-				occurrence: maxWonOccurrenceChampion[0]?._count?.championId || 0,
-				champion: championMaxWin
-			}
-		},
+		championMaxPlays,
+		championMaxWins,
+		maxKillStats,
+		maxDeathStats,
+		maxDamageStats,
+		maxFarmStats,
 		wr: (gamesWon / totalGames) * 100
 	};
 }) satisfies PageServerLoad;

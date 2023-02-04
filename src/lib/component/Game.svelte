@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { format, intervalToDuration } from 'date-fns';
-	import { scale } from 'svelte/transition';
+	import { scale, slide } from 'svelte/transition';
+	import { quintIn, circIn, backIn } from 'svelte/easing';
 
 	import type { Champion, Game, PlayerStat, User } from '@prisma/client';
 	import { getChampionName } from '$lib/utils';
@@ -21,9 +22,9 @@
 </script>
 
 <div
-	in:scale={{ duration: 300 }}
-	class={`card flex border-2 	 ${isWin ? 'border-emerald-300' : 'border-rose-300'} ${
-		isWin ? 'bg-emerald-200/30 dark:bg-emerald-400/30' : 'bg-rose-200/30 dark:bg-rose-400/30'
+	in:scale={{ duration: 200 }}
+	class={`card  flex border-1 backdrop-blur ${isWin ? 'border-emerald-300' : 'border-rose-300'} ${
+		isWin ? 'bg-emerald-300/30 dark:bg-green-500/20' : 'bg-rose-200/30 dark:bg-rose-500/20'
 	}`}
 >
 	<div class="flex flex-col w-full p-4">

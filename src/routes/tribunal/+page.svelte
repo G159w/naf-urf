@@ -3,13 +3,9 @@
 	import { Avatar } from '@skeletonlabs/skeleton';
 	import type { PageData } from './$types';
 	import { fade } from 'svelte/transition';
-	import CreateUser from '$lib/component/CreateUser.svelte';
 	import { Coins, Gavel } from 'lucide-svelte';
 	import { Cowled, CrossedSwords } from 'svelte-game-icons';
 	import { championMapDbToDisplay, getChampionName } from '$lib/utils';
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import Game from '$lib/component/Game.svelte';
 	import { format } from 'date-fns';
 	import _ from 'lodash';
 	import CreateStat from '$lib/component/CreateStat.svelte';
@@ -31,10 +27,6 @@
 	class="container h-full mx-auto flex flex-col gap-8 w-full items-center"
 	in:fade={{ duration: 200 }}
 >
-	<h1 class="font-bold">Tribunal</h1>
-
-	<hr class="w-full" />
-	<hr />
 	<div class="w-full flex flex-row justify-between items-center">
 		<h3>
 			Affaire n°{data.stat.id}:

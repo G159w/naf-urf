@@ -160,7 +160,7 @@ export const actions: Actions = {
 				where: {
 					isMatchLoaded: false
 				},
-				take: requests > 20 ? 20 : requests
+				take: requests // > 20 ? 20 : requests
 			});
 
 			if (games.length === 0) {
@@ -221,6 +221,7 @@ export const actions: Actions = {
 							totalTimeSpentDead: player.totalTimeSpentDead,
 							totalMinionsKilled: player.totalMinionsKilled,
 							neutralMinionsKilled: player.neutralMinionsKilled,
+							totalCs: player.totalMinionsKilled + player.neutralMinionsKilled,
 							goldEarned: player.goldEarned,
 							items: {
 								connectOrCreate: [
