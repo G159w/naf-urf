@@ -41,6 +41,22 @@
 		return 0;
 	};
 
+	const computeFirstLast = (stat: Stat) => {
+		if (stat.champion.support) {
+			return 0;
+		}
+		const teamStat = stat.game.players.filter((p) => p.isAllyTeam && p.userId !== stat.userId);
+		const maxDmg = _.maxBy(teamStat, 'damage');
+		if ((maxDmg?.damage || 0) < stat.damage) {
+			return 2;
+		}
+		const minDmg = _.minBy(teamStat, 'damage');
+		if ((minDmg?.damage || 0) > stat.damage) {
+			return -2;
+		}
+		return 0;
+	};
+
 	const computeKda = (stat: Stat) => {
 		if (stat.champion.support) {
 			return 0;
@@ -101,8 +117,14 @@
 	};
 
 	let bonusDamage: number = computeDmg(playerStat);
+	let firstLastDamage: number = computeFirstLast(playerStat);
 	let kda: number = computeKda(playerStat);
 	let perf = computePerf(playerStat);
+	if (perf > 0 && firstLastDamage < 0) {
+		perf = 0;
+	} else if (perf < 0 && firstLastDamage > 0) {
+		perf = 0;
+	}
 	let xclass = computeXClass(playerStat);
 </script>
 
