@@ -11,9 +11,9 @@
 
 	export let data: PageData;
 
-	const allyTeam = data.stat.game.players.filter((player) => player.isAllyTeam);
-	const enemyTeam = data.stat.game.players.filter((player) => !player.isAllyTeam);
-	const maxDamage = _.maxBy(data.stat.game.players, 'damage')?.damage || 0;
+	const allyTeam = data.stat?.game.players.filter((player) => player.isAllyTeam) || [];
+	const enemyTeam = data.stat?.game.players.filter((player) => !player.isAllyTeam);
+	const maxDamage = _.maxBy(data.stat?.game.players, 'damage')?.damage || 0;
 	const isWin = allyTeam[0].isWin;
 </script>
 
@@ -36,13 +36,13 @@
 			class="w-full flex flex-row justify-between items-center"
 		>
 			<h3>
-				Affaire n°{data.stat.id}:
+				Affaire n°{data.stat?.id}:
 				<br />
-				<span class="font-bold">Mr. {data.stat.user?.ign}</span>
+				<span class="font-bold">Mr. {data.stat?.user?.ign}</span>
 			</h3>
 			<h4>
 				Faits ayant eu lieu le: <span class="font-bold"
-					>{format(data.stat.game.gameCreation || new Date(), 'dd/MM/yyyy')}</span
+					>{format(data.stat?.game.gameCreation || new Date(), 'dd/MM/yyyy')}</span
 				>
 			</h4>
 		</div>
@@ -58,7 +58,7 @@
 				{#each allyTeam || [] as player, index}
 					<div
 						class={`w-full relative h-28  flex flex-col justify-between ${
-							player.userId === data.stat.userId ? 'inner-border' : ''
+							player.userId === data.stat?.userId ? 'inner-border' : ''
 						}`}
 					>
 						<div class="p-2 flex flex-row content-evenly justify-between h-full">
@@ -182,10 +182,10 @@
 				{/each}
 			</div>
 		</div>
-		{#if _.find(data.championsStats, (x) => x.championId === data.stat.championId)?.winrate}
+		{#if data.stat && _.find(data.championsStats, (x) => x.championId === data.stat?.championId)?.winrate}
 			<CreateStat
 				playerStat={data.stat}
-				winRate={_.find(data.championsStats, (x) => x.championId === data.stat.championId)
+				winRate={_.find(data.championsStats, (x) => x.championId === data.stat?.championId)
 					?.winrate || 0}
 			/>
 		{/if}

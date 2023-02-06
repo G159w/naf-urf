@@ -54,7 +54,7 @@ export const load = (async () => {
 	return {
 		stat,
 		championsStats: await prisma.championStat.findMany({
-			where: { periodId: stat.game.periodId || -1 },
+			where: { periodId: stat?.game.periodId || -1 },
 			include: {
 				champion: true
 			}

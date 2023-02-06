@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Champion, ChampionStat, Game, PlayerStat, User } from '@prisma/client';
-	import { enhance } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
 
 	import _ from 'lodash';
 	import { Gavel } from 'lucide-svelte';
@@ -135,7 +135,9 @@
 	action="/tribunal?/createStat"
 	use:enhance={({ data }) => {
 		data.append('playerStatId', `${playerStat.id}`);
-		return async () => {};
+		return async ({ result }) => {
+			await applyAction(result);
+		};
 	}}
 >
 	<div class="flex mt-2">
@@ -178,9 +180,9 @@
 			class=" w-60 rounded-none"
 			style="width: 80px; border-radius: 0"
 		>
-			<option value={-4}> -4 </option>
+			<option value={4}> 4 </option>
 			<option value={0}> 0 </option>
-			<option value={4}> +4 </option>
+			<option value={-4}> -4 </option>
 		</select>
 		<input
 			name="comment"
