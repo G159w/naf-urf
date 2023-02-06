@@ -138,67 +138,88 @@
 	}}
 >
 	<div class="flex mt-2">
-		<select
-			bind:value={bonusDamage}
-			name="bonusDamage"
-			class=" w-60"
-			style="width: 80px; border-radius: 0"
-		>
-			<option value={2}> +2 </option>
-			<option value={0}> 0 </option>
-			<option value={-2}> -2 </option>
-			<option value={-3}> -3 </option>
-			<option value={-5}> -5 </option>
-		</select>
-		<select
-			name="kda"
-			bind:value={kda}
-			class=" w-60 rounded-none"
-			style="width: 80px; border-radius: 0"
-		>
-			<option value={3}> +3 </option>
-			<option value={2}> +2 </option>
-			<option value={0}> 0 </option>
-			<option value={-2}> -2 </option>
-		</select>
-		<select
-			name="perf"
-			bind:value={perf}
-			class=" w-60 rounded-none"
-			style="width: 80px; border-radius: 0"
-		>
-			<option value={2}> +2 </option>
-			<option value={0}> 0 </option>
-			<option value={-2}> -2 </option>
-		</select>
-		<select
-			name="xclass"
-			bind:value={xclass}
-			class=" w-60 rounded-none"
-			style="width: 80px; border-radius: 0"
-		>
-			<option value={4}> +4 </option>
-			<option value={0}> 0 </option>
-			<option value={-4}> -4 </option>
-		</select>
-		<input
-			name="comment"
-			style="width: 200px; border-radius: 0"
-			placeholder="Remarques"
-			type="text"
-			autocomplete="off"
-		/>
-		<input
-			bind:value={total}
-			class=" text-center"
-			style="width: 60px; border-radius: 0"
-			type="text"
-			disabled
-		/>
-		<button
-			class="icon-btn btn-filled-primary p-0 rounded-none w-12 flex justify-center items-center"
-		>
-			<Gavel />
-		</button>
+		<div class="flex flex-col">
+			<div class="w-full items-center text-center">Dmg</div>
+			<select
+				bind:value={bonusDamage}
+				name="bonusDamage"
+				class=" w-60"
+				style="width: 80px; border-radius: 0"
+			>
+				<option value={2}> +2 </option>
+				<option value={0}> 0 </option>
+				<option value={-2}> -2 </option>
+				<option value={-3}> -3 </option>
+				<option value={-5}> -5 </option>
+			</select>
+		</div>
+		<div class="flex flex-col">
+			<div class="w-full items-center text-center">KDA</div>
+			<select
+				name="kda"
+				bind:value={kda}
+				class=" w-60 rounded-none"
+				style="width: 80px; border-radius: 0"
+			>
+				<option value={3}> +3 </option>
+				<option value={2}> +2 </option>
+				<option value={0}> 0 </option>
+				<option value={-2}> -2 </option>
+			</select>
+		</div>
+		<div class="flex flex-col">
+			<div class="w-full items-center text-center">Perf</div>
+			<select
+				name="perf"
+				bind:value={perf}
+				class=" w-60 rounded-none"
+				style="width: 80px; border-radius: 0"
+			>
+				<option value={2}> +2 </option>
+				<option value={0}> 0 </option>
+				<option value={-2}> -2 </option>
+			</select>
+		</div>
+		<div class="flex flex-col">
+			<div class="w-full items-center text-center">xClass</div>
+			<select
+				name="xclass"
+				bind:value={xclass}
+				class=" w-60 rounded-none"
+				style="width: 80px; border-radius: 0"
+			>
+				<option value={4}> +4 </option>
+				<option value={0}> 0 </option>
+				<option value={-4}> -4 </option>
+			</select>
+		</div>
+		<div class="flex flex-col">
+			<div class="w-full items-center text-center">Remarques</div>
+			<input
+				name="comment"
+				style="width: 200px; border-radius: 0"
+				placeholder="..."
+				type="text"
+				autocomplete="off"
+			/>
+		</div>
+		<div class="flex flex-col">
+			<div class="w-full items-center text-center">Total</div>
+			<input
+				bind:value={total}
+				class=" text-center"
+				style="width: 60px; border-radius: 0"
+				type="text"
+				disabled
+			/>
+		</div>
+		<div class="flex flex-col">
+			<div class="opacity-0">T</div>
+			<button
+				class="icon-btn btn-filled-primary p-0 rounded-none w-12 h-full flex justify-center items-center"
+			>
+				<Gavel />
+			</button>
+		</div>
 	</div>
 </form>
