@@ -135,9 +135,6 @@
 	action="/tribunal?/createStat"
 	use:enhance={({ data }) => {
 		data.append('playerStatId', `${playerStat.id}`);
-		return async ({ result }) => {
-			await applyAction(result);
-		};
 	}}
 >
 	<div class="flex mt-2">
@@ -180,7 +177,7 @@
 			class=" w-60 rounded-none"
 			style="width: 80px; border-radius: 0"
 		>
-			<option value={4}> 4 </option>
+			<option value={4}> +4 </option>
 			<option value={0}> 0 </option>
 			<option value={-4}> -4 </option>
 		</select>
@@ -189,16 +186,14 @@
 			style="width: 200px; border-radius: 0"
 			placeholder="Remarques"
 			type="text"
-			minlength="2"
+			autocomplete="off"
 		/>
 		<input
 			bind:value={total}
-			name="comment"
 			class=" text-center"
 			style="width: 60px; border-radius: 0"
 			type="text"
 			disabled
-			minlength="2"
 		/>
 		<button
 			class="icon-btn btn-filled-primary p-0 rounded-none w-12 flex justify-center items-center"
