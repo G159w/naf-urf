@@ -6,7 +6,7 @@ const { prisma } = await createContext();
 import { fail } from '@sveltejs/kit';
 
 export const load = (async () => {
-	const firstStat = await prisma.playerStat.findMany({
+	const stat = await prisma.playerStat.findFirst({
 		where: {
 			stat: {
 				is: null
@@ -52,9 +52,9 @@ export const load = (async () => {
 		take: 1
 	});
 	return {
-		stat: firstStat[0],
+		stat,
 		championsStats: await prisma.championStat.findMany({
-			where: { periodId: firstStat[0].game.periodId || -1 },
+			where: { periodId: stat.game.periodId || -1 },
 			include: {
 				champion: true
 			}

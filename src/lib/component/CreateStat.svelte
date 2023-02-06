@@ -96,7 +96,7 @@
 		}
 		const teamStat = stat.game.players.filter((p) => p.isAllyTeam && p.userId !== stat.userId);
 		// Master
-		const hasSupport = !!teamStat.find((p) => p.champion.support);
+		const hasSupport = !!teamStat.find((p) => p.userId && p.champion.support);
 		const maxDmg = _.maxBy(teamStat, 'damage');
 		if (
 			!hasSupport &&
@@ -126,6 +126,7 @@
 		perf = 0;
 	}
 	let xclass = computeXClass(playerStat);
+	$: total = bonusDamage + kda + perf + xclass;
 </script>
 
 <form
@@ -177,15 +178,24 @@
 			class=" w-60 rounded-none"
 			style="width: 80px; border-radius: 0"
 		>
-			<option value={-4}> +4 </option>
+			<option value={-4}> -4 </option>
 			<option value={0}> 0 </option>
-			<option value={4}> -4 </option>
+			<option value={4}> +4 </option>
 		</select>
 		<input
 			name="comment"
 			style="width: 200px; border-radius: 0"
 			placeholder="Remarques"
 			type="text"
+			minlength="2"
+		/>
+		<input
+			bind:value={total}
+			name="comment"
+			class=" text-center"
+			style="width: 60px; border-radius: 0"
+			type="text"
+			disabled
 			minlength="2"
 		/>
 		<button
