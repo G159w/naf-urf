@@ -1,10 +1,8 @@
 import { createContext } from '$lib/server/context';
 import type { PageServerLoad, Actions } from './$types';
 import { z } from 'zod';
-import { PlatformId } from '@fightmegg/riot-api';
-import type { Prisma } from '@prisma/client';
 import { fail } from '@sveltejs/kit';
-const { prisma, riotApi } = await createContext();
+const { prisma } = await createContext();
 
 export const load = (async ({ url }) => {
 	const periodId = +(url.searchParams.get('period') || 0) || undefined;
@@ -15,7 +13,8 @@ export const load = (async ({ url }) => {
 						stats: {
 							where: { periodId }
 						}
-					}
+					},
+					orderBy: [{ name: 'asc' }]
 			  })
 			: []
 	};
