@@ -1,21 +1,11 @@
-version: "3"
+version: '3.5'
 
 services:
-  nafurf-db:
-    container_name: nafurf-db
-    image: "postgres:latest"
+  crdb:
+    image: cockroachdb/cockroach:v19.2.2
     ports:
-      - 5436:5432
-    environment:
-      - DATABASE_HOST=127.0.0.1
-      - POSTGRES_USER=nafurf
-      - POSTGRES_PASSWORD=nafurf
-      - POSTGRES_DATABASE=nafurf
+      - '26257:26257'
+      - '8080:8080'
+    command: start-single-node --insecure
     volumes:
-      - db-data:/var/lib/postgresql/data
-
-volumes:
-  db-data:
-    driver: local
-  db-data-test:
-      driver: local
+      - '${PWD}/cockroach-data/crdb:/cockroach/cockroach-data'

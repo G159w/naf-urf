@@ -148,6 +148,9 @@ export const actions: Actions = {
 			};
 		} catch (err) {
 			console.log(err);
+			return {
+				success: false
+			};
 		}
 	},
 	loadGamesDetail: async () => {

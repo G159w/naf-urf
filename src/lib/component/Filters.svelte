@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import type { Champion, Period, User } from '@prisma/client';
 	import { goto } from '$app/navigation';
+	import { getChampionName } from '$lib/utils';
 
 	export let periods: Period[] | undefined = undefined;
 	export let users: User[] | undefined = undefined;
@@ -104,7 +105,7 @@
 			<option value={undefined}> Champion </option>
 			{#each champions as champion}
 				<option value={champion.id}>
-					{champion.name}
+					{getChampionName(champion.name)}
 				</option>
 			{/each}
 		</select>

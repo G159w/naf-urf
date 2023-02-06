@@ -1,12 +1,11 @@
 import { createContext } from '$lib/server/context';
 import type { PageServerLoad, Actions } from './$types';
 import { z } from 'zod';
-import { PlatformId } from '@fightmegg/riot-api';
-import type { Prisma } from '@prisma/client';
-const { prisma, riotApi } = await createContext();
+import { Timer } from 'timer-node';
+const { prisma } = await createContext();
+import { fail } from '@sveltejs/kit';
 
-export const load = (async ({ url }) => {
-	const userId = +(url.searchParams.get('user') || 0);
+export const load = (async () => {
 	const firstStat = await prisma.playerStat.findMany({
 		where: {
 			stat: {
@@ -14,9 +13,19 @@ export const load = (async ({ url }) => {
 			},
 			user: {
 				isNot: null
+			},
+			game: {
+				periodId: {
+					not: null
+				}
 			}
 		},
 		include: {
+			champion: {
+				include: {
+					stats: true
+				}
+			},
 			user: true,
 			game: {
 				include: {
@@ -43,14 +52,85 @@ export const load = (async ({ url }) => {
 		take: 1
 	});
 	return {
-		users: await prisma.user.findMany({ include: { _count: { select: { gameStats: true } } } }),
-		stat: firstStat[0]
+		stat: firstStat[0],
+		championsStats: await prisma.championStat.findMany({
+			where: { periodId: firstStat[0].game.periodId || -1 },
+			include: {
+				champion: true
+			}
+		})
 	};
 }) satisfies PageServerLoad;
 
+const createStatSchema = z.object({
+	bonusDamage: z.coerce.number(),
+	kda: z.coerce.number(),
+	perf: z.coerce.number(),
+	xclass: z.coerce.number(),
+	playerStatId: z.coerce.number(),
+	comment: z.string().nullable()
+});
+
 export const actions: Actions = {
 	createStat: async ({ request }) => {
-		const formData = await request.formData()
-		console.log(formData)
+		const timer = new Timer();
+		timer.start();
+		try {
+			const formaData = Object.fromEntries(await request.formData());
+			const { bonusDamage, kda, perf, xclass, comment, playerStatId } =
+				createStatSchema.parse(formaData);
+
+			const playerStat = await prisma.playerStat.findUnique({
+				where: { id: playerStatId },
+				include: {
+					game: true
+				}
+			});
+
+			if (!playerStat || !playerStat.userId || !playerStat.game.periodId) {
+				console.log(timer.time(), 'No Player Stat');
+				return fail(400, { success: false });
+			}
+
+			const championStat = await prisma.championStat.findUnique({
+				where: {
+					championId_periodId: {
+						championId: playerStat.championId,
+						periodId: playerStat.game.periodId
+					}
+				}
+			});
+
+			if (!championStat) {
+				console.log(timer.time(), 'No Champion Stat');
+				return fail(400, { success: false });
+			}
+
+			const newStat = await prisma.stat.create({
+				data: {
+					userId: playerStat.userId,
+					championStatId: championStat.id,
+					periodId: playerStat.game.periodId,
+					playerStatId: playerStat.id,
+					kills: playerStat.kills,
+					deaths: playerStat.deaths,
+					assists: playerStat.assists,
+					reduction: 0,
+					kda: kda,
+					damage: bonusDamage,
+					perf: perf,
+					xClass: xclass,
+					comment: comment
+				}
+			});
+
+			return {
+				success: true,
+				newStat
+			};
+		} catch (error) {
+			console.log(error);
+			return fail(400, { success: false });
+		}
 	}
 };

@@ -1,14 +1,13 @@
 <script lang="ts">
-	import type { ModalComponent, ModalSettings } from '@skeletonlabs/skeleton';
-	import { Avatar } from '@skeletonlabs/skeleton';
 	import type { PageData } from './$types';
-	import { fade } from 'svelte/transition';
-	import { Coins, Gavel } from 'lucide-svelte';
+	import { fade, scale } from 'svelte/transition';
+	import { Coins } from 'lucide-svelte';
 	import { Cowled, CrossedSwords } from 'svelte-game-icons';
 	import { championMapDbToDisplay, getChampionName } from '$lib/utils';
 	import { format } from 'date-fns';
 	import _ from 'lodash';
 	import CreateStat from '$lib/component/CreateStat.svelte';
+	import { quintIn } from 'svelte/easing';
 
 	export let data: PageData;
 
@@ -23,11 +22,18 @@
 	<meta name="URF Tribunal" content="NAF Tribunal" />
 </svelte:head>
 
-<section
-	class="container h-full mx-auto flex flex-col gap-8 w-full items-center"
-	in:fade={{ duration: 200 }}
->
-	<div class="w-full flex flex-row justify-between items-center">
+<section class="container h-full mx-auto flex flex-col gap-8 w-full items-center">
+	<img
+		in:fade={{ delay: 100, easing: quintIn }}
+		class={`z-[-1] h-full w-full opacity-60 object-cover object-top absolute top-0 left-0 img`}
+		alt={'Kayle jugement'}
+		src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kayle_5.jpg`}
+	/>
+
+	<div
+		in:fade={{ duration: 200, easing: quintIn }}
+		class="w-full flex flex-row justify-between items-center"
+	>
 		<h3>
 			Affaire n°{data.stat.id}:
 			<br />
@@ -39,16 +45,24 @@
 			>
 		</h4>
 	</div>
-	<div class="flex w-2/3 mt-8 bg-slate-900 z-[1] rounded-lg text-white drop-shadow-2xl">
+	<div
+		class="flex w-2/3 mt-8 bg-slate-900 z-[1] rounded-lg text-white drop-shadow-2xl"
+		in:scale={{ delay: 150, duration: 500 }}
+	>
 		<div
 			class={`basis-1/2 flex flex-col 
 			${isWin ? 'border-green-600' : 'border-red-600'}
 				rounded-lg border-r-0 rounded-r-none`}
 		>
 			{#each allyTeam || [] as player, index}
-				<div class="w-full relative h-28  flex flex-col justify-between">
+				<div
+					class={`w-full relative h-28  flex flex-col justify-between ${
+						player.userId === data.stat.userId ? 'inner-border' : ''
+					}`}
+				>
 					<div class="p-2 flex flex-row content-evenly justify-between h-full">
 						<img
+							in:fade={{ delay: 50, duration: 300, easing: quintIn }}
 							class={`h-28 w-full opacity-60 object-cover object-top absolute top-0 left-0 z-[-1] font-roboto
 								${index === 0 ? 'rounded-tl-lg' : ''}
 								${index === 4 ? 'rounded-bl-lg' : ''}
@@ -76,9 +90,10 @@
 								).toFixed(1)})
 							</span>
 							<span class="text-xs flex flex-row gap-2 align-middle">
-								{championMapDbToDisplay[player.champion.name]} - {player.champion.stats?.[0]
-									?.winrate}
-								%
+								{championMapDbToDisplay[player.champion.name]} - {_.find(
+									data.championsStats,
+									(x) => x.championId === player.championId
+								)?.winrate || 'N/A'} %
 							</span>
 						</div>
 						<div class=" flex flex-col h-full justify-center font-semibold gap-2 pr-4">
@@ -166,5 +181,23 @@
 			{/each}
 		</div>
 	</div>
-	<CreateStat />
+	{#if _.find(data.championsStats, (x) => x.championId === data.stat.championId)?.winrate}
+		<CreateStat
+			playerStat={data.stat}
+			winRate={_.find(data.championsStats, (x) => x.championId === data.stat.championId)?.winrate ||
+				0}
+		/>
+	{/if}
 </section>
+
+<style>
+	.img {
+		mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, transparent 100%);
+	}
+
+	.inner-border {
+		-webkit-box-shadow: inset 0px 0px 0px 10px #f00;
+		-moz-box-shadow: inset 0px 0px 0px 10px #f00;
+		box-shadow: inset 0px 0px 10px 4px #fff;
+	}
+</style>
