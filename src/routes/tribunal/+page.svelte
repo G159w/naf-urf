@@ -11,10 +11,10 @@
 
 	export let data: PageData;
 
-	const allyTeam = data.stat?.game.players.filter((player) => player.isAllyTeam) || [];
-	const enemyTeam = data.stat?.game.players.filter((player) => !player.isAllyTeam);
-	const maxDamage = _.maxBy(data.stat?.game.players, 'damage')?.damage || 0;
-	const isWin = allyTeam[0].isWin;
+	$: allyTeam = data.stat?.game.players.filter((player) => player.isAllyTeam) || [];
+	$: enemyTeam = data.stat?.game.players.filter((player) => !player.isAllyTeam) || [];
+	$: maxDamage = _.maxBy(data.stat?.game.players, 'damage')?.damage || 0;
+	$: isWin = allyTeam[0].isWin;
 </script>
 
 <svelte:head>
@@ -55,7 +55,7 @@
 			${isWin ? 'border-green-600' : 'border-red-600'}
 				rounded-lg border-r-0 rounded-r-none`}
 			>
-				{#each allyTeam || [] as player, index}
+				{#each allyTeam as player, index}
 					<div
 						class={`w-full relative h-28  flex flex-col justify-between ${
 							player.userId === data.stat?.userId ? 'inner-border' : ''
@@ -127,7 +127,7 @@
 			 ${isWin ? 'border-red-600' : 'border-green-600'}
 			border-6 rounded-lg border-l-0 rounded-l-none`}
 			>
-				{#each enemyTeam || [] as player, index}
+				{#each enemyTeam as player, index}
 					<div class="w-full relative h-28 flex flex-col justify-between items-end">
 						<div class="p-2 flex flex-row content-evenly justify-between h-full w-full">
 							<img
