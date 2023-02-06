@@ -36,6 +36,7 @@
 						<input
 							name="winrate"
 							type="number"
+							step="0.01"
 							value={champion.stats?.[0]?.winrate}
 							class="!w-20 "
 						/>
