@@ -22,15 +22,15 @@
 	<meta name="URF Tribunal" content="NAF Tribunal" />
 </svelte:head>
 
-{#key data}
-	<section class="container h-full mx-auto flex flex-col gap-8 w-full items-center">
-		<img
-			in:fade={{ delay: 100, easing: quintIn }}
-			class={`z-[-1] h-full w-full opacity-60 object-cover object-top absolute top-0 left-0 img`}
-			alt={'Kayle jugement'}
-			src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kayle_5.jpg`}
-		/>
+<section class="container h-full mx-auto flex flex-col gap-8 w-full items-center">
+	<img
+		in:fade={{ delay: 100, easing: quintIn }}
+		class={`z-[-1] h-full w-full opacity-60 object-cover object-top absolute top-0 left-0 img`}
+		alt={'Kayle jugement'}
+		src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kayle_5.jpg`}
+	/>
 
+	{#key data.stat?.id}
 		<div
 			in:fade={{ duration: 200, easing: quintIn }}
 			class="w-full flex flex-row justify-between items-center"
@@ -189,8 +189,8 @@
 					?.winrate || 0}
 			/>
 		{/if}
-	</section>
-{/key}
+	{/key}
+</section>
 
 <style>
 	.img {
