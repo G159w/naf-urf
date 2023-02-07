@@ -20,12 +20,27 @@ export const load = (async ({ url }) => {
 			damage: true,
 			xClass: true
 		},
+		_max: {
+			kills: true,
+			deaths: true
+		},
 		_count: {
 			kda: true
 		}
 	});
 
+	const nbChampionStats = await prisma.playerStat.groupBy({
+		by: ['userId', 'championId'],
+		where: { userId: { not: null }, stat: { isNot: null }, game: { periodId: periodId } },
+		_count: {
+			championId: true
+		}
+	});
+
+	console.log(nbChampionStats);
+
 	return {
-		stats
+		stats,
+		nbChampionStats
 	};
 }) satisfies PageServerLoad;
