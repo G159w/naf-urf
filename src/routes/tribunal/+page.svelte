@@ -182,13 +182,6 @@
 				{/each}
 			</div>
 		</div>
-		{#if data.stat && _.find(data.championsStats, (x) => x.championId === data.stat?.championId)?.winrate}
-			<CreateStat
-				playerStat={data.stat}
-				winRate={_.find(data.championsStats, (x) => x.championId === data.stat?.championId)
-					?.winrate || 0}
-			/>
-		{/if}
 	{/key}
 </section>
 

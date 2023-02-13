@@ -3,13 +3,14 @@
 	import { scale, slide } from 'svelte/transition';
 	import { quintIn, circIn, backIn } from 'svelte/easing';
 
-	import type { Champion, Game, PlayerStat, User } from '@prisma/client';
-	import { getChampionName } from '$lib/utils';
+	import type { Champion, Game, PlayerStat, Stat, User } from '@prisma/client';
+	import { computeStat, getChampionName } from '$lib/utils';
 	import _ from 'lodash';
 
 	export let game: Game & {
 		players: (PlayerStat & {
 			champion: Champion;
+			stat: Stat | null;
 		})[];
 	};
 
@@ -22,10 +23,9 @@
 </script>
 
 <div
-	in:scale={{ duration: 200 }}
-	class={`card  flex border-1 backdrop-blur ${isWin ? 'border-emerald-300' : 'border-rose-300'} ${
-		isWin ? 'bg-emerald-300/30 dark:bg-green-500/20' : 'bg-rose-200/30 dark:bg-rose-500/20'
-	}`}
+	class={`card hover:brightness-125 flex border-1 backdrop-blur ${
+		isWin ? 'border-emerald-300' : 'border-rose-300'
+	} ${isWin ? 'bg-emerald-300/30 dark:bg-green-500/20' : 'bg-rose-200/30 dark:bg-rose-500/20'}`}
 >
 	<div class="flex flex-col w-full p-4">
 		<div class="flex justify-between text-xs  mb-4">
@@ -59,6 +59,7 @@
 							/>
 							<div>
 								{player.sumName}
+								{player.stat ? ` | ${computeStat(player.stat)}` : ''}
 							</div>
 						</div>
 						<div>

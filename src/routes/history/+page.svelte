@@ -15,6 +15,7 @@
 	import CreatePeriod from '$lib/component/CreatePeriod.svelte';
 	import Filters from '$lib/component/Filters.svelte';
 	import { quintIn } from 'svelte/easing';
+	import DetailGame from '$lib/component/DetailGame.svelte';
 
 	export let form: ActionData;
 	export let data: PageData;
@@ -51,6 +52,14 @@
 		};
 		modalStore.trigger(d);
 	}
+
+	function scrollIntoView(element) {
+		element.scroll({ top: element.scrollHeight, behavior: 'smooth' });
+
+		console.log(element, element.scrollHeight);
+	}
+
+	let expendedGameId: number | undefined;
 </script>
 
 <svelte:head>
@@ -132,9 +141,22 @@
 	</div>
 	<div class="flex flex-wrap w-full" in:slide={{ duration: 500, delay: 100, easing: quintIn }}>
 		{#each data?.games || [] as game (game.id)}
-			<div class="lg:basis-1/2 w-full p-2">
-				<Game {game} mainUsers={data.users} />
-			</div>
+			{#if expendedGameId !== game.id}
+				<button
+					on:click={(event) => {
+						console.log(event.target);
+						scrollIntoView(event.target);
+						expendedGameId = game.id;
+					}}
+					class={`lg:basis-1/2 w-full p-2`}
+				>
+					<Game {game} mainUsers={data.users} />
+				</button>
+			{:else}
+				<button on:click={() => (expendedGameId = game.id)} class={`w-full p-2`}>
+					<DetailGame {game} mainUsers={data.users} />
+				</button>
+			{/if}
 		{/each}
 	</div>
 	<div in:fade class="w-full mt-8">

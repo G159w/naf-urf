@@ -1,6 +1,6 @@
 import { createContext } from '$lib/server/context';
 import { numberOfPossibleRequests, sleep } from '$lib/server/utils';
-import { PlatformId } from '@fightmegg/riot-api';
+import { PlatformId, RiotAPITypes } from '@fightmegg/riot-api';
 import type { Champion, Game, Prisma, PrismaPromise, User } from '@prisma/client';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
@@ -31,7 +31,11 @@ export const load = (async ({ url }) => {
 	return {
 		games: await prisma.game.findMany({
 			where,
-			include: { players: { include: { champion: true } } },
+			include: {
+				players: {
+					include: { champion: { include: { stats: true } }, stat: true, items: true, user: true }
+				}
+			},
 			orderBy: [{ gameCreation: 'desc' }],
 			take,
 			skip: page * take
@@ -170,7 +174,6 @@ export const actions: Actions = {
 				console.log('No more possible request');
 				return 0;
 			}
-
 			await prisma.lolRequest.create({ data: { count: games.length } });
 			console.log(timer.time(), games.length, 'Number of game requested ');
 

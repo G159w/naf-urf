@@ -5,27 +5,18 @@
 	import _ from 'lodash';
 	import { Gavel } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
-	import { quintIn } from 'svelte/easing';
+	import type { GameCreateStat } from '$lib/utils';
 
-	type Stat = PlayerStat & {
-		user: User | null;
-		champion: Champion & {
-			stats: ChampionStat[];
-		};
-		game: Game & {
-			players: (PlayerStat & {
-				user: User | null;
-				champion: Champion & {
-					stats: ChampionStat[];
-				};
-			})[];
-		};
-	};
+	export let playerStat: GameCreateStat;
+	export let callback: (() => void) | undefined = undefined;
 
-	export let playerStat: Stat;
-	export let winRate: number;
+	$: winRate =
+		_.find(playerStat.champion.stats, (x) => x.periodId === playerStat.game.periodId)?.winrate || 0;
 
-	const computeDmg = (stat: Stat) => {
+	const computeDmg = (stat: GameCreateStat) => {
+		if (stat.stat) {
+			return stat.stat.damage;
+		}
 		if (stat.champion.support) {
 			return 0;
 		}
@@ -41,7 +32,7 @@
 		return 0;
 	};
 
-	const computeFirstLast = (stat: Stat) => {
+	const computeFirstLast = (stat: GameCreateStat) => {
 		if (stat.champion.support) {
 			return 0;
 		}
@@ -57,7 +48,10 @@
 		return 0;
 	};
 
-	const computeKda = (stat: Stat) => {
+	const computeKda = (stat: GameCreateStat) => {
+		if (stat.stat) {
+			return stat.stat.kda;
+		}
 		if (stat.champion.support) {
 			return 0;
 		}
@@ -74,7 +68,10 @@
 		return 0;
 	};
 
-	const computePerf = (stat: Stat) => {
+	const computePerf = (stat: GameCreateStat) => {
+		if (stat.stat) {
+			return stat.stat.perf;
+		}
 		if (stat.champion.support) {
 			return 0;
 		}
@@ -90,7 +87,10 @@
 		return 2;
 	};
 
-	const computeXClass = (stat: Stat) => {
+	const computeXClass = (stat: GameCreateStat) => {
+		if (stat.stat) {
+			return stat.stat.xClass;
+		}
 		if (stat.champion.support) {
 			return 0;
 		}
@@ -116,9 +116,9 @@
 		return 0;
 	};
 
-	let bonusDamage: number = computeDmg(playerStat);
-	let firstLastDamage: number = computeFirstLast(playerStat);
-	let kda: number = computeKda(playerStat);
+	let bonusDamage = computeDmg(playerStat);
+	let firstLastDamage = computeFirstLast(playerStat);
+	let kda = computeKda(playerStat);
 	let perf = computePerf(playerStat);
 	if (perf > 0 && firstLastDamage < 0) {
 		perf = 0;
@@ -127,14 +127,18 @@
 	}
 	let xclass = computeXClass(playerStat);
 	$: total = bonusDamage + kda + perf + xclass;
+	let comment = playerStat.stat?.comment || '';
 </script>
 
 <form
-	in:slide={{ delay: 200, duration: 400, easing: quintIn }}
 	method="POST"
 	action="/tribunal?/createStat"
 	use:enhance={({ data }) => {
 		data.append('playerStatId', `${playerStat.id}`);
+		if (playerStat.stat) {
+			data.append('statId', `${playerStat.stat.id}`);
+		}
+		callback?.();
 	}}
 >
 	<div class="flex mt-2">
@@ -144,7 +148,7 @@
 				bind:value={bonusDamage}
 				name="bonusDamage"
 				class=" w-60"
-				style="width: 80px; border-radius: 0"
+				style="width: 80px; border-bottom-right-radius: 0; border-top-right-radius: 0"
 			>
 				<option value={2}> +2 </option>
 				<option value={0}> 0 </option>
@@ -196,6 +200,7 @@
 		<div class="flex flex-col">
 			<div class="w-full items-center text-center">Remarques</div>
 			<input
+				bind:value={comment}
 				name="comment"
 				style="width: 200px; border-radius: 0"
 				placeholder="..."
@@ -216,7 +221,7 @@
 		<div class="flex flex-col">
 			<div class="opacity-0">T</div>
 			<button
-				class="icon-btn btn-filled-primary p-0 rounded-none w-12 h-full flex justify-center items-center"
+				class="icon-btn btn-filled-primary p-0 rounded-none w-16 h-full flex justify-center items-center rounded-r-full"
 			>
 				<Gavel />
 			</button>

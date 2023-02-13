@@ -37,8 +37,6 @@ export const load = (async ({ url }) => {
 		}
 	});
 
-	console.log(nbChampionStats);
-
 	return {
 		stats,
 		nbChampionStats

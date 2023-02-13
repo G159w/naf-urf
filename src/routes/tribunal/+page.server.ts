@@ -63,11 +63,12 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 const createStatSchema = z.object({
+	playerStatId: z.coerce.number(),
+	statId: z.coerce.number().nullable(),
 	bonusDamage: z.coerce.number(),
 	kda: z.coerce.number(),
 	perf: z.coerce.number(),
 	xclass: z.coerce.number(),
-	playerStatId: z.coerce.number(),
 	comment: z.string().nullable()
 });
 
@@ -77,7 +78,7 @@ export const actions: Actions = {
 		timer.start();
 		try {
 			const formaData = Object.fromEntries(await request.formData());
-			const { bonusDamage, kda, perf, xclass, comment, playerStatId } =
+			const { bonusDamage, kda, perf, xclass, comment, playerStatId, statId } =
 				createStatSchema.parse(formaData);
 
 			const playerStat = await prisma.playerStat.findUnique({
@@ -106,8 +107,16 @@ export const actions: Actions = {
 				return fail(400, { success: false });
 			}
 
-			const newStat = await prisma.stat.create({
-				data: {
+			const newStat = await prisma.stat.upsert({
+				where: { id: statId || undefined },
+				update: {
+					kda: kda,
+					damage: bonusDamage,
+					perf: perf,
+					xClass: xclass,
+					comment: comment
+				},
+				create: {
 					userId: playerStat.userId,
 					championStatId: championStat.id,
 					periodId: playerStat.game.periodId,

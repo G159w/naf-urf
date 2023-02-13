@@ -1,3 +1,5 @@
+import type { Champion, ChampionStat, Game, PlayerStat, Stat, User } from '@prisma/client';
+
 export function capitalize(str: string) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -203,4 +205,24 @@ export const getColor = (position: number) => {
 		return 'text-amber-700';
 	}
 	return '';
+};
+
+export const computeStat = (stat: Stat) => {
+	return stat.kda + stat.damage + stat.perf + stat.xClass;
+};
+
+export type GameCreateStat = PlayerStat & {
+	user: User | null;
+	stat: Stat | null;
+	champion: Champion & {
+		stats: ChampionStat[];
+	};
+	game: Game & {
+		players: (PlayerStat & {
+			user: User | null;
+			champion: Champion & {
+				stats: ChampionStat[];
+			};
+		})[];
+	};
 };
