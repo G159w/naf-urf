@@ -64,7 +64,7 @@ export const load = (async () => {
 
 const createStatSchema = z.object({
 	playerStatId: z.coerce.number(),
-	statId: z.coerce.number().nullable(),
+	statId: z.coerce.number().optional(),
 	bonusDamage: z.coerce.number(),
 	kda: z.coerce.number(),
 	perf: z.coerce.number(),
@@ -108,7 +108,7 @@ export const actions: Actions = {
 			}
 
 			const newStat = await prisma.stat.upsert({
-				where: { id: statId || undefined },
+				where: { id: statId || 0 },
 				update: {
 					kda: kda,
 					damage: bonusDamage,
