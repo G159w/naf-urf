@@ -10,7 +10,7 @@
 	export let playerStat: GameCreateStat;
 	export let callback: (() => void) | undefined = undefined;
 
-	$: winRate =
+	let winRate =
 		_.find(playerStat.champion.stats, (x) => x.periodId === playerStat.game.periodId)?.winrate || 0;
 
 	const computeDmg = (stat: GameCreateStat) => {
