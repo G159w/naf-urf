@@ -68,7 +68,7 @@
 							<img
 								class="w-16 img"
 								alt={player.champion.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${getChampionName(
+								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionName(
 									player.champion.name
 								)}.png`}
 							/>
@@ -92,7 +92,7 @@
 											<img
 												class="w-6"
 												alt={item.itemId.toString()}
-												src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/${item.itemId}.png`}
+												src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/item/${item.itemId}.png`}
 											/>
 										{/if}
 									{/each}
@@ -155,7 +155,7 @@
 							<img
 								class="w-16"
 								alt={player.champion.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${getChampionName(
+								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionName(
 									player.champion.name
 								)}.png`}
 							/>
@@ -176,7 +176,7 @@
 											<img
 												class="w-6"
 												alt={item.itemId.toString()}
-												src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/${item.itemId}.png`}
+												src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/item/${item.itemId}.png`}
 											/>
 										{/if}
 									{/each}

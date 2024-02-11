@@ -5,17 +5,11 @@ import { PlatformId } from '@fightmegg/riot-api';
 import type { Prisma } from '@prisma/client';
 const { prisma, riotApi } = await createContext();
 
-type UserWhereInput =
-	| (Prisma.Without<Prisma.UserRelationFilter, Prisma.UserWhereInput> & Prisma.UserWhereInput)
-	| (Prisma.Without<Prisma.UserWhereInput, Prisma.UserRelationFilter> & Prisma.UserRelationFilter)
-	| null
-	| undefined;
-
 export const load = (async ({ url }) => {
 	const userId = +(url.searchParams.get('user') || 0);
 	const periodId = +(url.searchParams.get('period') || 0) || undefined;
 
-	const userWhereInput: UserWhereInput = userId
+	const userWhereInput = userId
 		? {
 				id: { equals: userId }
 		  }
@@ -24,8 +18,10 @@ export const load = (async ({ url }) => {
 		  };
 
 	const avg = await prisma.playerStat.aggregate({
-		where: {
-			user: userWhereInput,
+		where: { 
+			user: {
+				isNot: null
+			},
 			game: { periodId }
 		},
 		_avg: {

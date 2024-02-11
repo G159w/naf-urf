@@ -2,7 +2,7 @@
 	import { slide, scale } from 'svelte/transition';
 
 	import type { ModalComponent, ModalSettings } from '@skeletonlabs/skeleton';
-	import { modalStore } from '@skeletonlabs/skeleton';
+	import { getModalStore } from '@skeletonlabs/skeleton';
 	import type { PageData } from './$types';
 	import { fade } from 'svelte/transition';
 	import CreateUser from '$lib/component/CreateUser.svelte';
@@ -24,7 +24,7 @@
 			type: 'component',
 			component: modalComponent
 		};
-		modalStore.trigger(d);
+		getModalStore().trigger(d);
 	}
 </script>
 

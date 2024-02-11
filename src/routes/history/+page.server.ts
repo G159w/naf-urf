@@ -93,7 +93,7 @@ export const actions: Actions = {
 						urfGameRequests < requests && (full ? oldResponseLength === 100 : urfGameRequests < 1);
 						urfGameRequests++
 					) {
-						const response = await riotApi.matchV5.getIdsbyPuuid({
+						const response = await riotApi.matchV5.getIdsByPuuid({
 							cluster: PlatformId.EUROPE,
 							puuid: user.lolId,
 							params: {
@@ -115,7 +115,7 @@ export const actions: Actions = {
 						(full ? oldResponseLength === 100 : arurfGameRequests < 1);
 						arurfGameRequests++
 					) {
-						const response = await riotApi.matchV5.getIdsbyPuuid({
+						const response = await riotApi.matchV5.getIdsByPuuid({
 							cluster: PlatformId.EUROPE,
 							puuid: user.lolId,
 							params: {
@@ -302,6 +302,8 @@ export const actions: Actions = {
 			const winRateTd = cheerioApi(children).toArray()[6];
 			const winRate = parseFloat(cheerioApi(winRateTd).text());
 			const dbChampion = dbChampions.find((c) => championMapDisplayToDb[champion] === c.name);
+			console.log(champion, dbChampion);
+
 			if (dbChampion) {
 				champions.push({ champion: dbChampion, winRate });
 			}

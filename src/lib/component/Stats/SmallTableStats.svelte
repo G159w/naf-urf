@@ -20,7 +20,7 @@
 				<img
 					class="w-12"
 					alt={playerStat.champion.name}
-					src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${getChampionName(
+					src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionName(
 						playerStat.champion.name
 					)}.png`}
 				/>

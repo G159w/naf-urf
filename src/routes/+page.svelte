@@ -13,7 +13,7 @@
 	in:fade={{ duration: 200 }}
 >
 	<img class="w-72" alt="Home" src={logo} />
-	<h1 class="font-bold">NAF-URF</h1>
+	<h1 class="font-bold text-5xl">URF Tracker</h1>
 
 	<hr />
 	<div class="flex gap-4 w-full align-middle justify-center">

@@ -3,6 +3,12 @@
 	import type { Champion, Period, User } from '@prisma/client';
 	import { goto } from '$app/navigation';
 	import { getChampionName } from '$lib/utils';
+	import {
+		Autocomplete,
+		popup,
+		type AutocompleteOption,
+		type PopupSettings
+	} from '@skeletonlabs/skeleton';
 
 	export let periods: Period[] | undefined = undefined;
 	export let users: User[] | undefined = undefined;
@@ -39,7 +45,45 @@
 	let selectedUserId: number | undefined = +($page.url.searchParams.get('user') || 0) || undefined;
 	let selectedChampionId: number | undefined =
 		+($page.url.searchParams.get('champion') || 0) || undefined;
+
+	const championList: AutocompleteOption<Champion>[] =
+		champions?.map((champion) => ({ label: getChampionName(champion.name), value: champion })) ||
+		[];
+	let selectedChampion: Champion | undefined;
+
+	let popupSettings: PopupSettings = {
+		event: 'focus-click',
+		target: 'popupAutocomplete',
+		placement: 'bottom'
+	};
 </script>
+
+<input
+	class="input autocomplete"
+	type="search"
+	name="autocomplete-search"
+	bind:value={selectedChampion}
+	placeholder="Search..."
+	use:popup={popupSettings}
+/>
+<div data-popup="popupAutocomplete">
+	<Autocomplete
+		bind:input={selectedChampion}
+		options={championList}
+		on:selection={async (value) => {
+			console.log(value.detail.value);
+			selectedChampion = value.detail.value;
+			selectedChampionId = value.detail.value.id;
+			const newUrl = new URL($page.url);
+			if (selectedChampionId) {
+				newUrl?.searchParams?.set('champion', selectedChampionId.toString());
+			} else {
+				newUrl?.searchParams?.delete('champion');
+			}
+			await goto(newUrl);
+		}}
+	/>
+</div>
 
 <div class="flex mt-2 flex-col gap-2 items-center sm:flex-row sm:gap-0">
 	{#if periods}
