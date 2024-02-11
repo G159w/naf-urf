@@ -42,8 +42,8 @@
 					<div
 						class={`flex text-xs gap-2 items-center justify-between  ${
 							_.includes(
-								mainUsers.map((p) => p.ign),
-								player.sumName
+								mainUsers.map((p) => p.lolId),
+								player.puuid
 							)
 								? 'font-bold'
 								: ''

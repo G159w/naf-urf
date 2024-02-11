@@ -7,8 +7,11 @@
 		Autocomplete,
 		popup,
 		type AutocompleteOption,
-		type PopupSettings
+		type PopupSettings,
+		ListBox,
+		ListBoxItem
 	} from '@skeletonlabs/skeleton';
+	import _ from 'lodash';
 
 	export let periods: Period[] | undefined = undefined;
 	export let users: User[] | undefined = undefined;
@@ -46,112 +49,148 @@
 	let selectedChampionId: number | undefined =
 		+($page.url.searchParams.get('champion') || 0) || undefined;
 
-	const championList: AutocompleteOption<Champion>[] =
-		champions?.map((champion) => ({ label: getChampionName(champion.name), value: champion })) ||
-		[];
-	let selectedChampion: Champion | undefined;
+	let championById = _.keyBy(champions, 'id');
+	let userById = _.keyBy(users, 'id');
+	let periodById = _.keyBy(periods, 'id');
 
-	let popupSettings: PopupSettings = {
+	const championList: AutocompleteOption<string, Champion>[] = _.map(champions, (champion) => ({
+		label: getChampionName(champion.name),
+		value: champion.name,
+		meta: champion
+	}));
+
+	let selectedChampion: string | undefined = selectedChampionId
+		? getChampionName(championById[selectedChampionId].name)
+		: undefined;
+
+	const userList: AutocompleteOption<string, User>[] = _.map(users, (user) => ({
+		label: user.name,
+		value: user.name,
+		meta: user
+	}));
+
+	let selectedUser: string | undefined = selectedUserId ? userById[selectedUserId].name : undefined;
+
+	let popupAutocompleteChampion: PopupSettings = {
 		event: 'focus-click',
-		target: 'popupAutocomplete',
-		placement: 'bottom'
+		target: 'popupAutocompleteChampion',
+		placement: 'bottom-start'
 	};
+
+	let popupAutocompleteUser: PopupSettings = {
+		event: 'focus-click',
+		target: 'popupAutocompleteUser',
+		placement: 'bottom-start'
+	};
+
+	const popupComboboxPeriod: PopupSettings = {
+		event: 'click',
+		target: 'popupComboboxPeriod',
+		placement: 'bottom',
+		closeQuery: '.listbox-item'
+	};
+	let comboboxValue: string;
 </script>
 
-<input
-	class="input autocomplete"
-	type="search"
-	name="autocomplete-search"
-	bind:value={selectedChampion}
-	placeholder="Search..."
-	use:popup={popupSettings}
-/>
-<div data-popup="popupAutocomplete">
-	<Autocomplete
-		bind:input={selectedChampion}
-		options={championList}
-		on:selection={async (value) => {
-			console.log(value.detail.value);
-			selectedChampion = value.detail.value;
-			selectedChampionId = value.detail.value.id;
-			const newUrl = new URL($page.url);
-			if (selectedChampionId) {
-				newUrl?.searchParams?.set('champion', selectedChampionId.toString());
-			} else {
-				newUrl?.searchParams?.delete('champion');
-			}
-			await goto(newUrl);
-		}}
-	/>
-</div>
-
-<div class="flex mt-2 flex-col gap-2 items-center sm:flex-row sm:gap-0">
+<div class="flex mt-2 flex-col gap-1 items-center sm:flex-row">
 	{#if periods}
-		<select
-			bind:value={selectedPeriodId}
-			on:change={async () => {
-				const newUrl = new URL($page.url);
-				newUrl?.searchParams?.delete('page');
-				if (selectedPeriodId) {
-					newUrl?.searchParams?.set('period', selectedPeriodId.toString());
-				} else {
-					newUrl?.searchParams?.delete('period');
-				}
-				await goto(newUrl);
-			}}
-			class={`!w-48 ${getRoundedClass('period')}`}
-			style="width: 180px"
-		>
-			<option value={undefined}> Période </option>
-			{#each periods as period}
-				<option value={period.id}>
-					{period.name}
-				</option>
-			{/each}
-		</select>
+		<button class="btn variant-filled-surface w-48 justify-between" use:popup={popupComboboxPeriod}>
+			<span class="capitalize"
+				>{selectedPeriodId ? periodById[selectedPeriodId].name : 'Période'}</span
+			>
+		</button>
+		<div class="card w-48 shadow-xl py-2 z-50" data-popup="popupComboboxPeriod">
+			<ListBox rounded="rounded-none">
+				<ListBoxItem
+					bind:group={comboboxValue}
+					name={'No period'}
+					value={''}
+					on:click={async () => {
+						const newUrl = new URL($page.url);
+						newUrl?.searchParams?.delete('period');
+						await goto(newUrl);
+					}}
+				>
+					Aucun filtre</ListBoxItem
+				>
+				{#each periods as period}
+					<ListBoxItem
+						bind:group={comboboxValue}
+						name={period.name}
+						value={period.id}
+						on:click={async () => {
+							const newUrl = new URL($page.url);
+							newUrl?.searchParams?.set('period', period.id.toString());
+							await goto(newUrl);
+						}}
+					>
+						{period.name}</ListBoxItem
+					>
+				{/each}
+			</ListBox>
+			<div class="arrow bg-surface-100-800-token" />
+		</div>
 	{/if}
 	{#if users}
-		<select
-			bind:value={selectedUserId}
-			on:change={async () => {
-				const newUrl = new URL($page.url);
-				if (selectedUserId) {
-					newUrl?.searchParams?.set('user', selectedUserId.toString());
-				} else {
-					newUrl?.searchParams?.delete('user');
-				}
-				await goto(newUrl);
-			}}
-			class={`!w-48 ${getRoundedClass('user')}`}
+		<input
+			class="input autocomplete"
+			type="search"
+			name="autocomplete-search"
+			bind:value={selectedUser}
+			placeholder="Joueur..."
+			use:popup={popupAutocompleteUser}
+		/>
+		<div
+			data-popup="popupAutocompleteUser"
+			class="card w-full max-w-64 max-h-48 overflow-y-auto z-50"
+			tabindex="-1"
 		>
-			<option value={undefined}> Joueur </option>
-			{#each users as user}
-				<option value={user.id}>
-					{user.name}
-				</option>
-			{/each}
-		</select>
+			<Autocomplete
+				bind:input={selectedUser}
+				options={userList}
+				on:selection={async (value) => {
+					const newUrl = new URL($page.url);
+					selectedUser = value.detail.value;
+					if (!value.detail.meta) {
+						newUrl?.searchParams?.delete('user');
+					} else {
+						selectedUserId = value.detail.meta.id;
+						newUrl?.searchParams?.set('user', selectedUserId.toString());
+					}
+					await goto(newUrl);
+				}}
+			/>
+		</div>
 	{/if}
 	{#if champions}
-		<select
-			bind:value={selectedChampionId}
-			on:change={async () => {
-				const newUrl = new URL($page.url);
-				if (selectedChampionId) {
-					newUrl?.searchParams?.set('champion', selectedChampionId.toString());
-				} else {
-					newUrl?.searchParams?.delete('champion');
-				}
-				await goto(newUrl);
-			}}
-			class={`!w-48 ${getRoundedClass('champion')}`}
+		<input
+			class="input autocomplete"
+			type="search"
+			name="autocomplete-search"
+			bind:value={selectedChampion}
+			placeholder="Champion..."
+			use:popup={popupAutocompleteChampion}
+		/>
+		<div
+			data-popup="popupAutocompleteChampion"
+			class="card w-full max-w-64 max-h-48 overflow-y-auto z-50"
+			tabindex="-1"
 		>
-			<option value={undefined}> Champion </option>
-			{#each champions as champion}
-				<option value={champion.id}>
-					{getChampionName(champion.name)}
-				</option>
-			{/each}
-		</select>
+			<Autocomplete
+				bind:input={selectedChampion}
+				options={championList}
+				on:selection={async (value) => {
+					const newUrl = new URL($page.url);
+					selectedChampion = value.detail.value;
+					if (!value.detail.meta) {
+						newUrl?.searchParams?.delete('champion');
+					} else {
+						selectedChampionId = value.detail.meta.id;
+						newUrl?.searchParams?.set('champion', selectedChampionId.toString());
+					}
+					await goto(newUrl);
+				}}
+			/>
+		</div>
 	{/if}
 </div>

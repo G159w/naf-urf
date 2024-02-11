@@ -127,7 +127,7 @@
 </div>
 
 <section class="container h-full mx-auto flex flex-col gap-8 w-full items-center">
-	<div in:slide class="flex flex-col-reverse lg:flex-row gap-8 justify-between w-full items-center">
+	<div class="flex flex-col-reverse lg:flex-row gap-8 justify-between w-full items-center">
 		<div class="flex gap-2 flex-col items-center lg:items-start">
 			<p>Total games: {data.totalGames}</p>
 			<p>Games chargées: {data.totalLoadedGames}</p>
@@ -141,7 +141,7 @@
 			>
 		</div>
 	</div>
-	<div in:slide class="w-full m-8">
+	<div class="w-full m-8">
 		<Paginator
 			bind:settings={paginatorSettings}
 			on:page={async (event) => {
@@ -156,7 +156,7 @@
 			}}
 		/>
 	</div>
-	<div class="flex flex-wrap w-full" in:slide={{ duration: 500, delay: 100, easing: quintIn }}>
+	<div class="flex flex-wrap w-full" in:slide={{ duration: 200, easing: quintIn }}>
 		{#each data?.games || [] as game (game.id)}
 			{#if expendedGameId !== game.id}
 				<button
@@ -176,7 +176,7 @@
 			{/if}
 		{/each}
 	</div>
-	<div in:fade class="w-full mt-8">
+	<div class="w-full mt-8">
 		<Paginator
 			bind:settings={paginatorSettings}
 			on:page={async (event) => {
