@@ -147,8 +147,8 @@
 			<select
 				bind:value={bonusDamage}
 				name="bonusDamage"
-				class=" w-60"
-				style="width: 80px; border-bottom-right-radius: 0; border-top-right-radius: 0"
+				class=" w-[80] variant-filled-primary"
+
 			>
 				<option value={2}> +2 </option>
 				<option value={0}> 0 </option>
@@ -162,8 +162,7 @@
 			<select
 				name="kda"
 				bind:value={kda}
-				class=" w-60 rounded-none"
-				style="width: 80px; border-radius: 0"
+				class=" w-[80] variant-filled-primary"
 			>
 				<option value={3}> +3 </option>
 				<option value={2}> +2 </option>
@@ -176,8 +175,8 @@
 			<select
 				name="perf"
 				bind:value={perf}
-				class=" w-60 rounded-none"
-				style="width: 80px; border-radius: 0"
+				class=" w-[80] variant-filled-primary"
+
 			>
 				<option value={2}> +2 </option>
 				<option value={0}> 0 </option>
@@ -189,8 +188,7 @@
 			<select
 				name="xclass"
 				bind:value={xclass}
-				class=" w-60 rounded-none"
-				style="width: 80px; border-radius: 0"
+				class=" w-[80] variant-filled-primary"
 			>
 				<option value={4}> +4 </option>
 				<option value={0}> 0 </option>
@@ -201,8 +199,8 @@
 			<div class="w-full items-center text-center">Remarques</div>
 			<input
 				bind:value={comment}
+				class="variant-filled-primary w-[200]"
 				name="comment"
-				style="width: 200px; border-radius: 0"
 				placeholder="..."
 				type="text"
 				autocomplete="off"
@@ -212,16 +210,15 @@
 			<div class="w-full items-center text-center">Total</div>
 			<input
 				bind:value={total}
-				class=" text-center"
-				style="width: 60px; border-radius: 0"
+				class="text-center variant-filled-primary w-[60]"
 				type="text"
 				disabled
 			/>
 		</div>
-		<div class="flex flex-col">
+		<div class="flex flex-col ml-4">
 			<div class="opacity-0">T</div>
 			<button
-				class="icon-btn btn-filled-primary p-0 rounded-none w-16 h-full flex justify-center items-center rounded-r-full"
+				class=" rounded-full icon-btn variant-filled-secondary  w-16 h-full flex justify-center items-center"
 			>
 				<Gavel />
 			</button>

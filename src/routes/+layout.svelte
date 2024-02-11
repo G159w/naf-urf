@@ -73,16 +73,40 @@
 					<svelte:fragment slot="lead"><img class="w-12" alt="Home" src={logo} /></svelte:fragment>
 				</AppRailAnchor>
 			</svelte:fragment>
-			<AppRailAnchor label="Historique" tag="a" href="/history" value={2}>
+			<AppRailAnchor
+				label="Historique"
+				tag="a"
+				href="/history"
+				value={2}
+				selected={$page.url.pathname === '/history'}
+			>
 				<svelte:fragment slot="lead"><List /></svelte:fragment>
 			</AppRailAnchor>
-			<AppRailAnchor label="Ranks" tag="a" href="/ranks" value={3}>
+			<AppRailAnchor
+				label="Ranks"
+				tag="a"
+				href="/ranks"
+				value={3}
+				selected={$page.url.pathname === '/ranks'}
+			>
 				<svelte:fragment slot="lead"><BarChart /></svelte:fragment>
 			</AppRailAnchor>
-			<AppRailAnchor label="Stats" tag="a" href="/stats" value={4}>
+			<AppRailAnchor
+				label="Stats"
+				tag="a"
+				href="/stats"
+				value={4}
+				selected={$page.url.pathname === '/stats'}
+			>
 				<svelte:fragment slot="lead"><User /></svelte:fragment>
 			</AppRailAnchor>
-			<AppRailAnchor label="Tribunal" tag="a" href="/tribunal" value={5}>
+			<AppRailAnchor
+				label="Tribunal"
+				tag="a"
+				href="/tribunal"
+				value={5}
+				selected={$page.url.pathname === '/tribunal'}
+			>
 				<svelte:fragment slot="lead"><Gavel /></svelte:fragment>
 			</AppRailAnchor>
 			<svelte:fragment slot="trail">
