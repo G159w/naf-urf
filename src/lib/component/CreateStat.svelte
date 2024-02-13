@@ -133,10 +133,10 @@
 <form
 	method="POST"
 	action="/tribunal?/createStat"
-	use:enhance={({ data }) => {
-		data.append('playerStatId', `${playerStat.id}`);
+	use:enhance={({ formData }) => {
+		formData.append('playerStatId', `${playerStat.id}`);
 		if (playerStat.stat) {
-			data.append('statId', `${playerStat.stat.id}`);
+			formData.append('statId', `${playerStat.stat.id}`);
 		}
 		callback?.();
 	}}

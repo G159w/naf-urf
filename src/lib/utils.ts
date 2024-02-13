@@ -100,6 +100,7 @@ export const championMapDisplayToDb: Record<string, string> = {
 	Malzahar: 'malzahar',
 	Maokai: 'maokai',
 	'Master Yi': 'masteryi',
+	'Milio': 'milio',
 	'Miss Fortune': 'missfortune',
 	Mordekaiser: 'mordekaiser',
 	Morgana: 'morgana',
