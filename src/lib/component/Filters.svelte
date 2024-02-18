@@ -135,7 +135,8 @@
 		<input
 			class="input autocomplete"
 			type="search"
-			name="autocomplete-search"
+			name="autocomplete-user-search"
+			autocomplete="off"
 			bind:value={selectedUser}
 			placeholder="Joueur..."
 			use:popup={popupAutocompleteUser}
@@ -166,7 +167,8 @@
 		<input
 			class="input autocomplete"
 			type="search"
-			name="autocomplete-search"
+			name="autocomplete-champion-search"
+			autocomplete="off"
 			bind:value={selectedChampion}
 			placeholder="Champion..."
 			use:popup={popupAutocompleteChampion}
