@@ -1,13 +1,38 @@
 <script lang="ts">
-	import type { Champion, Period, PlayerStat, User } from '@prisma/client';
+	import type { Champion, Period, PlayerStat, Stat, User } from '@prisma/client';
 	import { Trophy } from 'lucide-svelte';
-	import { getChampionDragonName, getColor } from '$lib/utils';
-	export let playerStats: (PlayerStat & {
-		champion: Champion;
-		user: User | null;
-	})[];
+	import {
+		colorsLevels,
+		computeStat,
+		getChampionDragonName,
+		getChampionImage,
+		getColor
+	} from '$lib/utils';
+	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
+	import GameVisualizer from '../GameVisualizer.svelte';
+	import type { CompleteStat, MaxStat } from '$lib/type';
+	export let playerStats: MaxStat[];
 	export let statKey: keyof PlayerStat;
 	export let title: string;
+
+	const modalStore = getModalStore();
+
+	function triggerDetailGameModal(playerStat: CompleteStat['playerStat'], stat: Stat): void {
+		const modalComponent: ModalComponent = {
+			ref: GameVisualizer,
+			props: {
+				playerStat: playerStat,
+				stat: stat,
+				color: stat ? colorsLevels.total[computeStat(stat)] : ''
+			},
+			slot: '<p>Skeleton</p>'
+		};
+		const d: ModalSettings = {
+			type: 'component',
+			component: modalComponent
+		};
+		modalStore.trigger(d);
+	}
 </script>
 
 <div
@@ -16,20 +41,21 @@
 	<h4>{title}</h4>
 	<div class="flex flex-col w-full">
 		{#each playerStats || [] as playerStat, index}
-			<div class="flex flex-row gap-4 align-middle items-center ">
+			<button
+				class="flex flex-row gap-4 align-middle items-center"
+				on:click={() => triggerDetailGameModal(playerStat, playerStat.stat)}
+			>
 				<img
 					class="w-12"
 					alt={playerStat.champion.name}
-					src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
-						playerStat.champion.name
-					)}.png`}
+					src={getChampionImage(playerStat.champion.name)}
 				/>
 				<div class="flex flex-row justify-between items-center w-36">
-					<div class="flex flex-col ">
-						<span class="text-lg font-bold leading-none	">
+					<div class="flex flex-col">
+						<span class="text-lg font-bold leading-none">
 							{playerStat[statKey]?.toLocaleString()}
 						</span>
-						<span class="text-sm font-light text-gray-800 dark:text-gray-200 leading-none	">
+						<span class="text-sm font-light text-gray-800 dark:text-gray-200 leading-none">
 							{playerStat.user?.name}
 						</span>
 					</div>
@@ -37,7 +63,7 @@
 						<span class="text-lg"> <Trophy class={`${getColor(index)}`} /> </span>
 					{/if}
 				</div>
-			</div>
+			</button>
 		{/each}
 	</div>
 </div>

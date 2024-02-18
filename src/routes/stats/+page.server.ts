@@ -2,11 +2,16 @@ import { createContext } from '$lib/server/context';
 import type { PageServerLoad, Actions } from './$types';
 import { z } from 'zod';
 import { PlatformId } from '@fightmegg/riot-api';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, Stat } from '@prisma/client';
+import type { MaxStat } from '$lib/type';
 const { prisma, riotApi } = await createContext();
 
+type UserWhereInput =
+	| (Prisma.Without<Prisma.UserNullableRelationFilter, Prisma.UserWhereInput> &
+			Prisma.UserWhereInput)
+	| (Prisma.Without<Prisma.UserWhereInput, Prisma.UserNullableRelationFilter> &
+			Prisma.UserNullableRelationFilter);
 
-type UserWhereInput = (Prisma.Without<Prisma.UserNullableRelationFilter, Prisma.UserWhereInput> & Prisma.UserWhereInput) | (Prisma.Without<Prisma.UserWhereInput, Prisma.UserNullableRelationFilter> & Prisma.UserNullableRelationFilter);
 
 export const load = (async ({ url }) => {
 	const userId = +(url.searchParams.get('user') || 0);
@@ -15,13 +20,13 @@ export const load = (async ({ url }) => {
 	const userWhereInput: UserWhereInput = userId
 		? {
 				id: { equals: userId }
-		  }
+			}
 		: {
 				isNot: null
-		  };
+			};
 
 	const avg = await prisma.playerStat.aggregate({
-		where: { 
+		where: {
 			user: userWhereInput,
 			game: { periodId }
 		},
@@ -129,42 +134,62 @@ export const load = (async ({ url }) => {
 		...championMaxWinsQuery.find((y) => x.championId === y.id)
 	}));
 
-	const maxKillStats = await prisma.playerStat.findMany({
+	const maxKillStats: MaxStat[] = await prisma.playerStat.findMany({
 		where: {
 			user: userWhereInput,
 			game: { periodId }
 		},
-		include: { user: true, champion: true },
+		include: {
+			user: true,
+			champion: true,
+			stat: true,
+			game: { include: { players: { include: { champion: true } } } }
+		},
 		orderBy: [{ kills: 'desc' }],
 		take: 5
 	});
 
-	const maxDeathStats = await prisma.playerStat.findMany({
+	const maxDeathStats: MaxStat[] = await prisma.playerStat.findMany({
 		where: {
 			user: userWhereInput,
 			game: { periodId }
 		},
-		include: { user: true, champion: true },
+		include: {
+			user: true,
+			champion: true,
+			stat: true,
+			game: { include: { players: { include: { champion: true } } } }
+		},
 		orderBy: [{ deaths: 'desc' }],
 		take: 5
 	});
 
-	const maxDamageStats = await prisma.playerStat.findMany({
+	const maxDamageStats: MaxStat[] = await prisma.playerStat.findMany({
 		where: {
 			user: userWhereInput,
 			game: { periodId }
 		},
-		include: { user: true, champion: true },
+		include: {
+			user: true,
+			champion: true,
+			stat: true,
+			game: { include: { players: { include: { champion: true } } } }
+		},
 		orderBy: [{ damage: 'desc' }],
 		take: 5
 	});
 
-	const maxFarmStats = await prisma.playerStat.findMany({
+	const maxFarmStats: MaxStat[] = await prisma.playerStat.findMany({
 		where: {
 			user: userWhereInput,
 			game: { periodId }
 		},
-		include: { user: true, champion: true },
+		include: {
+			user: true,
+			champion: true,
+			stat: true,
+			game: { include: { players: { include: { champion: true } } } }
+		},
 		orderBy: [{ totalCs: 'desc' }],
 		take: 5
 	});

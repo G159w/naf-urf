@@ -243,3 +243,61 @@ export const getChampionImage = (championName: string, type: 'icon' | 'splash' =
 	)}.png`;
 };
 
+
+export const colorsLevels: {
+	xClass: Record<string, string>;
+	perso: Record<string, string>;
+	kda: Record<string, string>;
+	dmg: Record<string, string>;
+	win: Record<string, string>;
+	total: Record<number, string>;
+} = {
+	xClass: {
+		'-4': 'bg-red-500 bg-opacity-50',
+		'4': 'bg-green-500 bg-opacity-50'
+	},
+	perso: {
+		'-2': 'bg-red-500 bg-opacity-50',
+		'2': 'bg-green-500 bg-opacity-50'
+	},
+	kda: {
+		'-2': 'bg-red-500 bg-opacity-50',
+		'2': 'bg-green-400 bg-opacity-50',
+		'3': 'bg-green-500 bg-opacity-50'
+	},
+	dmg: {
+		'-5': 'bg-red-500 bg-opacity-50',
+		'-3': 'bg-red-400 bg-opacity-50',
+		'-2': 'bg-red-300 bg-opacity-50',
+		'2': 'bg-green-500 bg-opacity-50'
+	},
+	win: {
+		false: 'bg-red-500 bg-opacity-50',
+		true: 'bg-green-500 bg-opacity-50	'
+	},
+	total: {
+		'-13': 'bg-red-500 bg-opacity-50',
+		'-12': 'bg-red-500 bg-opacity-50',
+		'-11': 'bg-red-500 bg-opacity-50',
+		'-10': 'bg-red-500 bg-opacity-50',
+		'-9': 'bg-red-400 bg-opacity-50',
+		'-8': 'bg-red-400 bg-opacity-50',
+		'-7': 'bg-red-400 bg-opacity-50',
+		'-6': 'bg-red-400 bg-opacity-50',
+		'-5': 'bg-red-400 bg-opacity-50',
+		'-4': 'bg-red-300 bg-opacity-50',
+		'-3': 'bg-red-300 bg-opacity-50',
+		'-2': 'bg-red-300 bg-opacity-50',
+		'-1': 'bg-red-300 bg-opacity-50',
+		'1': 'bg-green-300 bg-opacity-50',
+		'2': 'bg-green-300 bg-opacity-50',
+		'3': 'bg-green-300 bg-opacity-50',
+		'4': 'bg-green-300 bg-opacity-50',
+		'5': 'bg-green-400 bg-opacity-50',
+		'6': 'bg-green-400 bg-opacity-50',
+		'7': 'bg-green-400 bg-opacity-50',
+		'8': 'bg-green-400 bg-opacity-50',
+		'9': 'bg-green-500 bg-opacity-50',
+		'10': 'bg-green-500 bg-opacity-50'
+	}
+};

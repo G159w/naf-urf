@@ -2,7 +2,7 @@ import { createContext } from '$lib/server/context';
 import type { Prisma } from '@prisma/client';
 import type { PageServerLoad } from './$types';
 import _ from 'lodash';
-import type { CompletePStat } from '$lib/type';
+import type { CompleteStat } from '$lib/type';
 const { prisma } = await createContext();
 
 export const load = (async ({ url }) => {
@@ -83,7 +83,7 @@ export const load = (async ({ url }) => {
 		}
 	});
 
-	let allStats: CompletePStat[] = [];
+	let allStats: CompleteStat[] = [];
 
 	if (userId) {
 		allStats = await prisma.stat.findMany({

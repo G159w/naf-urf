@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { slide, scale } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 
-	import type { ModalComponent, ModalSettings } from '@skeletonlabs/skeleton';
-	import { getModalStore } from '@skeletonlabs/skeleton';
 	import type { PageData } from './$types';
 	import { fade } from 'svelte/transition';
-	import CreateUser from '$lib/component/CreateUser.svelte';
-	import { championMapDbToDisplay, getChampionDragonName, getChampionImage } from '$lib/utils';
+	import { getChampionImage } from '$lib/utils';
 	import Filters from '$lib/component/Filters.svelte';
 	import SmallCardStats from '$lib/component/Stats/SmallCardStats.svelte';
 	import SmallTableStats from '$lib/component/Stats/SmallTableStats.svelte';
@@ -15,17 +12,6 @@
 
 	export let data: PageData;
 
-	function triggerCustomModal(): void {
-		const modalComponent: ModalComponent = {
-			ref: CreateUser,
-			slot: '<p>Skeleton</p>'
-		};
-		const d: ModalSettings = {
-			type: 'component',
-			component: modalComponent
-		};
-		getModalStore().trigger(d);
-	}
 </script>
 
 <svelte:head>
@@ -141,7 +127,7 @@
 		<div class="flex flex-wrap flex-row gap-4 w-full" in:scale={{ delay: 200 }}>
 			<SmallTableStats title="Top Kills" playerStats={data.maxKillStats} statKey={'kills'} />
 			<SmallTableStats title="Top Deaths" playerStats={data.maxDeathStats} statKey={'deaths'} />
-			<SmallTableStats title="Top Dégâts" playerStats={data.maxDamageStats} statKey={'damage'} />
+			<SmallTableStats title="Top Dégâts" playerStats={data.maxDamageStats} statKey={'damage'}  />
 			<SmallTableStats title="Top Farm" playerStats={data.maxFarmStats} statKey={'totalCs'} />
 		</div>
 	</section>

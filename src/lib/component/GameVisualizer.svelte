@@ -5,18 +5,19 @@
 	import {
 		championMapDbToDisplay,
 		computeStat,
-		getChampionDragonName,
 		getChampionImage
 	} from '$lib/utils';
 	import _ from 'lodash';
-	import type { CompletePStat as CompleteStat } from '$lib/type';
+	import type { CompleteStat } from '$lib/type';
+	import type { Stat } from '@prisma/client';
 
-	export let stat: CompleteStat;
+	export let playerStat: CompleteStat['playerStat'];
+	export let stat: Stat | undefined;
 	export let color: string;
 
-	$: allyTeam = stat.playerStat.game.players.filter((player) => player.isAllyTeam) || [];
-	$: enemyTeam = stat.playerStat.game.players.filter((player) => !player.isAllyTeam) || [];
-	$: maxDamage = _.maxBy(stat.playerStat.game.players, 'damage')?.damage || 0;
+	$: allyTeam = playerStat.game.players.filter((player) => player.isAllyTeam) || [];
+	$: enemyTeam = playerStat.game.players.filter((player) => !player.isAllyTeam) || [];
+	$: maxDamage = _.maxBy(playerStat.game.players, 'damage')?.damage || 0;
 	$: isWin = allyTeam[0].isWin;
 </script>
 
@@ -33,7 +34,7 @@ ${isWin ? 'border-green-600' : 'border-red-600'}
 			{#each allyTeam as player, index}
 				<div
 					class={`w-full relative h-28  flex flex-col justify-between ${
-						player.userId === stat.playerStat?.userId ? 'inner-border' : ''
+						player.userId === playerStat.userId ? 'inner-border' : ''
 					}`}
 				>
 					<div class="p-2 flex flex-row content-evenly justify-between h-full">
@@ -152,23 +153,25 @@ border-6 rounded-lg border-l-0 rounded-l-none`}
 			{/each}
 		</div>
 	</div>
-	<div class="flex flex-row w-full gap-4">
-		<div
-			class={`flex justify-center items-center text-2xl p-8 rounded-lg ${color ?? 'bg-surface-700'} bg-opacity-50 font-bold`}
-		>
-			{computeStat(stat)}
-		</div>
-		<div class="rounded-lg p-4 bg-surface-700 bg-opacity-50 flex flex-col gap-2 w-full">
-			<div class="font-bold">Appréciation du juge:</div>
-			<div class=" text-lg">
-				{#if !!stat.comment}
-					{stat.comment}
-				{:else}
-					Rien à signaler
-				{/if}
+	{#if !!stat}
+		<div class="flex flex-row w-full gap-4">
+			<div
+				class={`flex justify-center items-center text-2xl p-8 rounded-lg ${color ?? 'bg-surface-700'} bg-opacity-50 font-bold`}
+			>
+				{computeStat(stat)}
+			</div>
+			<div class="rounded-lg p-4 bg-surface-700 bg-opacity-50 flex flex-col gap-2 w-full">
+				<div class="font-bold">Appréciation du juge:</div>
+				<div class=" text-lg">
+					{#if !!stat.comment}
+						{stat.comment}
+					{:else}
+						Rien à signaler
+					{/if}
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 </div>
 
 <style>
