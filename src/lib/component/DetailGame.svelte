@@ -6,7 +6,7 @@
 	import { Coins } from 'lucide-svelte';
 
 	import type { Champion, ChampionStat, Game, Item, PlayerStat, Stat, User } from '@prisma/client';
-	import { computeStat, getChampionDragonName, type GameCreateStat } from '$lib/utils';
+	import { computeStat, getChampionDragonName, type GameCreateStat, getChampionImage } from '$lib/utils';
 	import _ from 'lodash';
 	import CreateStat from './CreateStat.svelte';
 
@@ -68,9 +68,7 @@
 							<img
 								class="w-16 img"
 								alt={player.champion.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
-									player.champion.name
-								)}.png`}
+								src={getChampionImage(player.champion.name)}
 							/>
 							<div class="w-16 absolute left-0 bottom-0 text-center font-bold">
 								{_.find(player.champion.stats, (x) => x.periodId === game.periodId)?.winrate || 0}%
@@ -155,9 +153,7 @@
 							<img
 								class="w-16"
 								alt={player.champion.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
-									player.champion.name
-								)}.png`}
+								src={getChampionImage(player.champion.name)}
 							/>
 							<div class="flex flex-row content-between h-full justify-start flex-wrap w-52">
 								<div class=" text-left w-full text-base leading-none ">

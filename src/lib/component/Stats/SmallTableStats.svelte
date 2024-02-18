@@ -42,7 +42,7 @@
 	<div class="flex flex-col w-full">
 		{#each playerStats || [] as playerStat, index}
 			<button
-				class="flex flex-row gap-4 align-middle items-center"
+				class="flex flex-row gap-4 align-middle items-center hover:bg-surface-900 rounded-r-md"
 				on:click={() => triggerDetailGameModal(playerStat, playerStat.stat)}
 			>
 				<img
@@ -51,16 +51,16 @@
 					src={getChampionImage(playerStat.champion.name)}
 				/>
 				<div class="flex flex-row justify-between items-center w-36">
-					<div class="flex flex-col">
-						<span class="text-lg font-bold leading-none">
+					<div class="flex flex-col justify-start">
+						<span class="text-lg font-bold leading-none justify-start flex">
 							{playerStat[statKey]?.toLocaleString()}
 						</span>
-						<span class="text-sm font-light text-gray-800 dark:text-gray-200 leading-none">
+						<span class="text-sm font-light text-gray-800 dark:text-gray-200 leading-none justify-start flex">
 							{playerStat.user?.name}
 						</span>
 					</div>
 					{#if index < 3}
-						<span class="text-lg"> <Trophy class={`${getColor(index)}`} /> </span>
+						<span class="text-lg pr-2"> <Trophy class={`${getColor(index)}`} /> </span>
 					{/if}
 				</div>
 			</button>
