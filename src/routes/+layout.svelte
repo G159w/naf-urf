@@ -100,15 +100,6 @@
 			>
 				<svelte:fragment slot="lead"><User /></svelte:fragment>
 			</AppRailAnchor>
-			<AppRailAnchor
-				label="Tribunal"
-				tag="a"
-				href="/tribunal"
-				value={5}
-				selected={$page.url.pathname === '/tribunal'}
-			>
-				<svelte:fragment slot="lead"><Gavel /></svelte:fragment>
-			</AppRailAnchor>
 			<svelte:fragment slot="trail">
 				<AppRailAnchor>
 					<svelte:fragment slot="lead"><LightSwitch /></svelte:fragment>
