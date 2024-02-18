@@ -3,7 +3,15 @@
 	import { fade } from 'svelte/transition';
 	import Filters from '$lib/component/Filters.svelte';
 	import _ from 'lodash';
-	import { championMapDbToDisplay, getChampionName } from '$lib/utils';
+	import {
+		championMapDbToDisplay,
+		computeStat,
+		getChampionDragonName,
+		getChampionImage
+	} from '$lib/utils';
+	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
+	import GameVisualizer from '$lib/component/GameVisualizer.svelte';
+	import type { CompletePStat } from '$lib/type';
 
 	export let data: PageData;
 
@@ -28,6 +36,25 @@
 		})
 		.orderBy('points', 'desc')
 		.value();
+  
+		const modalStore = getModalStore();
+
+	function triggerDetailGameModal(stat: CompletePStat): void {
+		console.log('HERE', stat)
+		const modalComponent: ModalComponent = {
+			ref: GameVisualizer,
+			props: {
+				stat: stat,
+				color: colorsLevels.total[computeStat(stat)],
+			},
+			slot: '<p>Skeleton</p>'
+		};
+		const d: ModalSettings = {
+			type: 'component',
+			component: modalComponent
+		};
+		modalStore.trigger(d);
+	}
 
 	let colorsLevels: {
 		xClass: Record<string, string>;
@@ -149,7 +176,7 @@
 			</thead>
 			<tbody>
 				{#each data.allStats as stats}
-					<tr>
+					<tr on:click={() => triggerDetailGameModal(stats)}>
 						<td
 							class={`border-primary-500 border-r-2 font-bold ${colorsLevels.win[stats.playerStat.isWin.toString()]}`}
 						>
@@ -157,13 +184,10 @@
 								<img
 									class="w-9 m-[-0.5rem] shadow-xl"
 									alt={stats.champion.champion.name}
-									src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionName(
-										stats.champion.champion.name
-									)}.png`}
+									src={getChampionImage(stats.champion.champion.name)}
 								/>
 								<div class=" w-28">
 									{championMapDbToDisplay[stats.champion.champion.name]}
-
 								</div>
 							</div>
 						</td>
@@ -176,9 +200,8 @@
 						<td class={`border-primary-500 border-r-2 ${colorsLevels.xClass[stats.xClass]}`}
 							>{stats.xClass}</td
 						>
-						<td
-							class={`font-bold ${colorsLevels.total[stats.kda + stats.perf + stats.xClass + stats.damage]}`}
-							>{stats.kda + stats.perf + stats.xClass + stats.damage}</td
+						<td class={`font-bold ${colorsLevels.total[computeStat(stats)]}`}
+							>{computeStat(stats)}</td
 						>
 					</tr>
 				{/each}

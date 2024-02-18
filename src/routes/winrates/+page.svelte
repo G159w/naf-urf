@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { getChampionName } from '$lib/utils';
+	import { getChampionDragonName } from '$lib/utils';
 	import Filters from '$lib/component/Filters.svelte';
 	import { enhance } from '$app/forms';
 	import { Save } from 'lucide-svelte';
@@ -24,15 +24,15 @@
 				<form
 					method="POST"
 					action="/winrates?/createChampStat"
-					use:enhance={({ data }) => {
-						data.append('championId', `${champion.id}`);
-						data.append('periodId', `${periodId}`);
+					use:enhance={({ formData }) => {
+						formData.append('championId', `${champion.id}`);
+						formData.append('periodId', `${periodId}`);
 
 						return async () => {};
 					}}
 				>
 					<div class="flex flex-row gap-2 items-center">
-						<div class="w-32">{getChampionName(champion.name)}</div>
+						<div class="w-32">{getChampionDragonName(champion.name)}</div>
 						<input
 							name="winrate"
 							type="number"

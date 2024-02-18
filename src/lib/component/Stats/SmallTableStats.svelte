@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Champion, Period, PlayerStat, User } from '@prisma/client';
 	import { Trophy } from 'lucide-svelte';
-	import { getChampionName, getColor } from '$lib/utils';
+	import { getChampionDragonName, getColor } from '$lib/utils';
 	export let playerStats: (PlayerStat & {
 		champion: Champion;
 		user: User | null;
@@ -20,7 +20,7 @@
 				<img
 					class="w-12"
 					alt={playerStat.champion.name}
-					src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionName(
+					src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
 						playerStat.champion.name
 					)}.png`}
 				/>

@@ -78,6 +78,7 @@ export const actions: Actions = {
 		timer.start();
 		try {
 			const formaData = Object.fromEntries(await request.formData());
+			console.log(formaData);
 			const { bonusDamage, kda, perf, xclass, comment, playerStatId, statId } =
 				createStatSchema.parse(formaData);
 

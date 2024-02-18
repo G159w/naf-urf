@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import type { Champion, Period, User } from '@prisma/client';
 	import { goto } from '$app/navigation';
-	import { getChampionName } from '$lib/utils';
+	import { getChampionDragonName } from '$lib/utils';
 	import {
 		Autocomplete,
 		popup,
@@ -54,13 +54,13 @@
 	let periodById = _.keyBy(periods, 'id');
 
 	const championList: AutocompleteOption<string, Champion>[] = _.map(champions, (champion) => ({
-		label: getChampionName(champion.name),
+		label: getChampionDragonName(champion.name),
 		value: champion.name,
 		meta: champion
 	}));
 
 	let selectedChampion: string | undefined = selectedChampionId
-		? getChampionName(championById[selectedChampionId].name)
+		? getChampionDragonName(championById[selectedChampionId].name)
 		: undefined;
 
 	const userList: AutocompleteOption<string, User>[] = _.map(users, (user) => ({

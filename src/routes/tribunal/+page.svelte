@@ -3,7 +3,7 @@
 	import { fade, scale } from 'svelte/transition';
 	import { Coins } from 'lucide-svelte';
 	import { Cowled, CrossedSwords } from 'svelte-game-icons';
-	import { championMapDbToDisplay, getChampionName } from '$lib/utils';
+	import { championMapDbToDisplay, getChampionDragonName, getChampionImage } from '$lib/utils';
 	import { format } from 'date-fns';
 	import _ from 'lodash';
 	import CreateStat from '$lib/component/CreateStat.svelte';
@@ -69,9 +69,7 @@
 								${index === 4 ? 'rounded-bl-lg' : ''}
 							`}
 								alt={player.champion?.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${getChampionName(
-									player.champion?.name || ''
-								)}_0.jpg`}
+								src={getChampionImage(player.champion?.name || '', 'splash')}
 							/>
 							<div class=" flex flex-col gap-1 ">
 								<span class="text-xl font-semibold">
@@ -136,9 +134,7 @@
 								${index === 4 ? 'rounded-br-lg' : ''}
 							`}
 								alt={player.champion?.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${getChampionName(
-									player.champion?.name || ''
-								)}_0.jpg`}
+								src={getChampionImage(player.champion?.name || '', 'splash')}
 							/>
 							<div class=" flex flex-col h-full justify-center font-semibold gap-2 pl-4">
 								<span class="flex flex-row gap-2 align-middle text-md text-right">

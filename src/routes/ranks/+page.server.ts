@@ -2,6 +2,7 @@ import { createContext } from '$lib/server/context';
 import type { Prisma } from '@prisma/client';
 import type { PageServerLoad } from './$types';
 import _ from 'lodash';
+import type { CompletePStat } from '$lib/type';
 const { prisma } = await createContext();
 
 export const load = (async ({ url }) => {
@@ -25,13 +26,13 @@ export const load = (async ({ url }) => {
 		},
 		_max: {
 			kills: true,
-			deaths: true,
+			deaths: true
 		},
 		_count: {
-			kda: true,
+			kda: true
 		}
 	});
-	
+
 	const gameWon = await prisma.playerStat.groupBy({
 		by: ['userId'],
 		where: {
@@ -42,7 +43,7 @@ export const load = (async ({ url }) => {
 			championId: championId
 		},
 		_count: {
-			isWin: true,
+			isWin: true
 		}
 	});
 
@@ -56,7 +57,7 @@ export const load = (async ({ url }) => {
 			championId: championId
 		},
 		_count: {
-			isWin: true,
+			isWin: true
 		}
 	});
 
@@ -65,7 +66,7 @@ export const load = (async ({ url }) => {
 		const gameWonCount = gameWon._count?.isWin || 0;
 		return {
 			userId: gameWon.userId,
-			winRate: gameWonCount / (gameWonCount + gameLostCount) * 100
+			winRate: (gameWonCount / (gameWonCount + gameLostCount)) * 100
 		};
 	});
 
@@ -82,13 +83,18 @@ export const load = (async ({ url }) => {
 		}
 	});
 
-	let allStats: Prisma.StatGetPayload<{ include: { playerStat: true, champion: { include: { champion: true }} }}>[] = [];
+	let allStats: CompletePStat[] = [];
 
 	if (userId) {
 		allStats = await prisma.stat.findMany({
 			where: { userId, champion: { championId }, periodId },
-			include: { playerStat: true, champion: { include: { champion: true }} },
-			orderBy: { playerStat: { game: { gameCreation: 'desc' }} }
+			include: {
+				playerStat: {
+					include: { game: { include: { players: { include: { champion: true } } } } }
+				},
+				champion: { include: { champion: true } }
+			},
+			orderBy: { playerStat: { game: { gameCreation: 'desc' } } }
 		});
 	}
 

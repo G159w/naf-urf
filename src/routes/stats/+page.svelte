@@ -6,7 +6,7 @@
 	import type { PageData } from './$types';
 	import { fade } from 'svelte/transition';
 	import CreateUser from '$lib/component/CreateUser.svelte';
-	import { championMapDbToDisplay, getChampionName } from '$lib/utils';
+	import { championMapDbToDisplay, getChampionDragonName, getChampionImage } from '$lib/utils';
 	import Filters from '$lib/component/Filters.svelte';
 	import SmallCardStats from '$lib/component/Stats/SmallCardStats.svelte';
 	import SmallTableStats from '$lib/component/Stats/SmallTableStats.svelte';
@@ -38,9 +38,7 @@
 			in:fade={{ delay: 100, easing: quintIn }}
 			class={`z-[-1] h-2/3 w-full opacity-60 object-cover object-top absolute top-0 left-0 img`}
 			alt={data.championMaxPlays[0].name}
-			src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${getChampionName(
-				data.championMaxPlays[0].name || ''
-			)}_0.jpg`}
+			src={getChampionImage(data.championMaxPlays[0].name || '', 'splash')}
 		/>
 
 		<Filters periods={data.periods} users={data.users} />

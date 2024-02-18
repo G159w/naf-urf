@@ -38,7 +38,7 @@ export const championMapDisplayToDb: Record<string, string> = {
 	Blitzcrank: 'blitzcrank',
 	Brand: 'brand',
 	Braum: 'braum',
-	Briar : 'briar',
+	Briar: 'briar',
 	Caitlyn: 'caitlyn',
 	Camille: 'camille',
 	Cassiopeia: 'cassiopeia',
@@ -100,7 +100,7 @@ export const championMapDisplayToDb: Record<string, string> = {
 	Malzahar: 'malzahar',
 	Maokai: 'maokai',
 	'Master Yi': 'masteryi',
-	'Milio': 'milio',
+	Milio: 'milio',
 	'Miss Fortune': 'missfortune',
 	Mordekaiser: 'mordekaiser',
 	Morgana: 'morgana',
@@ -194,7 +194,7 @@ export const championMapDbToDisplay: Record<string, string> = Object.fromEntries
 	Object.entries(championMapDisplayToDb).map((a) => a.reverse())
 );
 
-export const getChampionName = (championName: string) => {
+export const getChampionDragonName = (championName: string) => {
 	if (championName in championsToFormat) {
 		return capitalize(championsToFormat[championName]);
 	}
@@ -231,3 +231,15 @@ export type GameCreateStat = PlayerStat & {
 		})[];
 	};
 };
+
+export const getChampionImage = (championName: string, type: 'icon' | 'splash' = 'icon') => {
+	if (type !== 'icon') {
+		return `http://ddragon.leagueoflegends.com/cdn/img/champion/${type}/${getChampionDragonName(
+			championName
+		)}_0.jpg`;
+	}
+	return `http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
+		championName
+	)}.png`;
+};
+

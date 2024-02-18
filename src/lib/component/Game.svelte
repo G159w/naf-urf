@@ -4,7 +4,7 @@
 	import { quintIn, circIn, backIn } from 'svelte/easing';
 
 	import type { Champion, Game, PlayerStat, Stat, User } from '@prisma/client';
-	import { computeStat, getChampionName } from '$lib/utils';
+	import { computeStat, getChampionDragonName } from '$lib/utils';
 	import _ from 'lodash';
 
 	export let game: Game & {
@@ -53,7 +53,7 @@
 							<img
 								class=" w-7"
 								alt={player.champion.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionName(
+								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
 									player.champion.name
 								)}.png`}
 							/>
@@ -79,7 +79,7 @@
 							<img
 								class="w-7"
 								alt={player.champion.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionName(
+								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
 									player.champion.name
 								)}.png`}
 							/>

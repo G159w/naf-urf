@@ -8,12 +8,8 @@
 		Paginator,
 		type ModalComponent,
 		type ModalSettings,
-
 		type PopupSettings,
-
 		popup
-
-
 	} from '@skeletonlabs/skeleton';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';

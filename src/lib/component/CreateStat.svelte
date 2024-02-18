@@ -141,15 +141,10 @@
 		callback?.();
 	}}
 >
-	<div class="flex mt-2">
+	<div class="flex mt-2 items-center">
 		<div class="flex flex-col">
 			<div class="w-full items-center text-center">Dmg</div>
-			<select
-				bind:value={bonusDamage}
-				name="bonusDamage"
-				class=" w-[80] variant-filled-primary"
-
-			>
+			<select bind:value={bonusDamage} name="bonusDamage" class=" w-[80] variant-filled-primary">
 				<option value={2}> +2 </option>
 				<option value={0}> 0 </option>
 				<option value={-2}> -2 </option>
@@ -159,11 +154,7 @@
 		</div>
 		<div class="flex flex-col">
 			<div class="w-full items-center text-center">KDA</div>
-			<select
-				name="kda"
-				bind:value={kda}
-				class=" w-[80] variant-filled-primary"
-			>
+			<select name="kda" bind:value={kda} class=" w-[80] variant-filled-primary">
 				<option value={3}> +3 </option>
 				<option value={2}> +2 </option>
 				<option value={0}> 0 </option>
@@ -172,12 +163,7 @@
 		</div>
 		<div class="flex flex-col">
 			<div class="w-full items-center text-center">Perf</div>
-			<select
-				name="perf"
-				bind:value={perf}
-				class=" w-[80] variant-filled-primary"
-
-			>
+			<select name="perf" bind:value={perf} class=" w-[80] variant-filled-primary">
 				<option value={2}> +2 </option>
 				<option value={0}> 0 </option>
 				<option value={-2}> -2 </option>
@@ -185,26 +171,11 @@
 		</div>
 		<div class="flex flex-col">
 			<div class="w-full items-center text-center">xClass</div>
-			<select
-				name="xclass"
-				bind:value={xclass}
-				class=" w-[80] variant-filled-primary"
-			>
+			<select name="xclass" bind:value={xclass} class=" w-[80] variant-filled-primary">
 				<option value={4}> +4 </option>
 				<option value={0}> 0 </option>
 				<option value={-4}> -4 </option>
 			</select>
-		</div>
-		<div class="flex flex-col">
-			<div class="w-full items-center text-center">Remarques</div>
-			<input
-				bind:value={comment}
-				class="variant-filled-primary w-[200]"
-				name="comment"
-				placeholder="..."
-				type="text"
-				autocomplete="off"
-			/>
 		</div>
 		<div class="flex flex-col">
 			<div class="w-full items-center text-center">Total</div>
@@ -216,9 +187,20 @@
 			/>
 		</div>
 		<div class="flex flex-col ml-4">
+			<div class="w-full items-center text-center">Remarques</div>
+			<textarea
+				name="comment"
+				bind:value={comment}
+				class="textarea variant-filled-primary w-[400px]"
+				rows="2"
+				autocomplete="off"
+				placeholder="Enter some long form content."
+			/>
+		</div>
+		<div class="flex flex-col ml-4 h-20">
 			<div class="opacity-0">T</div>
 			<button
-				class=" rounded-full icon-btn variant-filled-secondary  w-16 h-full flex justify-center items-center"
+				class=" rounded-xl icon-btn variant-filled-secondary w-16 h-full flex justify-center items-center"
 			>
 				<Gavel />
 			</button>
