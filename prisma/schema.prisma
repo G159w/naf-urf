@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -8,39 +8,35 @@ datasource db {
 }
 
 model User {
-  id        Int          @id @default(sequence(increment: 1))
+  id        Int          @id @default(sequence())
   name      String       @unique
   ign       String?      @unique
   lolId     String?      @unique
-  stats     Stat[]
-  gameStats PlayerStat[]
   updatedAt DateTime     @updatedAt
   createdAt DateTime     @default(now())
+  gameStats PlayerStat[]
+  stats     Stat[]
 }
 
 model Game {
-  id            Int          @id @default(sequence(increment: 1))
+  id            Int          @id @default(sequence())
   matchId       String       @unique
   gameMode      String?
   isMatchLoaded Boolean      @default(false)
-  players       PlayerStat[]
   periodId      Int?
-  period        Period?      @relation(fields: [periodId], references: [id])
   duration      Float?
   gameCreation  DateTime?
   updatedAt     DateTime     @updatedAt
   createdAt     DateTime     @default(now())
+  period        Period?      @relation(fields: [periodId], references: [id])
+  players       PlayerStat[]
 }
 
 model PlayerStat {
-  id                   Int         @id @default(sequence(increment: 1))
+  id                   Int         @id @default(sequence())
   gameId               Int
-  game                 Game        @relation(fields: [gameId], references: [id])
   championId           Int
-  champion             Champion    @relation(fields: [championId], references: [id])
   userId               Int?
-  user                 User?       @relation(fields: [userId], references: [id])
-  stat                 Stat?
   sumName              String
   puuid                String
   isAllyTeam           Boolean
@@ -60,43 +56,43 @@ model PlayerStat {
   goldEarned           Int
   totalMinionsKilled   Int
   neutralMinionsKilled Int
-  totalCs              Int
   isWin                Boolean
   totalTimeSpentDead   Int
-  sumSpells            SumSpells[]
-  items                Item[]
   updatedAt            DateTime    @updatedAt
   createdAt            DateTime    @default(now())
+  totalCs              Int
+  champion             Champion    @relation(fields: [championId], references: [id])
+  game                 Game        @relation(fields: [gameId], references: [id])
+  user                 User?       @relation(fields: [userId], references: [id])
+  stat                 Stat?
+  items                Item[]      @relation("ItemToPlayerStat")
+  sumSpells            SumSpells[] @relation("PlayerStatToSumSpells")
 }
 
 model SumSpells {
-  id        Int          @id @default(sequence(increment: 1))
+  id        Int          @id @default(sequence())
   sumId     Int          @unique
   name      String?      @unique
-  players   PlayerStat[]
   updatedAt DateTime     @updatedAt
   createdAt DateTime     @default(now())
+  players   PlayerStat[] @relation("PlayerStatToSumSpells")
 }
 
 model Item {
-  id        Int          @id @default(sequence(increment: 1))
+  id        Int          @id @default(sequence())
   itemId    Int          @unique
   name      String?      @unique
-  players   PlayerStat[]
   updatedAt DateTime     @updatedAt
   createdAt DateTime     @default(now())
+  players   PlayerStat[] @relation("ItemToPlayerStat")
 }
 
 model Stat {
-  id             Int          @id @default(sequence(increment: 1))
+  id             Int          @id @default(sequence())
   userId         Int
-  user           User         @relation(fields: [userId], references: [id])
   championStatId Int
-  champion       ChampionStat @relation(fields: [championStatId], references: [id])
   periodId       Int
-  period         Period       @relation(fields: [periodId], references: [id])
   playerStatId   Int          @unique
-  playerStat     PlayerStat   @relation(fields: [playerStatId], references: [id])
   kills          Int
   deaths         Int
   assists        Int
@@ -108,45 +104,49 @@ model Stat {
   comment        String?
   updatedAt      DateTime     @updatedAt
   createdAt      DateTime     @default(now())
+  champion       ChampionStat @relation(fields: [championStatId], references: [id])
+  period         Period       @relation(fields: [periodId], references: [id])
+  playerStat     PlayerStat   @relation(fields: [playerStatId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
 }
 
 model Champion {
-  id        Int            @id @default(sequence(increment: 1))
+  id        Int            @id @default(sequence())
   name      String         @unique
-  players   PlayerStat[]
-  stats     ChampionStat[]
   support   Boolean        @default(false)
   updatedAt DateTime       @updatedAt
   createdAt DateTime       @default(now())
+  stats     ChampionStat[]
+  players   PlayerStat[]
 }
 
 model ChampionStat {
-  id         Int      @id @default(sequence(increment: 1))
+  id         Int      @id @default(sequence())
   periodId   Int
-  period     Period   @relation(fields: [periodId], references: [id])
   winrate    Float
   championId Int
-  champion   Champion @relation(fields: [championId], references: [id])
-  userStats  Stat[]
   updatedAt  DateTime @updatedAt
   createdAt  DateTime @default(now())
+  champion   Champion @relation(fields: [championId], references: [id])
+  period     Period   @relation(fields: [periodId], references: [id])
+  userStats  Stat[]
 
   @@unique([championId, periodId])
 }
 
 model Period {
-  id            Int            @id @default(sequence(increment: 1))
+  id            Int            @id @default(sequence())
   name          String
   date          DateTime
-  games         Game[]
-  championStats ChampionStat[]
-  stats         Stat[]
   updatedAt     DateTime       @updatedAt
   createdAt     DateTime       @default(now())
+  championStats ChampionStat[]
+  games         Game[]
+  stats         Stat[]
 }
 
 model LolRequest {
-  id        Int      @id @default(sequence(increment: 1))
+  id        Int      @id @default(sequence())
   count     Int
   createdAt DateTime @default(now())
 }

@@ -54,6 +54,7 @@ CREATE TABLE "PlayerStat" (
     "totalTimeSpentDead" INT4 NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "totalCs" INT4 NOT NULL,
 
     CONSTRAINT "PlayerStat_pkey" PRIMARY KEY ("id")
 );
@@ -206,16 +207,13 @@ CREATE INDEX "_ItemToPlayerStat_B_index" ON "_ItemToPlayerStat"("B");
 ALTER TABLE "Game" ADD CONSTRAINT "Game_periodId_fkey" FOREIGN KEY ("periodId") REFERENCES "Period"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PlayerStat" ADD CONSTRAINT "PlayerStat_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "PlayerStat" ADD CONSTRAINT "PlayerStat_championId_fkey" FOREIGN KEY ("championId") REFERENCES "Champion"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PlayerStat" ADD CONSTRAINT "PlayerStat_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PlayerStat" ADD CONSTRAINT "PlayerStat_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Stat" ADD CONSTRAINT "Stat_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PlayerStat" ADD CONSTRAINT "PlayerStat_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Stat" ADD CONSTRAINT "Stat_championStatId_fkey" FOREIGN KEY ("championStatId") REFERENCES "ChampionStat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -227,10 +225,13 @@ ALTER TABLE "Stat" ADD CONSTRAINT "Stat_periodId_fkey" FOREIGN KEY ("periodId") 
 ALTER TABLE "Stat" ADD CONSTRAINT "Stat_playerStatId_fkey" FOREIGN KEY ("playerStatId") REFERENCES "PlayerStat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ChampionStat" ADD CONSTRAINT "ChampionStat_periodId_fkey" FOREIGN KEY ("periodId") REFERENCES "Period"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Stat" ADD CONSTRAINT "Stat_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ChampionStat" ADD CONSTRAINT "ChampionStat_championId_fkey" FOREIGN KEY ("championId") REFERENCES "Champion"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ChampionStat" ADD CONSTRAINT "ChampionStat_periodId_fkey" FOREIGN KEY ("periodId") REFERENCES "Period"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_PlayerStatToSumSpells" ADD CONSTRAINT "_PlayerStatToSumSpells_A_fkey" FOREIGN KEY ("A") REFERENCES "PlayerStat"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -243,3 +244,4 @@ ALTER TABLE "_ItemToPlayerStat" ADD CONSTRAINT "_ItemToPlayerStat_A_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "_ItemToPlayerStat" ADD CONSTRAINT "_ItemToPlayerStat_B_fkey" FOREIGN KEY ("B") REFERENCES "PlayerStat"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
