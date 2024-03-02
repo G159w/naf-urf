@@ -112,6 +112,14 @@
 			</form>
 		</li>
 		<li class="p-1">
+			<form method="POST" action="?/updateGamesDetail">
+				<button class="p-0 flex gap-2 items-center">
+					<Download size={20} />
+					Update details
+				</button>
+			</form>
+		</li>
+		<li class="p-1">
 			<form method="POST" action="?/loadUserGames">
 				<button class="p-0 flex gap-2 items-center">
 					<RefreshCcw size={20} />

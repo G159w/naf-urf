@@ -83,6 +83,12 @@
 						{data.avg.totalCs?.toLocaleString(undefined, { maximumFractionDigits: 0 })} cs
 					</span>
 				</SmallCardStats>
+				<SmallCardStats>
+					<span slot="title">Tanked</span>
+					<span slot="stat">
+						{data.avg.tanked?.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+					</span>
+				</SmallCardStats>
 			</div>
 		</div>
 		<div class="flex flex-wrap flex-row gap-4 w-full">
@@ -129,6 +135,23 @@
 			<SmallTableStats title="Top Deaths" playerStats={data.maxDeathStats} statKey={'deaths'} />
 			<SmallTableStats title="Top Dégâts" playerStats={data.maxDamageStats} statKey={'damage'}  />
 			<SmallTableStats title="Top Farm" playerStats={data.maxFarmStats} statKey={'totalCs'} />
+			<SmallTableStats title="Top Tanked" playerStats={data.maxTankedStats} statKey={'tanked'} />
+			<SmallTableStats title="Top Mitigated" playerStats={data.maxMitigatedStats} statKey={'mitigated'} />
+			<SmallTableStats title="Top CC Time" playerStats={data.maxCCingStats} statKey={'timeCCingOthers'} />
+			<SmallTableStats title="Top Gold" playerStats={data.maxGoldEarnedStats} statKey={'goldEarned'} />
+			<SmallTableStats title="Top Dead Time" playerStats={data.maxDeadTimeStats} statKey={'totalTimeSpentDead'} />
+			<SmallTableStats title="Top Crit Strike" playerStats={data.maxCritStrikeStats} statKey={'largestCriticalStrike'} />
+			<SmallTableStats title="Top Killing Spree" playerStats={data.maxKillingSpreeStats} statKey={'largestKillingSpree'} />
+			<SmallTableStats title="Top Time Alive" playerStats={data.maxTimeLivingStats} statKey={'longestTimeSpentLiving'} />
+			<SmallTableStats title="Top Q Casts" playerStats={data.maxSpell1CastsStats} statKey={'spell1Casts'} />
+			<SmallTableStats title="Top Z Casts" playerStats={data.maxSpell2CastsStats} statKey={'spell2Casts'} />
+			<SmallTableStats title="Top E Casts" playerStats={data.maxSpell3CastsStats} statKey={'spell3Casts'} />
+			<SmallTableStats title="Top R Casts" playerStats={data.maxSpell4CastsStats} statKey={'spell4Casts'} />
+			<SmallTableStats title="Top D Casts" playerStats={data.maxSumm1CastsStats} statKey={'summoner1Casts'} />
+			<SmallTableStats title="Top F Casts" playerStats={data.maxSumm2CastsStats} statKey={'summoner2Casts'} />
+			<SmallTableStats title="Top Heal" playerStats={data.maxHealStats} statKey={'totalHeal'} />
+			<SmallTableStats title="Top Heal on Team" playerStats={data.maxHealTeammatesStats} statKey={'totalHealsOnTeammates'} />
+			<SmallTableStats title="Top Shield on Team" playerStats={data.maxShieldTeammatesStats} statKey={'totalDamageShieldedOnTeammates'} />
 		</div>
 	</section>
 {/key}

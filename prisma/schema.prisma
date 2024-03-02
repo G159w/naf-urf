@@ -33,40 +33,55 @@ model Game {
 }
 
 model PlayerStat {
-  id                   Int         @id @default(sequence())
-  gameId               Int
-  championId           Int
-  userId               Int?
-  sumName              String
-  puuid                String
-  isAllyTeam           Boolean
-  kills                Int
-  deaths               Int
-  assists              Int
-  damage               Int
-  tanked               Int
-  mitigated            Int
-  totalTimeCCDealt     Int
-  isFirstBloodKill     Boolean
-  doubleKills          Int
-  tripleKills          Int
-  quadraKills          Int
-  pentaKills           Int
-  timeCCingOthers      Int
-  goldEarned           Int
-  totalMinionsKilled   Int
-  neutralMinionsKilled Int
-  isWin                Boolean
-  totalTimeSpentDead   Int
-  updatedAt            DateTime    @updatedAt
-  createdAt            DateTime    @default(now())
-  totalCs              Int
-  champion             Champion    @relation(fields: [championId], references: [id])
-  game                 Game        @relation(fields: [gameId], references: [id])
-  user                 User?       @relation(fields: [userId], references: [id])
-  stat                 Stat?
-  items                Item[]      @relation("ItemToPlayerStat")
-  sumSpells            SumSpells[] @relation("PlayerStatToSumSpells")
+  id                             Int         @id @default(sequence())
+  gameId                         Int
+  championId                     Int
+  userId                         Int?
+  sumName                        String
+  puuid                          String
+  isAllyTeam                     Boolean
+  kills                          Int
+  deaths                         Int
+  assists                        Int
+  damage                         Int
+  tanked                         Int
+  mitigated                      Int
+  totalTimeCCDealt               Int
+  isFirstBloodKill               Boolean
+  doubleKills                    Int
+  tripleKills                    Int
+  quadraKills                    Int
+  pentaKills                     Int
+  timeCCingOthers                Int
+  goldEarned                     Int
+  totalMinionsKilled             Int
+  neutralMinionsKilled           Int
+  isWin                          Boolean
+  totalTimeSpentDead             Int
+  largestCriticalStrike          Int?
+  largestKillingSpree            Int?
+  longestTimeSpentLiving         Int?
+  spell1Casts                    Int?
+  spell2Casts                    Int?
+  spell3Casts                    Int?
+  spell4Casts                    Int?
+  summoner1Casts                 Int?
+  summoner2Casts                 Int?
+  totalHeal                      Int?
+  totalHealsOnTeammates          Int?
+  totalDamageShieldedOnTeammates Int?
+  totalCs                        Int
+  champion                       Champion    @relation(fields: [championId], references: [id])
+  game                           Game        @relation(fields: [gameId], references: [id])
+  user                           User?       @relation(fields: [userId], references: [id])
+  stat                           Stat?
+  items                          Item[]      @relation("ItemToPlayerStat")
+  sumSpells                      SumSpells[] @relation("PlayerStatToSumSpells")
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([gameId, puuid])
 }
 
 model SumSpells {

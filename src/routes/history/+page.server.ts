@@ -229,6 +229,18 @@ export const actions: Actions = {
 							neutralMinionsKilled: player.neutralMinionsKilled,
 							totalCs: player.totalMinionsKilled + player.neutralMinionsKilled,
 							goldEarned: player.goldEarned,
+							largestCriticalStrike: player.largestCriticalStrike,
+							largestKillingSpree: player.largestKillingSpree,
+							longestTimeSpentLiving: player.longestTimeSpentLiving,
+							spell1Casts: player.spell1Casts,
+							spell2Casts: player.spell2Casts,
+							spell3Casts: player.spell3Casts,
+							spell4Casts: player.spell4Casts,
+							summoner1Casts: player.summoner1Casts,
+							summoner2Casts: player.summoner2Casts,
+							totalHeal: player.totalHeal,
+							totalHealsOnTeammates: player.totalHealsOnTeammates,
+							totalDamageShieldedOnTeammates: player.totalDamageShieldedOnTeammates,
 							items: {
 								connectOrCreate: [
 									{ where: { itemId: player.item0 }, create: { itemId: player.item0 } },
@@ -259,6 +271,101 @@ export const actions: Actions = {
 							isMatchLoaded: true,
 							players: {
 								create: players
+							}
+						}
+					})
+				);
+				console.log(timer.time(), game.id, 'game riot api call done');
+			}
+
+			console.log(timer.time(), 'Start awaiting games update');
+			const loadedGames = await prisma.$transaction(prismaUpdates.map((x) => x()));
+			console.log(timer.time(), loadedGames.length, 'End awaiting games update');
+
+			return {
+				success: true,
+				loadedGames: games.length
+			};
+		} catch (err) {
+			console.log(err);
+			return { success: false };
+		}
+	},
+	updateGamesDetail: async () => {
+		try {
+			const timer = new Timer();
+			timer.start();
+			const requests = await numberOfPossibleRequests(prisma);
+
+			const twoYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 2));
+
+			const games = await prisma.game.findMany({
+				where: {
+					players: {
+						some: {
+							totalHeal: { equals: null }
+						}
+					},
+					gameCreation: { gt: twoYearsAgo }
+				},
+				take: requests // > 20 ? 20 : requests
+			});
+
+			if (games.length === 0) {
+				console.log('No more possible request');
+				return 0;
+			}
+			await prisma.lolRequest.create({ data: { count: games.length } });
+			console.log(timer.time(), games.length, 'Number of game requested ');
+
+			const users = await prisma.user.findMany();
+			const userLolIds = users.map((user) => user.lolId);
+
+			const prismaUpdates: (() => PrismaPromise<Game>)[] = [];
+
+			console.log(timer.time(), 'Start calling riot API');
+			for (const game of games) {
+				const match = await riotApi.matchV5.getMatchById({
+					cluster: PlatformId.EUROPE,
+					matchId: game.matchId
+				});
+
+				const firstRegisteredAlly = _.find(match.info.participants, (player) =>
+					_.includes(userLolIds, player.puuid)
+				);
+				if (!firstRegisteredAlly) {
+					throw new Error('NO REGISTERED USER IN THIS GAME');
+				}
+
+				const players: Prisma.PlayerStatUpdateManyWithWhereWithoutGameInput[] = match.info.participants.map(
+					(player) => {
+						return {
+							where: {
+								puuid: player.puuid
+							},
+							data: {
+								largestCriticalStrike: player.largestCriticalStrike,
+								largestKillingSpree: player.largestKillingSpree,
+								longestTimeSpentLiving: player.longestTimeSpentLiving,
+								spell1Casts: player.spell1Casts,
+								spell2Casts: player.spell2Casts,
+								spell3Casts: player.spell3Casts,
+								spell4Casts: player.spell4Casts,
+								summoner1Casts: player.summoner1Casts,
+								summoner2Casts: player.summoner2Casts,
+								totalHeal: player.totalHeal,
+								totalHealsOnTeammates: player.totalHealsOnTeammates,
+								totalDamageShieldedOnTeammates: player.totalDamageShieldedOnTeammates
+							}
+						};
+					}
+				);
+				prismaUpdates.push(() =>
+					prisma.game.update({
+						where: { id: game.id },
+						data: {
+							players: {
+								updateMany: players
 							}
 						}
 					})
