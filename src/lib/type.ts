@@ -1,16 +1,21 @@
-import type { Prisma } from '@prisma/client';
+import type { Prisma, Stat } from '@prisma/client';
+
+export const completePlayerStatInclude = {
+	game: { include: { players: { include: { champion: true } } } },
+	champion: true,
+	user: true,
+	stat: true
+}
 
 export type CompleteStat = Prisma.StatGetPayload<{
 	include: {
 		playerStat: {
-			include: {
-				game: { include: { players: { include: { champion: true } } } };
-				champion: true;
-				user: true;
-			};
+			include: typeof completePlayerStatInclude
 		};
 		champion: { include: { champion: true } };
 	};
 }>;
 
-export type MaxStat = (CompleteStat['playerStat'] & { stat: Stat | null });
+export type TopStat = Prisma.TopStatsGetPayload<{
+	include: typeof completePlayerStatInclude
+}>

@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -8,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id        Int          @id @default(sequence())
+  id        Int          @id @default(sequence(maxValue: 2147483647))
   name      String       @unique
   ign       String?      @unique
   lolId     String?      @unique
@@ -16,6 +17,7 @@ model User {
   createdAt DateTime     @default(now())
   gameStats PlayerStat[]
   stats     Stat[]
+  TopStats  TopStats[]
 }
 
 model Game {
@@ -30,6 +32,7 @@ model Game {
   createdAt     DateTime     @default(now())
   period        Period?      @relation(fields: [periodId], references: [id])
   players       PlayerStat[]
+  TopStats      TopStats[]
 }
 
 model PlayerStat {
@@ -58,6 +61,9 @@ model PlayerStat {
   neutralMinionsKilled           Int
   isWin                          Boolean
   totalTimeSpentDead             Int
+  updatedAt                      DateTime    @updatedAt
+  createdAt                      DateTime    @default(now())
+  totalCs                        Int
   largestCriticalStrike          Int?
   largestKillingSpree            Int?
   longestTimeSpentLiving         Int?
@@ -67,10 +73,9 @@ model PlayerStat {
   spell4Casts                    Int?
   summoner1Casts                 Int?
   summoner2Casts                 Int?
+  totalDamageShieldedOnTeammates Int?
   totalHeal                      Int?
   totalHealsOnTeammates          Int?
-  totalDamageShieldedOnTeammates Int?
-  totalCs                        Int
   champion                       Champion    @relation(fields: [championId], references: [id])
   game                           Game        @relation(fields: [gameId], references: [id])
   user                           User?       @relation(fields: [userId], references: [id])
@@ -78,14 +83,11 @@ model PlayerStat {
   items                          Item[]      @relation("ItemToPlayerStat")
   sumSpells                      SumSpells[] @relation("PlayerStatToSumSpells")
 
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
-
   @@unique([gameId, puuid])
 }
 
 model SumSpells {
-  id        Int          @id @default(sequence())
+  id        Int          @id @default(sequence(maxValue: 2147483647))
   sumId     Int          @unique
   name      String?      @unique
   updatedAt DateTime     @updatedAt
@@ -94,7 +96,7 @@ model SumSpells {
 }
 
 model Item {
-  id        Int          @id @default(sequence())
+  id        Int          @id @default(sequence(maxValue: 2147483647))
   itemId    Int          @unique
   name      String?      @unique
   updatedAt DateTime     @updatedAt
@@ -123,20 +125,22 @@ model Stat {
   period         Period       @relation(fields: [periodId], references: [id])
   playerStat     PlayerStat   @relation(fields: [playerStatId], references: [id])
   user           User         @relation(fields: [userId], references: [id])
+  TopStats       TopStats[]
 }
 
 model Champion {
-  id        Int            @id @default(sequence())
+  id        Int            @id @default(sequence(maxValue: 2147483647))
   name      String         @unique
   support   Boolean        @default(false)
   updatedAt DateTime       @updatedAt
   createdAt DateTime       @default(now())
   stats     ChampionStat[]
   players   PlayerStat[]
+  TopStats  TopStats[]
 }
 
 model ChampionStat {
-  id         Int      @id @default(sequence())
+  id         Int      @id @default(sequence(maxValue: 2147483647))
   periodId   Int
   winrate    Float
   championId Int
@@ -150,7 +154,7 @@ model ChampionStat {
 }
 
 model Period {
-  id            Int            @id @default(sequence())
+  id            Int            @id @default(sequence(maxValue: 2147483647))
   name          String
   date          DateTime
   updatedAt     DateTime       @updatedAt
@@ -161,7 +165,60 @@ model Period {
 }
 
 model LolRequest {
-  id        Int      @id @default(sequence())
+  id        Int      @id @default(sequence(maxValue: 2147483647))
   count     Int
   createdAt DateTime @default(now())
+}
+
+view TopStats {
+  id                             Int @unique
+  gameId                         Int
+  championId                     Int
+  userId                         Int?
+  sumName                        String
+  puuid                          String
+  isAllyTeam                     Boolean
+  kills                          Int
+  deaths                         Int
+  assists                        Int
+  damage                         Int
+  tanked                         Int
+  mitigated                      Int
+  totalTimeCCDealt               Int
+  isFirstBloodKill               Boolean
+  doubleKills                    Int
+  tripleKills                    Int
+  quadraKills                    Int
+  pentaKills                     Int
+  timeCCingOthers                Int
+  goldEarned                     Int
+  totalMinionsKilled             Int
+  neutralMinionsKilled           Int
+  isWin                          Boolean
+  totalTimeSpentDead             Int
+  updatedAt                      DateTime
+  createdAt                      DateTime
+  totalCs                        Int
+  largestCriticalStrike          Int?
+  largestKillingSpree            Int?
+  longestTimeSpentLiving         Int?
+  spell1Casts                    Int?
+  spell2Casts                    Int?
+  spell3Casts                    Int?
+  spell4Casts                    Int?
+  summoner1Casts                 Int?
+  summoner2Casts                 Int?
+  totalDamageShieldedOnTeammates Int?
+  totalHeal                      Int?
+  totalHealsOnTeammates          Int?
+  statId                         Int?
+  totalTanked                    BigInt
+  dmgPerMinute                   Float
+  tankedPerMinute                Float
+  goldPerMinute                  Float
+  dmgPerGold                     Float
+  game                           Game     @relation(fields: [gameId], references: [id])
+  user                           User?     @relation(fields: [userId], references: [id])
+  champion                       Champion @relation(fields: [championId], references: [id])
+  stat                           Stat?    @relation(fields: [statId], references: [id])
 }

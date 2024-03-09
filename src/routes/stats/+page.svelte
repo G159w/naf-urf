@@ -131,12 +131,12 @@
 		</div>
 
 		<div class="flex flex-wrap flex-row gap-4 w-full" in:scale={{ delay: 200 }}>
-			<SmallTableStats title="Top Kills" playerStats={data.maxKillStats} statKey={'kills'} />
-			<SmallTableStats title="Top Deaths" playerStats={data.maxDeathStats} statKey={'deaths'} />
+			<SmallTableStats title="Top Kills" playerStats={data.maxKillsStats} statKey={'kills'} />
+			<SmallTableStats title="Top Deaths" playerStats={data.maxDeathsStats} statKey={'deaths'} />
+			<SmallTableStats title="Top Assists" playerStats={data.maxAssistsStats} statKey={'assists'} />
 			<SmallTableStats title="Top Dégâts" playerStats={data.maxDamageStats} statKey={'damage'}  />
-			<SmallTableStats title="Top Farm" playerStats={data.maxFarmStats} statKey={'totalCs'} />
-			<SmallTableStats title="Top Tanked" playerStats={data.maxTankedStats} statKey={'tanked'} />
-			<SmallTableStats title="Top Mitigated" playerStats={data.maxMitigatedStats} statKey={'mitigated'} />
+			<SmallTableStats title="Top Farm" playerStats={data.maxFarmStats} statKey={'totalMinionsKilled'} />
+			<SmallTableStats title="Top Tanked" playerStats={data.maxReceivedStats} statKey={'totalTanked'} />
 			<SmallTableStats title="Top CC Time" playerStats={data.maxCCingStats} statKey={'timeCCingOthers'} />
 			<SmallTableStats title="Top Gold" playerStats={data.maxGoldEarnedStats} statKey={'goldEarned'} />
 			<SmallTableStats title="Top Dead Time" playerStats={data.maxDeadTimeStats} statKey={'totalTimeSpentDead'} />
@@ -152,6 +152,10 @@
 			<SmallTableStats title="Top Heal" playerStats={data.maxHealStats} statKey={'totalHeal'} />
 			<SmallTableStats title="Top Heal on Team" playerStats={data.maxHealTeammatesStats} statKey={'totalHealsOnTeammates'} />
 			<SmallTableStats title="Top Shield on Team" playerStats={data.maxShieldTeammatesStats} statKey={'totalDamageShieldedOnTeammates'} />
+			<SmallTableStats title="Top Damage/Minute" playerStats={data.maxDamagePerMinuteStats} statKey={'dmgPerMinute'} />
+			<SmallTableStats title="Top Tanked/Minute" playerStats={data.maxTankedPerMinuteStats} statKey={'tankedPerMinute'} />
+			<SmallTableStats title="Top Gold/Minute" playerStats={data.maxGoldPerMinuteStats} statKey={'goldPerMinute'} />
+			<SmallTableStats title="Top Damage/Gold" playerStats={data.maxDamagePerGoldStats} statKey={'dmgPerGold'} />
 		</div>
 	</section>
 {/key}

@@ -1,23 +1,22 @@
 <script lang="ts">
-	import type { Champion, Period, PlayerStat, Stat, User } from '@prisma/client';
+	import type { Stat } from '@prisma/client';
 	import { Trophy } from 'lucide-svelte';
 	import {
 		colorsLevels,
 		computeStat,
-		getChampionDragonName,
 		getChampionImage,
 		getColor
 	} from '$lib/utils';
 	import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 	import GameVisualizer from '../GameVisualizer.svelte';
-	import type { CompleteStat, MaxStat } from '$lib/type';
-	export let playerStats: MaxStat[];
-	export let statKey: keyof PlayerStat;
+	import type { CompleteStat, TopStat } from '$lib/type';
+	export let playerStats: TopStat[];
+	export let statKey: keyof typeof playerStats[0];
 	export let title: string;
 
 	const modalStore = getModalStore();
 
-	function triggerDetailGameModal(playerStat: CompleteStat['playerStat'], stat: Stat): void {
+	function triggerDetailGameModal(playerStat: CompleteStat['playerStat'] | TopStat, stat: Stat | null): void {
 		const modalComponent: ModalComponent = {
 			ref: GameVisualizer,
 			props: {

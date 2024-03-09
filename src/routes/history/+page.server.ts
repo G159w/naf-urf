@@ -308,6 +308,7 @@ export const actions: Actions = {
 					},
 					gameCreation: { gt: twoYearsAgo }
 				},
+				orderBy: { gameCreation: 'desc' },
 				take: requests // > 20 ? 20 : requests
 			});
 
