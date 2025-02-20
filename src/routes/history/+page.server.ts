@@ -1,6 +1,6 @@
 import { createContext } from '$lib/server/context';
-import { numberOfPossibleRequests, sleep } from '$lib/server/utils';
-import { PlatformId, RiotAPITypes } from '@fightmegg/riot-api';
+import { numberOfPossibleRequests } from '$lib/server/utils';
+import { PlatformId } from '@fightmegg/riot-api';
 import type { Champion, Game, Prisma, PrismaPromise, User } from '@prisma/client';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';

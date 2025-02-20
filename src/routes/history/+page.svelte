@@ -18,7 +18,6 @@
 	import { quintIn } from 'svelte/easing';
 	import DetailGame from '$lib/component/DetailGame.svelte';
 
-	export let form: ActionData;
 	export let data: PageData;
 
 	const menuPopup: PopupSettings = {
@@ -65,7 +64,7 @@
 		getModalStore().trigger(d);
 	}
 
-	function scrollIntoView(element) {
+	function scrollIntoView(element: Element) {
 		element.scroll({ top: element.scrollHeight, behavior: 'smooth' });
 
 		console.log(element, element.scrollHeight);
@@ -166,7 +165,9 @@
 				<button
 					on:click={(event) => {
 						console.log(event.target);
-						scrollIntoView(event.target);
+						if (event.target instanceof Element) {
+							scrollIntoView(event.target);
+						}
 						expendedGameId = game.id;
 					}}
 					class={`lg:basis-1/2 w-full p-2`}

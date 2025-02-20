@@ -90,7 +90,7 @@
 											<img
 												class="w-6"
 												alt={item.itemId.toString()}
-												src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/item/${item.itemId}.png`}
+												src={`http://ddragon.leagueoflegends.com/cdn/15.4.1/img/item/${item.itemId}.png`}
 											/>
 										{/if}
 									{/each}
@@ -172,7 +172,7 @@
 											<img
 												class="w-6"
 												alt={item.itemId.toString()}
-												src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/item/${item.itemId}.png`}
+												src={`http://ddragon.leagueoflegends.com/cdn/15.4.1/img/item/${item.itemId}.png`}
 											/>
 										{/if}
 									{/each}

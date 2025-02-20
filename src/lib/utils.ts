@@ -26,12 +26,14 @@ export const championMapDisplayToDb: Record<string, string> = {
 	Akali: 'akali',
 	Akshan: 'akshan',
 	Alistar: 'alistar',
+	Ambessa: 'ambessa',
 	Amumu: 'amumu',
 	Anivia: 'anivia',
 	Annie: 'annie',
 	Aphelios: 'aphelios',
 	Ashe: 'ashe',
 	'Aurelion Sol': 'aurelionsol',
+	Aurora: 'aurora',
 	Azir: 'azir',
 	Bard: 'bard',
 	"Bel'Veth": 'belveth',
@@ -100,6 +102,7 @@ export const championMapDisplayToDb: Record<string, string> = {
 	Malzahar: 'malzahar',
 	Maokai: 'maokai',
 	'Master Yi': 'masteryi',
+	Mel: 'mel',
 	Milio: 'milio',
 	'Miss Fortune': 'missfortune',
 	Mordekaiser: 'mordekaiser',
@@ -238,7 +241,7 @@ export const getChampionImage = (championName: string, type: 'icon' | 'splash' =
 			championName
 		)}_0.jpg`;
 	}
-	return `http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
+	return `http://ddragon.leagueoflegends.com/cdn/15.4.1/img/champion/${getChampionDragonName(
 		championName
 	)}.png`;
 };

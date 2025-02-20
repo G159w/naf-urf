@@ -53,7 +53,7 @@
 							<img
 								class=" w-7"
 								alt={player.champion.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
+								src={`http://ddragon.leagueoflegends.com/cdn/15.4.1/img/champion/${getChampionDragonName(
 									player.champion.name
 								)}.png`}
 							/>
@@ -79,7 +79,7 @@
 							<img
 								class="w-7"
 								alt={player.champion.name}
-								src={`http://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${getChampionDragonName(
+								src={`http://ddragon.leagueoflegends.com/cdn/15.4.1/img/champion/${getChampionDragonName(
 									player.champion.name
 								)}.png`}
 							/>
